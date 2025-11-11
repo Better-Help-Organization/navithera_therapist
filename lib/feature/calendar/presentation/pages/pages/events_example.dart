@@ -62,7 +62,7 @@ class Session {
   final String id;
   final DateTime schedule;
   final int duration;
-  final Client client;
+  final Client? client; // Make client nullable
   final String? note;
   final bool hasTherapistAttended;
   final String approvalStatus;
@@ -71,7 +71,7 @@ class Session {
     required this.id,
     required this.schedule,
     required this.duration,
-    required this.client,
+    this.client, // Make client optional
     required this.approvalStatus,
     this.note,
     this.hasTherapistAttended = false,
@@ -79,11 +79,17 @@ class Session {
 
   factory Session.fromMap(Map<String, dynamic> map) {
     log("object: ${map}");
+
+    Client? client;
+    if (map['client'] != null && map['client'] is Map<String, dynamic>) {
+      client = Client.fromMap(map['client'] as Map<String, dynamic>);
+    }
+
     return Session(
       id: map['id']?.toString() ?? '',
       schedule: DateTime.parse(map['schedule']?.toString() ?? ''),
       duration: map['duration'] is int ? map['duration'] as int : 0,
-      client: Client.fromMap(map['client'] as Map<String, dynamic>),
+      client: client, // This can be null now
       approvalStatus: map['approvalStatus']?.toString() ?? 'pending',
       note: map['note']?.toString(),
       hasTherapistAttended:
@@ -490,7 +496,12 @@ class _SessionCalendarScreenState extends ConsumerState<SessionCalendarScreen>
                   ],
                 ),
                 const SizedBox(height: 16),
-                _buildDetailRow('Client', session.client.fullName),
+                _buildDetailRow(
+                  'Client',
+                  session.client != null
+                      ? session.client!.fullName
+                      : "Group Session",
+                ),
                 _buildDetailRow('Date', _formatDate(session.schedule)),
                 _buildDetailRow('Time', _formatTime(session.schedule)),
                 _buildDetailRow('Duration', '${session.duration} minutes'),
@@ -1122,7 +1133,9 @@ class _SessionTimeBlock extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                session.client.fullName,
+                session.client != null
+                    ? session.client!.fullName
+                    : "Group Session",
                 style: TextStyle(
                   color:
                       session.approvalStatus == 'pending'

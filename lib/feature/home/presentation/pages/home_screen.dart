@@ -195,6 +195,88 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return List.generate(7, (index) => monday.add(Duration(days: index)));
   }
 
+  // Future<void> _loadSession() async {
+  //   setState(() {
+  //     _isLoadingSessions = true;
+  //   });
+
+  //   final sessionService = ref.read(sessionServiceProvider);
+
+  //   // Fetch this week's stats for all calculations
+  //   final now = DateTime.now();
+  //   final monday = _getMondayOfWeek(now);
+  //   final sunday = monday.add(const Duration(days: 6));
+  //   final statsData = await sessionService.fetchStats(monday, sunday);
+
+  //   int weeklySessions = 0;
+  //   int weeklyRevenue = 0;
+  //   int weeklyUsers = 0;
+
+  //   if (statsData != null && statsData['data'] != null) {
+  //     final data = statsData['data'] as Map<String, dynamic>;
+
+  //     print("dataxoxo: ${data}");
+
+  //     weeklySessions = data['totalSessions'];
+
+  //     // Calculate total revenue from revenueOverTime
+  //     final revenueOverTime = data['revenueOverTime'] as List<dynamic>? ?? [];
+  //     for (var revenue in revenueOverTime) {
+  //       final revenueValue = revenue['revenue'];
+  //       if (revenueValue != null) {
+  //         weeklyRevenue += int.tryParse(revenueValue.toString()) ?? 0;
+  //       }
+  //     }
+  //     // weeklyRevenue = data['total']
+
+  //     // Calculate total users from usersTreatedOverTime
+  //     final usersTreatedOverTime =
+  //         data['usersTreatedOverTime'] as List<dynamic>? ?? [];
+  //     for (var user in usersTreatedOverTime) {
+  //       final count =
+  //           int.tryParse(user['treatedUsers']?.toString() ?? '0') ?? 0;
+  //       weeklyUsers += count;
+  //     }
+
+  //     // Also check therapistWorkload as a fallback for total users
+  //     final therapistWorkload =
+  //         data['therapistWorkload'] as List<dynamic>? ?? [];
+  //     if (weeklyUsers == 0 && therapistWorkload.isNotEmpty) {
+  //       weeklyUsers =
+  //           int.tryParse(
+  //             therapistWorkload[0]['sessionCount']?.toString() ?? '0',
+  //           ) ??
+  //           0;
+  //     }
+
+  //     weeklyUsers = data['totalUsers'];
+  //   }
+
+  //   // Fallback to session count if no stats data available
+  //   if (weeklySessions == 0) {
+  //     final count = await sessionService.fetchSessions();
+  //     weeklySessions = count ?? 0;
+  //   }
+
+  //   // Calculate total hours (45 minutes per session)
+  //   final totalMinutes = weeklySessions * 60;
+  //   final totalHours = (totalMinutes / 60).toStringAsFixed(
+  //     1,
+  //   ); // Keep 1 decimal place
+
+  //   setState(() {
+  //     totalSessions = weeklySessions;
+  //     totalRevenue = weeklyRevenue; // Use actual API data
+  //     this.totalHours = double.parse(
+  //       totalHours,
+  //     ); // Store as double for decimal values
+  //     totalUsers = weeklyUsers; // fallback to 128 if no users data
+
+  //     _isLoadingSessions = false;
+  //   });
+  // } //     _isLoadingCharts = true;
+  // //   });
+
   Future<void> _loadSession() async {
     setState(() {
       _isLoadingSessions = true;
@@ -211,13 +293,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     int weeklySessions = 0;
     int weeklyRevenue = 0;
     int weeklyUsers = 0;
+    double weeklyHours = 0.0; // Add this variable
 
     if (statsData != null && statsData['data'] != null) {
       final data = statsData['data'] as Map<String, dynamic>;
 
       print("dataxoxo: ${data}");
 
-      weeklySessions = data['totalSessions'];
+      weeklySessions = data['totalSessions'] ?? 0;
+      weeklyHours =
+          (data['totalHours'] ?? 0.0).toDouble(); // Get hours from API
 
       // Calculate total revenue from revenueOverTime
       final revenueOverTime = data['revenueOverTime'] as List<dynamic>? ?? [];
@@ -227,7 +312,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           weeklyRevenue += int.tryParse(revenueValue.toString()) ?? 0;
         }
       }
-      // weeklyRevenue = data['total']
 
       // Calculate total users from usersTreatedOverTime
       final usersTreatedOverTime =
@@ -249,7 +333,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             0;
       }
 
-      weeklyUsers = data['totalUsers'];
+      weeklyUsers = data['totalUsers'] ?? weeklyUsers;
     }
 
     // Fallback to session count if no stats data available
@@ -258,24 +342,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       weeklySessions = count ?? 0;
     }
 
-    // Calculate total hours (45 minutes per session)
-    final totalMinutes = weeklySessions * 60;
-    final totalHours = (totalMinutes / 60).toStringAsFixed(
-      1,
-    ); // Keep 1 decimal place
+    // Remove the manual hours calculation since we get it from API now
+    // final totalMinutes = weeklySessions * 60;
+    // final totalHours = (totalMinutes / 60).toStringAsFixed(1);
 
     setState(() {
       totalSessions = weeklySessions;
-      totalRevenue = weeklyRevenue; // Use actual API data
-      this.totalHours = double.parse(
-        totalHours,
-      ); // Store as double for decimal values
-      totalUsers = weeklyUsers; // fallback to 128 if no users data
+      totalRevenue = weeklyRevenue;
+      totalHours = weeklyHours; // Use the value from API directly
+      totalUsers = weeklyUsers;
 
       _isLoadingSessions = false;
     });
-  } //     _isLoadingCharts = true;
-  //   });
+  }
 
   Widget _buildNotificationIcon() {
     final unreadCount = ref.watch(notificationCountProvider);
