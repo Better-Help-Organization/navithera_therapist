@@ -28,19 +28,6 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  log("Handling a background message: ${message.messageId}");
-
-  // Dump everything clearly
-  log("🔔 RemoteMessage data: ${message.data}");
-  log("🔔 RemoteMessage from: ${message.from}");
-  log("🔔 RemoteMessage sentTime: ${message.sentTime}");
-  log("🔔 RemoteMessage category: ${message.category}");
-  log("🔔 RemoteMessage collapseKey: ${message.collapseKey}");
-  log("🔔 RemoteMessage ttl: ${message.ttl}");
-  log("🔔 RemoteMessage contentAvailable: ${message.contentAvailable}");
-  log("🔔 RemoteMessage mutableContent: ${message.mutableContent}");
-
   // Notification part (title, body, etc.)
   if (message.notification != null) {
     log("🔔 Notification title: ${message.notification?.title}");

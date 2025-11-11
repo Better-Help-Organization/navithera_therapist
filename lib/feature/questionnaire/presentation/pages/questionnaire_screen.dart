@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
@@ -10,20 +11,12 @@ import 'package:navicare/core/routes/app_router.dart';
 import 'package:navicare/feature/questionnaire/presentation/widgets/progress_indicator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
-// ============ Constants ============
-// const String base_url_dev =
-//     'https://your-api-base-url.com'; // Replace with your actual base URL
-
 // ============ Providers ============
 
 import 'package:http_parser/http_parser.dart';
 
 // Add this near your other constants
 const Map<String, String> expertiseOptions = {
-  // 'IndividualTherapy': 'Individual Therapy',
-  // 'TeenTherapy': 'Teen Therapy',
-  // 'CoupleTherapy': 'Couple Therapy',
-  // 'GroupTherapy': 'Group Therapy',
   'Anxiety': 'Anxiety',
   'Depression': 'Depression',
   'StressManagement': 'Stress Management',
@@ -64,10 +57,8 @@ class FileUploadService {
     request.headers['Authorization'] = 'Bearer $accessToken';
 
     // Get the file extension to determine MIME type
-    String extension = imageFile.path.split('.').last.toLowerCase();
+    final extension = imageFile.path.split('.').last.toLowerCase();
     String mimeType;
-
-    // Determine MIME type based on extension
     switch (extension) {
       case 'jpg':
       case 'jpeg':
@@ -78,6 +69,16 @@ class FileUploadService {
         break;
       case 'gif':
         mimeType = 'image/gif';
+        break;
+      case 'pdf':
+        mimeType = 'application/pdf';
+        break;
+      case 'doc':
+        mimeType = 'application/msword';
+        break;
+      case 'docx':
+        mimeType =
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
         break;
       default:
         mimeType = 'application/octet-stream';
@@ -155,10 +156,8 @@ class FileUploadService {
     request.headers['Authorization'] = 'Bearer $accessToken';
 
     // Get the file extension to determine MIME type
-    String extension = imageFile.path.split('.').last.toLowerCase();
+    final extension = imageFile.path.split('.').last.toLowerCase();
     String mimeType;
-
-    // Determine MIME type based on extension
     switch (extension) {
       case 'jpg':
       case 'jpeg':
@@ -169,6 +168,16 @@ class FileUploadService {
         break;
       case 'gif':
         mimeType = 'image/gif';
+        break;
+      case 'pdf':
+        mimeType = 'application/pdf';
+        break;
+      case 'doc':
+        mimeType = 'application/msword';
+        break;
+      case 'docx':
+        mimeType =
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
         break;
       default:
         mimeType = 'application/octet-stream';
@@ -1201,12 +1210,230 @@ class _PostSignupQuestionnaireScreenState
     );
   }
 
+  // Widget _normalLicenceUploadStep(WidgetRef ref) {
+  //   final normalLicenceImage = ref.watch(normalLicenceImageProvider);
+  //   final isUploading = ref.watch(uploadingProvider);
+  //   final selectedModalId = ref.watch(selectedModalIdProvider);
+
+  //   Future<void> pickAndUploadImage() async {
+  //     try {
+  //       // Check if modal is selected
+  //       if (selectedModalId == null) {
+  //         if (!mounted) return;
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //           const SnackBar(
+  //             content: Text('Please select a modality first'),
+  //             backgroundColor: Colors.red,
+  //           ),
+  //         );
+  //         return;
+  //       }
+
+  //       final ImagePicker picker = ImagePicker();
+  //       final XFile? pickedFile = await picker.pickImage(
+  //         source: ImageSource.gallery,
+  //         imageQuality: 85,
+  //         maxWidth: 1024,
+  //       );
+
+  //       if (pickedFile != null) {
+  //         final File imageFile = File(pickedFile.path);
+  //         ref.read(normalLicenceImageProvider.notifier).state = imageFile;
+
+  //         // Upload immediately after selection with modal ID
+  //         ref.read(uploadingProvider.notifier).state = true;
+  //         try {
+  //           await FileUploadService.uploadFileWithModal(
+  //             imageFile,
+  //             'licence',
+  //             selectedModalId!,
+  //           );
+  //           if (!mounted) return;
+  //           ScaffoldMessenger.of(context).showSnackBar(
+  //             const SnackBar(
+  //               content: Text(
+  //                 'Work experience document uploaded successfully!',
+  //               ),
+  //               backgroundColor: Colors.green,
+  //             ),
+  //           );
+  //         } catch (e) {
+  //           if (!mounted) return;
+  //           ScaffoldMessenger.of(context).showSnackBar(
+  //             SnackBar(
+  //               content: Text('Upload failed'),
+  //               backgroundColor: Colors.red,
+  //             ),
+  //           );
+  //         } finally {
+  //           ref.read(uploadingProvider.notifier).state = false;
+  //         }
+  //       }
+  //     } catch (e) {
+  //       if (!mounted) return;
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //           content: Text('Failed to pick image'),
+  //           backgroundColor: Colors.red,
+  //         ),
+  //       );
+  //     }
+  //   }
+
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       RichText(
+  //         text: TextSpan(
+  //           children: [
+  //             TextSpan(
+  //               text: 'Upload Your Work Experience Documents',
+  //               style: TextStyle(
+  //                 fontSize: 22,
+  //                 fontWeight: FontWeight.w600,
+  //                 color: textPrimary,
+  //                 height: 1.3,
+  //               ),
+  //             ),
+  //             TextSpan(
+  //               text: ' *',
+  //               style: TextStyle(
+  //                 fontSize: 14,
+  //                 color: Colors.red,
+  //                 fontWeight: FontWeight.w500,
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //       const SizedBox(height: 16),
+  //       Text(
+  //         selectedModalId == null
+  //             ? 'Please select a modality first'
+  //             : 'Upload your documents for ${ref.watch(modalsAsyncProvider).when(data: (modals) => modals.firstWhere((m) => m.id == selectedModalId, orElse: () => _Modal(id: '', name: 'Selected', order: 0, description: '')).name, loading: () => 'selected modality', error: (_, __) => 'selected modality')}',
+  //         style: TextStyle(
+  //           fontSize: 14,
+  //           color: selectedModalId == null ? Colors.red : textSecondary,
+  //         ),
+  //       ),
+  //       const SizedBox(height: 24),
+
+  //       if (selectedModalId == null) ...[
+  //         Container(
+  //           height: 150,
+  //           width: double.infinity,
+  //           padding: const EdgeInsets.all(16),
+  //           decoration: BoxDecoration(
+  //             color: bg,
+  //             borderRadius: BorderRadius.circular(12),
+  //             border: Border.all(color: Colors.red),
+  //           ),
+  //           child: const Column(
+  //             mainAxisAlignment: MainAxisAlignment.center,
+  //             children: [
+  //               Icon(Icons.warning, color: Colors.red, size: 48),
+  //               SizedBox(height: 12),
+  //               Text(
+  //                 'Please go back and select a modality first',
+  //                 style: TextStyle(fontSize: 16, color: Colors.red),
+  //                 textAlign: TextAlign.center,
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       ] else if (normalLicenceImage != null) ...[
+  //         Container(
+  //           height: 200,
+  //           width: double.infinity,
+  //           decoration: BoxDecoration(
+  //             borderRadius: BorderRadius.circular(12),
+  //             border: Border.all(color: borderNeutral),
+  //           ),
+  //           child: ClipRRect(
+  //             borderRadius: BorderRadius.circular(12),
+  //             child: Image.file(
+  //               normalLicenceImage,
+  //               fit: BoxFit.cover,
+  //               errorBuilder: (context, error, stackTrace) {
+  //                 return const Center(
+  //                   child: Icon(
+  //                     Icons.error_outline,
+  //                     color: Colors.red,
+  //                     size: 48,
+  //                   ),
+  //                 );
+  //               },
+  //             ),
+  //           ),
+  //         ),
+  //         const SizedBox(height: 16),
+  //         if (isUploading)
+  //           const Center(
+  //             child: CircularProgressIndicator(
+  //               valueColor: AlwaysStoppedAnimation<Color>(primary),
+  //             ),
+  //           )
+  //         else
+  //           ElevatedButton(
+  //             onPressed: pickAndUploadImage,
+  //             style: ElevatedButton.styleFrom(
+  //               backgroundColor: primary,
+  //               foregroundColor: Colors.white,
+  //               minimumSize: const Size(double.infinity, 50),
+  //             ),
+  //             child: const Text('Change Document'),
+  //           ),
+  //       ] else ...[
+  //         InkWell(
+  //           onTap: isUploading ? null : pickAndUploadImage,
+  //           borderRadius: BorderRadius.circular(12),
+  //           child: Container(
+  //             height: 150,
+  //             width: double.infinity,
+  //             padding: const EdgeInsets.all(16),
+  //             decoration: BoxDecoration(
+  //               color: bg,
+  //               borderRadius: BorderRadius.circular(12),
+  //               border: Border.all(color: borderNeutral),
+  //             ),
+  //             child: Column(
+  //               mainAxisAlignment: MainAxisAlignment.center,
+  //               children: [
+  //                 Icon(
+  //                   Icons.assignment_outlined,
+  //                   color: isUploading ? textSecondary : primary,
+  //                   size: 48,
+  //                 ),
+  //                 const SizedBox(height: 12),
+  //                 Text(
+  //                   isUploading
+  //                       ? 'Uploading...'
+  //                       : 'Tap to upload work experience',
+  //                   style: TextStyle(
+  //                     fontSize: 16,
+  //                     color: isUploading ? textSecondary : textPrimary,
+  //                   ),
+  //                 ),
+  //                 const SizedBox(height: 4),
+  //                 const Text(
+  //                   'JPG, PNG formats',
+  //                   style: TextStyle(fontSize: 12, color: textSecondary),
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     ],
+  //   );
+  // }
+
   Widget _normalLicenceUploadStep(WidgetRef ref) {
     final normalLicenceImage = ref.watch(normalLicenceImageProvider);
     final isUploading = ref.watch(uploadingProvider);
     final selectedModalId = ref.watch(selectedModalIdProvider);
 
-    Future<void> pickAndUploadImage() async {
+    Future<void> pickAndUploadFile() async {
       try {
         // Check if modal is selected
         if (selectedModalId == null) {
@@ -1220,55 +1447,140 @@ class _PostSignupQuestionnaireScreenState
           return;
         }
 
-        final ImagePicker picker = ImagePicker();
-        final XFile? pickedFile = await picker.pickImage(
-          source: ImageSource.gallery,
-          imageQuality: 85,
-          maxWidth: 1024,
+        // Use FilePicker to allow multiple file types
+        final result = await FilePicker.platform.pickFiles(
+          type: FileType.custom,
+          allowMultiple: false,
+          withReadStream: false,
+          allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'],
         );
 
-        if (pickedFile != null) {
-          final File imageFile = File(pickedFile.path);
-          ref.read(normalLicenceImageProvider.notifier).state = imageFile;
+        if (result == null || result.files.isEmpty) {
+          // User canceled
+          return;
+        }
 
-          // Upload immediately after selection with modal ID
-          ref.read(uploadingProvider.notifier).state = true;
-          try {
-            await FileUploadService.uploadFileWithModal(
-              imageFile,
-              'licence',
-              selectedModalId!,
-            );
-            if (!mounted) return;
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
-                  'Work experience document uploaded successfully!',
-                ),
-                backgroundColor: Colors.green,
-              ),
-            );
-          } catch (e) {
-            if (!mounted) return;
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Upload failed'),
-                backgroundColor: Colors.red,
-              ),
-            );
-          } finally {
-            ref.read(uploadingProvider.notifier).state = false;
-          }
+        final picked = result.files.first;
+
+        // Optional: enforce size limit (e.g., 10MB)
+        const maxBytes = 10 * 1024 * 1024;
+        if (picked.size != null && picked.size > maxBytes) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('File too large. Max 10MB.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
+        final path = picked.path;
+        if (path == null) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Could not read the selected file path.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
+        final file = File(path);
+        ref.read(normalLicenceImageProvider.notifier).state = file;
+
+        // Upload immediately after selection with modal ID
+        ref.read(uploadingProvider.notifier).state = true;
+        try {
+          await FileUploadService.uploadFileWithModal(
+            file,
+            'licence',
+            selectedModalId!,
+          );
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Document uploaded successfully!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } catch (e) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Upload failed: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        } finally {
+          ref.read(uploadingProvider.notifier).state = false;
         }
       } catch (e) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to pick image'),
+            content: Text('Failed to pick file: $e'),
             backgroundColor: Colors.red,
           ),
         );
       }
+    }
+
+    // Helper to get file extension for display
+    String _getFileExtension(File file) {
+      final path = file.path;
+      final extension = path.split('.').last.toLowerCase();
+      return extension.toUpperCase();
+    }
+
+    // Helper to get file name for display
+    String _getFileName(File file) {
+      final path = file.path;
+      return path.split('/').last;
+    }
+
+    // Badge widget for file type
+    Widget _fileTypeBadge(String extension) {
+      Color bgColor;
+      Color textColor;
+
+      switch (extension.toLowerCase()) {
+        case 'pdf':
+          bgColor = const Color(0xFFFFEBEE);
+          textColor = const Color(0xFFD32F2F);
+          break;
+        case 'jpg':
+        case 'jpeg':
+        case 'png':
+          bgColor = const Color(0xFFE8F5E9);
+          textColor = const Color(0xFF2E7D32);
+          break;
+        case 'doc':
+        case 'docx':
+          bgColor = const Color(0xFFE3F2FD);
+          textColor = const Color(0xFF1565C0);
+          break;
+        default:
+          bgColor = const Color(0xFFF5F5F5);
+          textColor = const Color(0xFF424242);
+      }
+
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Text(
+          extension,
+          style: TextStyle(
+            color: textColor,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      );
     }
 
     return Column(
@@ -1334,49 +1646,150 @@ class _PostSignupQuestionnaireScreenState
           ),
         ] else if (normalLicenceImage != null) ...[
           Container(
-            height: 200,
-            width: double.infinity,
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
+              color: Colors.white,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: borderNeutral),
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.file(
-                normalLicenceImage,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return const Center(
-                    child: Icon(
-                      Icons.error_outline,
-                      color: Colors.red,
-                      size: 48,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    _fileTypeBadge(_getFileExtension(normalLicenceImage!)),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _getFileName(normalLicenceImage!),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: textPrimary,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${_getFileExtension(normalLicenceImage!)} • ${_formatFileSize(normalLicenceImage!.lengthSync())}',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  );
-                },
-              ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                // Show preview for images
+                // if (_getFileExtension(normalLicenceImage!).toLowerCase()
+                //     in ['jpg', 'jpeg', 'png']) ...[
+                //   Container(
+                //     height: 200,
+                //     width: double.infinity,
+                //     decoration: BoxDecoration(
+                //       borderRadius: BorderRadius.circular(8),
+                //       border: Border.all(color: borderNeutral),
+                //     ),
+                //     child: ClipRRect(
+                //       borderRadius: BorderRadius.circular(8),
+                //       child: Image.file(
+                //         normalLicenceImage!,
+                //         fit: BoxFit.cover,
+                //         errorBuilder: (context, error, stackTrace) {
+                //           return const Center(
+                //             child: Icon(
+                //               Icons.error_outline,
+                //               color: Colors.red,
+                //               size: 48,
+                //             ),
+                //           );
+                //         },
+                //       ),
+                //     ),
+                //   ),
+                //   const SizedBox(height: 16),
+                // ],
+
+                // Show document icon for non-image files
+                // if (_getFileExtension(normalLicenceImage!).toLowerCase()
+                //     in ['pdf', 'doc', 'docx']) ...[
+                //   Container(
+                //     height: 120,
+                //     width: double.infinity,
+                //     decoration: BoxDecoration(
+                //       color: bg,
+                //       borderRadius: BorderRadius.circular(8),
+                //       border: Border.all(color: borderNeutral),
+                //     ),
+                //     child: Column(
+                //       mainAxisAlignment: MainAxisAlignment.center,
+                //       children: [
+                //         Icon(
+                //           _getFileExtension(normalLicenceImage!).toLowerCase() == 'pdf'
+                //               ? Icons.picture_as_pdf
+                //               : Icons.description,
+                //           color: primary,
+                //           size: 48,
+                //         ),
+                //         const SizedBox(height: 8),
+                //         Text(
+                //           '${_getFileExtension(normalLicenceImage!)} Document',
+                //           style: const TextStyle(
+                //             fontSize: 16,
+                //             color: textPrimary,
+                //             fontWeight: FontWeight.w500,
+                //           ),
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                //   const SizedBox(height: 16),
+                // ],
+                if (isUploading)
+                  const Center(
+                    child: Column(
+                      children: [
+                        CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(primary),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'Uploading...',
+                          style: TextStyle(color: textSecondary),
+                        ),
+                      ],
+                    ),
+                  )
+                else
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: pickAndUploadFile,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: primary,
+                            foregroundColor: Colors.white,
+                            minimumSize: const Size(0, 50),
+                          ),
+                          child: const Text('Change Document'),
+                        ),
+                      ),
+                    ],
+                  ),
+              ],
             ),
           ),
-          const SizedBox(height: 16),
-          if (isUploading)
-            const Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(primary),
-              ),
-            )
-          else
-            ElevatedButton(
-              onPressed: pickAndUploadImage,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: primary,
-                foregroundColor: Colors.white,
-                minimumSize: const Size(double.infinity, 50),
-              ),
-              child: const Text('Change Document'),
-            ),
         ] else ...[
           InkWell(
-            onTap: isUploading ? null : pickAndUploadImage,
+            onTap: isUploading ? null : pickAndUploadFile,
             borderRadius: BorderRadius.circular(12),
             child: Container(
               height: 150,
@@ -1397,9 +1810,7 @@ class _PostSignupQuestionnaireScreenState
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    isUploading
-                        ? 'Uploading...'
-                        : 'Tap to upload work experience',
+                    isUploading ? 'Uploading...' : 'Tap to upload document',
                     style: TextStyle(
                       fontSize: 16,
                       color: isUploading ? textSecondary : textPrimary,
@@ -1407,8 +1818,9 @@ class _PostSignupQuestionnaireScreenState
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    'JPG, PNG formats',
+                    'PDF, JPG, PNG, DOC, DOCX formats • Max 10MB',
                     style: TextStyle(fontSize: 12, color: textSecondary),
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ),
@@ -1419,57 +1831,150 @@ class _PostSignupQuestionnaireScreenState
     );
   }
 
+  // Helper function to format file size
+  String _formatFileSize(int bytes) {
+    if (bytes < 1024) return '$bytes B';
+    if (bytes < 1048576) return '${(bytes / 1024).toStringAsFixed(1)} KB';
+    return '${(bytes / 1048576).toStringAsFixed(1)} MB';
+  }
+
   Widget _specialTrainingUploadStep(WidgetRef ref) {
     final specialTrainingImage = ref.watch(specialTrainingImageProvider);
     final isUploading = ref.watch(uploadingProvider);
 
-    Future<void> pickAndUploadImage() async {
+    Future<void> pickAndUploadFile() async {
       try {
-        final ImagePicker picker = ImagePicker();
-        final XFile? pickedFile = await picker.pickImage(
-          source: ImageSource.gallery,
-          imageQuality: 85,
-          maxWidth: 1024,
+        final result = await FilePicker.platform.pickFiles(
+          type: FileType.custom,
+          allowMultiple: false,
+          withReadStream: false,
+          allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'],
         );
 
-        if (pickedFile != null) {
-          final File imageFile = File(pickedFile.path);
-          ref.read(specialTrainingImageProvider.notifier).state = imageFile;
+        if (result == null || result.files.isEmpty) {
+          return;
+        }
 
-          // Upload immediately after selection
-          ref.read(uploadingProvider.notifier).state = true;
-          try {
-            await FileUploadService.uploadFile(imageFile, 'special_training');
-            if (!mounted) return;
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
-                  'Special training certificate uploaded successfully!',
-                ),
-                backgroundColor: Colors.green,
+        final picked = result.files.first;
+
+        const maxBytes = 10 * 1024 * 1024;
+        if (picked.size != null && picked.size > maxBytes) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('File too large. Max 10MB.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
+        final path = picked.path;
+        if (path == null) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Could not read the selected file path.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
+        final file = File(path);
+        ref.read(specialTrainingImageProvider.notifier).state = file;
+
+        ref.read(uploadingProvider.notifier).state = true;
+        try {
+          await FileUploadService.uploadFile(file, 'special_training');
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Special training certificate uploaded successfully!',
               ),
-            );
-          } catch (e) {
-            if (!mounted) return;
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Upload failed: $e'),
-                backgroundColor: Colors.red,
-              ),
-            );
-          } finally {
-            ref.read(uploadingProvider.notifier).state = false;
-          }
+              backgroundColor: Colors.green,
+            ),
+          );
+        } catch (e) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Upload failed: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        } finally {
+          ref.read(uploadingProvider.notifier).state = false;
         }
       } catch (e) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to pick image: $e'),
+            content: Text('Failed to pick file: $e'),
             backgroundColor: Colors.red,
           ),
         );
       }
+    }
+
+    String _getFileExtension(File file) {
+      final path = file.path;
+      final extension = path.split('.').last.toLowerCase();
+      return extension.toUpperCase();
+    }
+
+    String _getFileName(File file) {
+      final path = file.path;
+      return path.split('/').last;
+    }
+
+    String _formatFileSize(int bytes) {
+      if (bytes < 1024) return '$bytes B';
+      if (bytes < 1048576) return '${(bytes / 1024).toStringAsFixed(1)} KB';
+      return '${(bytes / 1048576).toStringAsFixed(1)} MB';
+    }
+
+    Widget _fileTypeBadge(String extension) {
+      Color bgColor;
+      Color textColor;
+
+      switch (extension.toLowerCase()) {
+        case 'pdf':
+          bgColor = const Color(0xFFFFEBEE);
+          textColor = const Color(0xFFD32F2F);
+          break;
+        case 'jpg':
+        case 'jpeg':
+        case 'png':
+          bgColor = const Color(0xFFE8F5E9);
+          textColor = const Color(0xFF2E7D32);
+          break;
+        case 'doc':
+        case 'docx':
+          bgColor = const Color(0xFFE3F2FD);
+          textColor = const Color(0xFF1565C0);
+          break;
+        default:
+          bgColor = const Color(0xFFF5F5F5);
+          textColor = const Color(0xFF424242);
+      }
+
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Text(
+          extension,
+          style: TextStyle(
+            color: textColor,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      );
     }
 
     return Column(
@@ -1486,56 +1991,153 @@ class _PostSignupQuestionnaireScreenState
         ),
         const SizedBox(height: 16),
         const Text(
-          'Please upload certificates for any specialized training or certifications you have completed',
+          'Please upload certificates for any specialized training or certifications you have completed (Optional)',
           style: TextStyle(fontSize: 14, color: textSecondary),
         ),
         const SizedBox(height: 24),
 
         if (specialTrainingImage != null) ...[
           Container(
-            height: 200,
-            width: double.infinity,
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
+              color: Colors.white,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: borderNeutral),
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.file(
-                specialTrainingImage,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return const Center(
-                    child: Icon(
-                      Icons.error_outline,
-                      color: Colors.red,
-                      size: 48,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    _fileTypeBadge(_getFileExtension(specialTrainingImage!)),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _getFileName(specialTrainingImage!),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: textPrimary,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${_getFileExtension(specialTrainingImage!)} • ${_formatFileSize(specialTrainingImage!.lengthSync())}',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  );
-                },
-              ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                // if (_getFileExtension(specialTrainingImage!).toLowerCase() in ['jpg', 'jpeg', 'png']) ...[-`
+                //   Container(
+                //     height: 200,
+                //     width: double.infinity,
+                //     decoration: BoxDecoration(
+                //       borderRadius: BorderRadius.circular(8),
+                //       border: Border.all(color: borderNeutral),
+                //     ),
+                //     child: ClipRRect(
+                //       borderRadius: BorderRadius.circular(8),
+                //       child: Image.file(
+                //         specialTrainingImage!,
+                //         fit: BoxFit.cover,
+                //         errorBuilder: (context, error, stackTrace) {
+                //           return const Center(
+                //             child: Icon(
+                //               Icons.error_outline,
+                //               color: Colors.red,
+                //               size: 48,
+                //             ),
+                //           );
+                //         },
+                //       ),
+                //     ),
+                //   ),
+                //   const SizedBox(height: 16),
+                // ],
+
+                // if (_getFileExtension(specialTrainingImage!).toLowerCase() in ['pdf', 'doc', 'docx']) ...[
+                //   Container(
+                //     height: 120,
+                //     width: double.infinity,
+                //     decoration: BoxDecoration(
+                //       color: bg,
+                //       borderRadius: BorderRadius.circular(8),
+                //       border: Border.all(color: borderNeutral),
+                //     ),
+                //     child: Column(
+                //       mainAxisAlignment: MainAxisAlignment.center,
+                //       children: [
+                //         Icon(
+                //           _getFileExtension(specialTrainingImage!).toLowerCase() == 'pdf'
+                //               ? Icons.picture_as_pdf
+                //               : Icons.description,
+                //           color: primary,
+                //           size: 48,
+                //         ),
+                //         const SizedBox(height: 8),
+                //         Text(
+                //           '${_getFileExtension(specialTrainingImage!)} Document',
+                //           style: const TextStyle(
+                //             fontSize: 16,
+                //             color: textPrimary,
+                //             fontWeight: FontWeight.w500,
+                //           ),
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                //   const SizedBox(height: 16),
+                // ],
+                if (isUploading)
+                  const Center(
+                    child: Column(
+                      children: [
+                        CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(primary),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'Uploading...',
+                          style: TextStyle(color: textSecondary),
+                        ),
+                      ],
+                    ),
+                  )
+                else
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: pickAndUploadFile,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: primary,
+                            foregroundColor: Colors.white,
+                            minimumSize: const Size(0, 50),
+                          ),
+                          child: const Text('Change Document'),
+                        ),
+                      ),
+                    ],
+                  ),
+              ],
             ),
           ),
-          const SizedBox(height: 16),
-          if (isUploading)
-            const Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(primary),
-              ),
-            )
-          else
-            ElevatedButton(
-              onPressed: pickAndUploadImage,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: primary,
-                foregroundColor: Colors.white,
-                minimumSize: const Size(double.infinity, 50),
-              ),
-              child: const Text('Change Certificate'),
-            ),
         ] else ...[
           InkWell(
-            onTap: isUploading ? null : pickAndUploadImage,
+            onTap: isUploading ? null : pickAndUploadFile,
             borderRadius: BorderRadius.circular(12),
             child: Container(
               height: 150,
@@ -1566,8 +2168,9 @@ class _PostSignupQuestionnaireScreenState
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    'JPG, PNG, PDF formats',
+                    'PDF, JPG, PNG, DOC, DOCX formats • Max 10MB (Optional)',
                     style: TextStyle(fontSize: 12, color: textSecondary),
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ),
@@ -1707,56 +2310,311 @@ class _PostSignupQuestionnaireScreenState
     );
   }
 
+  // Widget _licenceUploadStep(WidgetRef ref) {
+  //   final licenceImage = ref.watch(licenceImageProvider);
+  //   final isUploading = ref.watch(uploadingProvider);
+
+  //   Future<void> pickAndUploadImage() async {
+  //     try {
+  //       final ImagePicker picker = ImagePicker();
+  //       final XFile? pickedFile = await picker.pickImage(
+  //         source: ImageSource.gallery,
+  //         imageQuality: 85,
+  //         maxWidth: 1024,
+  //       );
+
+  //       if (pickedFile != null) {
+  //         final File imageFile = File(pickedFile.path);
+  //         ref.read(licenceImageProvider.notifier).state = imageFile;
+
+  //         // Upload immediately after selection
+  //         ref.read(uploadingProvider.notifier).state = true;
+  //         try {
+  //           await FileUploadService.uploadFile(imageFile, 'gov_id');
+  //           if (!mounted) return;
+  //           ScaffoldMessenger.of(context).showSnackBar(
+  //             const SnackBar(
+  //               content: Text('Licence uploaded successfully!'),
+  //               backgroundColor: Colors.green,
+  //             ),
+  //           );
+  //         } catch (e) {
+  //           if (!mounted) return;
+  //           ScaffoldMessenger.of(context).showSnackBar(
+  //             SnackBar(
+  //               content: Text('Upload failed: $e'),
+  //               backgroundColor: Colors.red,
+  //             ),
+  //           );
+  //           // Keep the image selected so user can retry
+  //         } finally {
+  //           ref.read(uploadingProvider.notifier).state = false;
+  //         }
+  //       }
+  //     } catch (e) {
+  //       if (!mounted) return;
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //           content: Text('Failed to pick image: $e'),
+  //           backgroundColor: Colors.red,
+  //         ),
+  //       );
+  //     }
+  //   }
+
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       RichText(
+  //         text: TextSpan(
+  //           children: [
+  //             TextSpan(
+  //               text: 'Upload Your Government ID',
+  //               style: TextStyle(
+  //                 fontSize: 22,
+  //                 fontWeight: FontWeight.w600,
+  //                 color: textPrimary,
+  //                 height: 1.3,
+  //               ),
+  //             ),
+  //             TextSpan(
+  //               text: ' *',
+  //               style: TextStyle(
+  //                 fontSize: 14,
+  //                 color: Colors.red,
+  //                 fontWeight: FontWeight.w500,
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //       const SizedBox(height: 16),
+  //       const Text(
+  //         'Please upload a clear image of your Government ID or National ID',
+  //         style: TextStyle(fontSize: 14, color: textSecondary),
+  //       ),
+  //       const SizedBox(height: 24),
+
+  //       if (licenceImage != null) ...[
+  //         Container(
+  //           height: 200,
+  //           width: double.infinity,
+  //           decoration: BoxDecoration(
+  //             borderRadius: BorderRadius.circular(12),
+  //             border: Border.all(color: borderNeutral),
+  //           ),
+  //           child: ClipRRect(
+  //             borderRadius: BorderRadius.circular(12),
+  //             child: Image.file(
+  //               licenceImage,
+  //               fit: BoxFit.cover,
+  //               errorBuilder: (context, error, stackTrace) {
+  //                 return const Center(
+  //                   child: Icon(
+  //                     Icons.error_outline,
+  //                     color: Colors.red,
+  //                     size: 48,
+  //                   ),
+  //                 );
+  //               },
+  //             ),
+  //           ),
+  //         ),
+  //         const SizedBox(height: 16),
+  //         if (isUploading)
+  //           const Center(
+  //             child: CircularProgressIndicator(
+  //               valueColor: AlwaysStoppedAnimation<Color>(primary),
+  //             ),
+  //           )
+  //         else
+  //           ElevatedButton(
+  //             onPressed: pickAndUploadImage,
+  //             style: ElevatedButton.styleFrom(
+  //               backgroundColor: primary,
+  //               foregroundColor: Colors.white,
+  //               minimumSize: const Size(double.infinity, 50),
+  //             ),
+  //             child: const Text('Change Image'),
+  //           ),
+  //       ] else ...[
+  //         InkWell(
+  //           onTap: isUploading ? null : pickAndUploadImage,
+  //           borderRadius: BorderRadius.circular(12),
+  //           child: Container(
+  //             height: 150,
+  //             width: double.infinity,
+  //             padding: const EdgeInsets.all(16),
+  //             decoration: BoxDecoration(
+  //               color: bg,
+  //               borderRadius: BorderRadius.circular(12),
+  //               border: Border.all(color: borderNeutral),
+  //             ),
+  //             child: Column(
+  //               mainAxisAlignment: MainAxisAlignment.center,
+  //               children: [
+  //                 Icon(
+  //                   Icons.badge,
+  //                   color: isUploading ? textSecondary : primary,
+  //                   size: 48,
+  //                 ),
+  //                 const SizedBox(height: 12),
+  //                 Text(
+  //                   isUploading ? 'Uploading...' : 'Tap to upload ID',
+  //                   style: TextStyle(
+  //                     fontSize: 16,
+  //                     color: isUploading ? textSecondary : textPrimary,
+  //                   ),
+  //                 ),
+  //                 const SizedBox(height: 4),
+  //                 const Text(
+  //                   'JPG, PNG formats',
+  //                   style: TextStyle(fontSize: 12, color: textSecondary),
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     ],
+  //   );
+  // }
+
   Widget _licenceUploadStep(WidgetRef ref) {
     final licenceImage = ref.watch(licenceImageProvider);
     final isUploading = ref.watch(uploadingProvider);
 
-    Future<void> pickAndUploadImage() async {
+    Future<void> pickAndUploadFile() async {
       try {
-        final ImagePicker picker = ImagePicker();
-        final XFile? pickedFile = await picker.pickImage(
-          source: ImageSource.gallery,
-          imageQuality: 85,
-          maxWidth: 1024,
+        final result = await FilePicker.platform.pickFiles(
+          type: FileType.custom,
+          allowMultiple: false,
+          withReadStream: false,
+          allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'],
         );
 
-        if (pickedFile != null) {
-          final File imageFile = File(pickedFile.path);
-          ref.read(licenceImageProvider.notifier).state = imageFile;
+        if (result == null || result.files.isEmpty) {
+          return;
+        }
 
-          // Upload immediately after selection
-          ref.read(uploadingProvider.notifier).state = true;
-          try {
-            await FileUploadService.uploadFile(imageFile, 'gov_id');
-            if (!mounted) return;
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Licence uploaded successfully!'),
-                backgroundColor: Colors.green,
-              ),
-            );
-          } catch (e) {
-            if (!mounted) return;
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Upload failed: $e'),
-                backgroundColor: Colors.red,
-              ),
-            );
-            // Keep the image selected so user can retry
-          } finally {
-            ref.read(uploadingProvider.notifier).state = false;
-          }
+        final picked = result.files.first;
+
+        const maxBytes = 10 * 1024 * 1024;
+        if (picked.size != null && picked.size > maxBytes) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('File too large. Max 10MB.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
+        final path = picked.path;
+        if (path == null) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Could not read the selected file path.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
+        final file = File(path);
+        ref.read(licenceImageProvider.notifier).state = file;
+
+        ref.read(uploadingProvider.notifier).state = true;
+        try {
+          await FileUploadService.uploadFile(file, 'gov_id');
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Government ID uploaded successfully!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } catch (e) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Upload failed: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        } finally {
+          ref.read(uploadingProvider.notifier).state = false;
         }
       } catch (e) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to pick image: $e'),
+            content: Text('Failed to pick file: $e'),
             backgroundColor: Colors.red,
           ),
         );
       }
+    }
+
+    String _getFileExtension(File file) {
+      final path = file.path;
+      final extension = path.split('.').last.toLowerCase();
+      return extension.toUpperCase();
+    }
+
+    String _getFileName(File file) {
+      final path = file.path;
+      return path.split('/').last;
+    }
+
+    String _formatFileSize(int bytes) {
+      if (bytes < 1024) return '$bytes B';
+      if (bytes < 1048576) return '${(bytes / 1024).toStringAsFixed(1)} KB';
+      return '${(bytes / 1048576).toStringAsFixed(1)} MB';
+    }
+
+    Widget _fileTypeBadge(String extension) {
+      Color bgColor;
+      Color textColor;
+
+      switch (extension.toLowerCase()) {
+        case 'pdf':
+          bgColor = const Color(0xFFFFEBEE);
+          textColor = const Color(0xFFD32F2F);
+          break;
+        case 'jpg':
+        case 'jpeg':
+        case 'png':
+          bgColor = const Color(0xFFE8F5E9);
+          textColor = const Color(0xFF2E7D32);
+          break;
+        case 'doc':
+        case 'docx':
+          bgColor = const Color(0xFFE3F2FD);
+          textColor = const Color(0xFF1565C0);
+          break;
+        default:
+          bgColor = const Color(0xFFF5F5F5);
+          textColor = const Color(0xFF424242);
+      }
+
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Text(
+          extension,
+          style: TextStyle(
+            color: textColor,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      );
     }
 
     return Column(
@@ -1787,56 +2645,153 @@ class _PostSignupQuestionnaireScreenState
         ),
         const SizedBox(height: 16),
         const Text(
-          'Please upload a clear image of your Government ID or National ID',
+          'Please upload a clear image or scan of your Government ID or National ID',
           style: TextStyle(fontSize: 14, color: textSecondary),
         ),
         const SizedBox(height: 24),
 
         if (licenceImage != null) ...[
           Container(
-            height: 200,
-            width: double.infinity,
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
+              color: Colors.white,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: borderNeutral),
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.file(
-                licenceImage,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return const Center(
-                    child: Icon(
-                      Icons.error_outline,
-                      color: Colors.red,
-                      size: 48,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    _fileTypeBadge(_getFileExtension(licenceImage!)),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _getFileName(licenceImage!),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: textPrimary,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${_getFileExtension(licenceImage!)} • ${_formatFileSize(licenceImage!.lengthSync())}',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  );
-                },
-              ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                // if (_getFileExtension(licenceImage!).toLowerCase() in ['jpg', 'jpeg', 'png']) ...[
+                //   Container(
+                //     height: 200,
+                //     width: double.infinity,
+                //     decoration: BoxDecoration(
+                //       borderRadius: BorderRadius.circular(8),
+                //       border: Border.all(color: borderNeutral),
+                //     ),
+                //     child: ClipRRect(
+                //       borderRadius: BorderRadius.circular(8),
+                //       child: Image.file(
+                //         licenceImage!,
+                //         fit: BoxFit.cover,
+                //         errorBuilder: (context, error, stackTrace) {
+                //           return const Center(
+                //             child: Icon(
+                //               Icons.error_outline,
+                //               color: Colors.red,
+                //               size: 48,
+                //             ),
+                //           );
+                //         },
+                //       ),
+                //     ),
+                //   ),
+                //   const SizedBox(height: 16),
+                // ],
+
+                // if (_getFileExtension(licenceImage!).toLowerCase() in ['pdf', 'doc', 'docx']) ...[
+                //   Container(
+                //     height: 120,
+                //     width: double.infinity,
+                //     decoration: BoxDecoration(
+                //       color: bg,
+                //       borderRadius: BorderRadius.circular(8),
+                //       border: Border.all(color: borderNeutral),
+                //     ),
+                //     child: Column(
+                //       mainAxisAlignment: MainAxisAlignment.center,
+                //       children: [
+                //         Icon(
+                //           _getFileExtension(licenceImage!).toLowerCase() == 'pdf'
+                //               ? Icons.picture_as_pdf
+                //               : Icons.description,
+                //           color: primary,
+                //           size: 48,
+                //         ),
+                //         const SizedBox(height: 8),
+                //         Text(
+                //           '${_getFileExtension(licenceImage!)} Document',
+                //           style: const TextStyle(
+                //             fontSize: 16,
+                //             color: textPrimary,
+                //             fontWeight: FontWeight.w500,
+                //           ),
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                //   const SizedBox(height: 16),
+                // ],
+                if (isUploading)
+                  const Center(
+                    child: Column(
+                      children: [
+                        CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(primary),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'Uploading...',
+                          style: TextStyle(color: textSecondary),
+                        ),
+                      ],
+                    ),
+                  )
+                else
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: pickAndUploadFile,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: primary,
+                            foregroundColor: Colors.white,
+                            minimumSize: const Size(0, 50),
+                          ),
+                          child: const Text('Change Document'),
+                        ),
+                      ),
+                    ],
+                  ),
+              ],
             ),
           ),
-          const SizedBox(height: 16),
-          if (isUploading)
-            const Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(primary),
-              ),
-            )
-          else
-            ElevatedButton(
-              onPressed: pickAndUploadImage,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: primary,
-                foregroundColor: Colors.white,
-                minimumSize: const Size(double.infinity, 50),
-              ),
-              child: const Text('Change Image'),
-            ),
         ] else ...[
           InkWell(
-            onTap: isUploading ? null : pickAndUploadImage,
+            onTap: isUploading ? null : pickAndUploadFile,
             borderRadius: BorderRadius.circular(12),
             child: Container(
               height: 150,
@@ -1857,7 +2812,9 @@ class _PostSignupQuestionnaireScreenState
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    isUploading ? 'Uploading...' : 'Tap to upload ID',
+                    isUploading
+                        ? 'Uploading...'
+                        : 'Tap to upload Government ID',
                     style: TextStyle(
                       fontSize: 16,
                       color: isUploading ? textSecondary : textPrimary,
@@ -1865,8 +2822,9 @@ class _PostSignupQuestionnaireScreenState
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    'JPG, PNG formats',
+                    'PDF, JPG, PNG, DOC, DOCX formats • Max 10MB',
                     style: TextStyle(fontSize: 12, color: textSecondary),
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ),
@@ -1877,55 +2835,310 @@ class _PostSignupQuestionnaireScreenState
     );
   }
 
+  // Widget _degreeUploadStep(WidgetRef ref) {
+  //   final degreeImage = ref.watch(degreeImageProvider);
+  //   final isUploading = ref.watch(uploadingProvider);
+
+  //   Future<void> pickAndUploadImage() async {
+  //     try {
+  //       final ImagePicker picker = ImagePicker();
+  //       final XFile? pickedFile = await picker.pickImage(
+  //         source: ImageSource.gallery,
+  //         imageQuality: 85,
+  //         maxWidth: 1024,
+  //       );
+
+  //       if (pickedFile != null) {
+  //         final File imageFile = File(pickedFile.path);
+  //         ref.read(degreeImageProvider.notifier).state = imageFile;
+
+  //         // Upload immediately after selection
+  //         ref.read(uploadingProvider.notifier).state = true;
+  //         try {
+  //           await FileUploadService.uploadFile(imageFile, 'degree');
+  //           if (!mounted) return;
+  //           ScaffoldMessenger.of(context).showSnackBar(
+  //             const SnackBar(
+  //               content: Text('Degree uploaded successfully!'),
+  //               backgroundColor: Colors.green,
+  //             ),
+  //           );
+  //         } catch (e) {
+  //           if (!mounted) return;
+  //           ScaffoldMessenger.of(context).showSnackBar(
+  //             SnackBar(
+  //               content: Text('Upload failed: $e'),
+  //               backgroundColor: Colors.red,
+  //             ),
+  //           );
+  //         } finally {
+  //           ref.read(uploadingProvider.notifier).state = false;
+  //         }
+  //       }
+  //     } catch (e) {
+  //       if (!mounted) return;
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //           content: Text('Failed to pick image: $e'),
+  //           backgroundColor: Colors.red,
+  //         ),
+  //       );
+  //     }
+  //   }
+
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       RichText(
+  //         text: TextSpan(
+  //           children: [
+  //             TextSpan(
+  //               text: 'Upload Your Degree',
+  //               style: TextStyle(
+  //                 fontSize: 22,
+  //                 fontWeight: FontWeight.w600,
+  //                 color: textPrimary,
+  //                 height: 1.3,
+  //               ),
+  //             ),
+  //             TextSpan(
+  //               text: ' *',
+  //               style: TextStyle(
+  //                 fontSize: 14,
+  //                 color: Colors.red,
+  //                 fontWeight: FontWeight.w500,
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //       const SizedBox(height: 16),
+  //       const Text(
+  //         'Please upload a clear image of your academic degree',
+  //         style: TextStyle(fontSize: 14, color: textSecondary),
+  //       ),
+  //       const SizedBox(height: 24),
+
+  //       if (degreeImage != null) ...[
+  //         Container(
+  //           height: 200,
+  //           width: double.infinity,
+  //           decoration: BoxDecoration(
+  //             borderRadius: BorderRadius.circular(12),
+  //             border: Border.all(color: borderNeutral),
+  //           ),
+  //           child: ClipRRect(
+  //             borderRadius: BorderRadius.circular(12),
+  //             child: Image.file(
+  //               degreeImage,
+  //               fit: BoxFit.cover,
+  //               errorBuilder: (context, error, stackTrace) {
+  //                 return const Center(
+  //                   child: Icon(
+  //                     Icons.error_outline,
+  //                     color: Colors.red,
+  //                     size: 48,
+  //                   ),
+  //                 );
+  //               },
+  //             ),
+  //           ),
+  //         ),
+  //         const SizedBox(height: 16),
+  //         if (isUploading)
+  //           const Center(
+  //             child: CircularProgressIndicator(
+  //               valueColor: AlwaysStoppedAnimation<Color>(primary),
+  //             ),
+  //           )
+  //         else
+  //           ElevatedButton(
+  //             onPressed: pickAndUploadImage,
+  //             style: ElevatedButton.styleFrom(
+  //               backgroundColor: primary,
+  //               foregroundColor: Colors.white,
+  //               minimumSize: const Size(double.infinity, 50),
+  //             ),
+  //             child: const Text('Change Image'),
+  //           ),
+  //       ] else ...[
+  //         InkWell(
+  //           onTap: isUploading ? null : pickAndUploadImage,
+  //           borderRadius: BorderRadius.circular(12),
+  //           child: Container(
+  //             height: 150,
+  //             width: double.infinity,
+  //             padding: const EdgeInsets.all(16),
+  //             decoration: BoxDecoration(
+  //               color: bg,
+  //               borderRadius: BorderRadius.circular(12),
+  //               border: Border.all(color: borderNeutral),
+  //             ),
+  //             child: Column(
+  //               mainAxisAlignment: MainAxisAlignment.center,
+  //               children: [
+  //                 Icon(
+  //                   Icons.school_outlined,
+  //                   color: isUploading ? textSecondary : primary,
+  //                   size: 48,
+  //                 ),
+  //                 const SizedBox(height: 12),
+  //                 Text(
+  //                   isUploading ? 'Uploading...' : 'Tap to upload degree',
+  //                   style: TextStyle(
+  //                     fontSize: 16,
+  //                     color: isUploading ? textSecondary : textPrimary,
+  //                   ),
+  //                 ),
+  //                 const SizedBox(height: 4),
+  //                 const Text(
+  //                   'JPG, PNG formats',
+  //                   style: TextStyle(fontSize: 12, color: textSecondary),
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     ],
+  //   );
+  // }
+
   Widget _degreeUploadStep(WidgetRef ref) {
     final degreeImage = ref.watch(degreeImageProvider);
     final isUploading = ref.watch(uploadingProvider);
 
-    Future<void> pickAndUploadImage() async {
+    Future<void> pickAndUploadFile() async {
       try {
-        final ImagePicker picker = ImagePicker();
-        final XFile? pickedFile = await picker.pickImage(
-          source: ImageSource.gallery,
-          imageQuality: 85,
-          maxWidth: 1024,
+        final result = await FilePicker.platform.pickFiles(
+          type: FileType.custom,
+          allowMultiple: false,
+          withReadStream: false,
+          allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'],
         );
 
-        if (pickedFile != null) {
-          final File imageFile = File(pickedFile.path);
-          ref.read(degreeImageProvider.notifier).state = imageFile;
+        if (result == null || result.files.isEmpty) {
+          return;
+        }
 
-          // Upload immediately after selection
-          ref.read(uploadingProvider.notifier).state = true;
-          try {
-            await FileUploadService.uploadFile(imageFile, 'degree');
-            if (!mounted) return;
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Degree uploaded successfully!'),
-                backgroundColor: Colors.green,
-              ),
-            );
-          } catch (e) {
-            if (!mounted) return;
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Upload failed: $e'),
-                backgroundColor: Colors.red,
-              ),
-            );
-          } finally {
-            ref.read(uploadingProvider.notifier).state = false;
-          }
+        final picked = result.files.first;
+
+        const maxBytes = 10 * 1024 * 1024;
+        if (picked.size != null && picked.size > maxBytes) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('File too large. Max 10MB.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
+        final path = picked.path;
+        if (path == null) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Could not read the selected file path.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
+        final file = File(path);
+        ref.read(degreeImageProvider.notifier).state = file;
+
+        ref.read(uploadingProvider.notifier).state = true;
+        try {
+          await FileUploadService.uploadFile(file, 'degree');
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Degree uploaded successfully!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } catch (e) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Upload failed: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        } finally {
+          ref.read(uploadingProvider.notifier).state = false;
         }
       } catch (e) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to pick image: $e'),
+            content: Text('Failed to pick file: $e'),
             backgroundColor: Colors.red,
           ),
         );
       }
+    }
+
+    String _getFileExtension(File file) {
+      final path = file.path;
+      final extension = path.split('.').last.toLowerCase();
+      return extension.toUpperCase();
+    }
+
+    String _getFileName(File file) {
+      final path = file.path;
+      return path.split('/').last;
+    }
+
+    String _formatFileSize(int bytes) {
+      if (bytes < 1024) return '$bytes B';
+      if (bytes < 1048576) return '${(bytes / 1024).toStringAsFixed(1)} KB';
+      return '${(bytes / 1048576).toStringAsFixed(1)} MB';
+    }
+
+    Widget _fileTypeBadge(String extension) {
+      Color bgColor;
+      Color textColor;
+
+      switch (extension.toLowerCase()) {
+        case 'pdf':
+          bgColor = const Color(0xFFFFEBEE);
+          textColor = const Color(0xFFD32F2F);
+          break;
+        case 'jpg':
+        case 'jpeg':
+        case 'png':
+          bgColor = const Color(0xFFE8F5E9);
+          textColor = const Color(0xFF2E7D32);
+          break;
+        case 'doc':
+        case 'docx':
+          bgColor = const Color(0xFFE3F2FD);
+          textColor = const Color(0xFF1565C0);
+          break;
+        default:
+          bgColor = const Color(0xFFF5F5F5);
+          textColor = const Color(0xFF424242);
+      }
+
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Text(
+          extension,
+          style: TextStyle(
+            color: textColor,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      );
     }
 
     return Column(
@@ -1956,56 +3169,153 @@ class _PostSignupQuestionnaireScreenState
         ),
         const SizedBox(height: 16),
         const Text(
-          'Please upload a clear image of your academic degree',
+          'Please upload a clear image or scan of your academic degree certificate',
           style: TextStyle(fontSize: 14, color: textSecondary),
         ),
         const SizedBox(height: 24),
 
         if (degreeImage != null) ...[
           Container(
-            height: 200,
-            width: double.infinity,
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
+              color: Colors.white,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: borderNeutral),
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.file(
-                degreeImage,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return const Center(
-                    child: Icon(
-                      Icons.error_outline,
-                      color: Colors.red,
-                      size: 48,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    _fileTypeBadge(_getFileExtension(degreeImage!)),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _getFileName(degreeImage!),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: textPrimary,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${_getFileExtension(degreeImage!)} • ${_formatFileSize(degreeImage!.lengthSync())}',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  );
-                },
-              ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                // if (_getFileExtension(degreeImage!).toLowerCase() in ['jpg', 'jpeg', 'png']) ...[
+                //   Container(
+                //     height: 200,
+                //     width: double.infinity,
+                //     decoration: BoxDecoration(
+                //       borderRadius: BorderRadius.circular(8),
+                //       border: Border.all(color: borderNeutral),
+                //     ),
+                //     child: ClipRRect(
+                //       borderRadius: BorderRadius.circular(8),
+                //       child: Image.file(
+                //         degreeImage!,
+                //         fit: BoxFit.cover,
+                //         errorBuilder: (context, error, stackTrace) {
+                //           return const Center(
+                //             child: Icon(
+                //               Icons.error_outline,
+                //               color: Colors.red,
+                //               size: 48,
+                //             ),
+                //           );
+                //         },
+                //       ),
+                //     ),
+                //   ),
+                //   const SizedBox(height: 16),
+                // ],
+
+                // if (_getFileExtension(degreeImage!).toLowerCase() in ['pdf', 'doc', 'docx']) ...[
+                //   Container(
+                //     height: 120,
+                //     width: double.infinity,
+                //     decoration: BoxDecoration(
+                //       color: bg,
+                //       borderRadius: BorderRadius.circular(8),
+                //       border: Border.all(color: borderNeutral),
+                //     ),
+                //     child: Column(
+                //       mainAxisAlignment: MainAxisAlignment.center,
+                //       children: [
+                //         Icon(
+                //           _getFileExtension(degreeImage!).toLowerCase() == 'pdf'
+                //               ? Icons.picture_as_pdf
+                //               : Icons.description,
+                //           color: primary,
+                //           size: 48,
+                //         ),
+                //         const SizedBox(height: 8),
+                //         Text(
+                //           '${_getFileExtension(degreeImage!)} Document',
+                //           style: const TextStyle(
+                //             fontSize: 16,
+                //             color: textPrimary,
+                //             fontWeight: FontWeight.w500,
+                //           ),
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                //   const SizedBox(height: 16),
+                // ],
+                if (isUploading)
+                  const Center(
+                    child: Column(
+                      children: [
+                        CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(primary),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'Uploading...',
+                          style: TextStyle(color: textSecondary),
+                        ),
+                      ],
+                    ),
+                  )
+                else
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: pickAndUploadFile,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: primary,
+                            foregroundColor: Colors.white,
+                            minimumSize: const Size(0, 50),
+                          ),
+                          child: const Text('Change Document'),
+                        ),
+                      ),
+                    ],
+                  ),
+              ],
             ),
           ),
-          const SizedBox(height: 16),
-          if (isUploading)
-            const Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(primary),
-              ),
-            )
-          else
-            ElevatedButton(
-              onPressed: pickAndUploadImage,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: primary,
-                foregroundColor: Colors.white,
-                minimumSize: const Size(double.infinity, 50),
-              ),
-              child: const Text('Change Image'),
-            ),
         ] else ...[
           InkWell(
-            onTap: isUploading ? null : pickAndUploadImage,
+            onTap: isUploading ? null : pickAndUploadFile,
             borderRadius: BorderRadius.circular(12),
             child: Container(
               height: 150,
@@ -2034,8 +3344,9 @@ class _PostSignupQuestionnaireScreenState
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    'JPG, PNG formats',
+                    'PDF, JPG, PNG, DOC, DOCX formats • Max 10MB',
                     style: TextStyle(fontSize: 12, color: textSecondary),
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ),
@@ -2046,60 +3357,304 @@ class _PostSignupQuestionnaireScreenState
     );
   }
 
+  // Widget _professionalLicenseUploadStep(WidgetRef ref) {
+  //   final professionalLicenseImage = ref.watch(
+  //     professionalLicenseImageProvider,
+  //   );
+  //   final isUploading = ref.watch(uploadingProvider);
+
+  //   Future<void> pickAndUploadImage() async {
+  //     try {
+  //       final ImagePicker picker = ImagePicker();
+  //       final XFile? pickedFile = await picker.pickImage(
+  //         source: ImageSource.gallery,
+  //         imageQuality: 85,
+  //         maxWidth: 1024,
+  //       );
+
+  //       if (pickedFile != null) {
+  //         final File imageFile = File(pickedFile.path);
+  //         ref.read(professionalLicenseImageProvider.notifier).state = imageFile;
+
+  //         // Upload immediately after selection
+  //         ref.read(uploadingProvider.notifier).state = true;
+  //         try {
+  //           await FileUploadService.uploadFile(
+  //             imageFile,
+  //             'professional_license',
+  //           );
+  //           if (!mounted) return;
+  //           ScaffoldMessenger.of(context).showSnackBar(
+  //             const SnackBar(
+  //               content: Text('Professional license uploaded successfully!'),
+  //               backgroundColor: Colors.green,
+  //             ),
+  //           );
+  //         } catch (e) {
+  //           if (!mounted) return;
+  //           ScaffoldMessenger.of(context).showSnackBar(
+  //             SnackBar(
+  //               content: Text('Upload failed: $e'),
+  //               backgroundColor: Colors.red,
+  //             ),
+  //           );
+  //         } finally {
+  //           ref.read(uploadingProvider.notifier).state = false;
+  //         }
+  //       }
+  //     } catch (e) {
+  //       if (!mounted) return;
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //           content: Text('Failed to pick image: $e'),
+  //           backgroundColor: Colors.red,
+  //         ),
+  //       );
+  //     }
+  //   }
+
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       const Text(
+  //         'Upload Your Professional License',
+  //         style: TextStyle(
+  //           fontSize: 22,
+  //           fontWeight: FontWeight.w600,
+  //           color: textPrimary,
+  //           height: 1.3,
+  //         ),
+  //       ),
+  //       const SizedBox(height: 16),
+  //       const Text(
+  //         'Please upload a clear image of your professional license certificate',
+  //         style: TextStyle(fontSize: 14, color: textSecondary),
+  //       ),
+  //       const SizedBox(height: 24),
+
+  //       if (professionalLicenseImage != null) ...[
+  //         Container(
+  //           height: 200,
+  //           width: double.infinity,
+  //           decoration: BoxDecoration(
+  //             borderRadius: BorderRadius.circular(12),
+  //             border: Border.all(color: borderNeutral),
+  //           ),
+  //           child: ClipRRect(
+  //             borderRadius: BorderRadius.circular(12),
+  //             child: Image.file(
+  //               professionalLicenseImage,
+  //               fit: BoxFit.cover,
+  //               errorBuilder: (context, error, stackTrace) {
+  //                 return const Center(
+  //                   child: Icon(
+  //                     Icons.error_outline,
+  //                     color: Colors.red,
+  //                     size: 48,
+  //                   ),
+  //                 );
+  //               },
+  //             ),
+  //           ),
+  //         ),
+  //         const SizedBox(height: 16),
+  //         if (isUploading)
+  //           const Center(
+  //             child: CircularProgressIndicator(
+  //               valueColor: AlwaysStoppedAnimation<Color>(primary),
+  //             ),
+  //           )
+  //         else
+  //           ElevatedButton(
+  //             onPressed: pickAndUploadImage,
+  //             style: ElevatedButton.styleFrom(
+  //               backgroundColor: primary,
+  //               foregroundColor: Colors.white,
+  //               minimumSize: const Size(double.infinity, 50),
+  //             ),
+  //             child: const Text('Change Image'),
+  //           ),
+  //       ] else ...[
+  //         InkWell(
+  //           onTap: isUploading ? null : pickAndUploadImage,
+  //           borderRadius: BorderRadius.circular(12),
+  //           child: Container(
+  //             height: 150,
+  //             width: double.infinity,
+  //             padding: const EdgeInsets.all(16),
+  //             decoration: BoxDecoration(
+  //               color: bg,
+  //               borderRadius: BorderRadius.circular(12),
+  //               border: Border.all(color: borderNeutral),
+  //             ),
+  //             child: Column(
+  //               mainAxisAlignment: MainAxisAlignment.center,
+  //               children: [
+  //                 Icon(
+  //                   Icons.verified_user_outlined,
+  //                   color: isUploading ? textSecondary : primary,
+  //                   size: 48,
+  //                 ),
+  //                 const SizedBox(height: 12),
+  //                 Text(
+  //                   isUploading
+  //                       ? 'Uploading...'
+  //                       : 'Tap to upload professional license',
+  //                   style: TextStyle(
+  //                     fontSize: 16,
+  //                     color: isUploading ? textSecondary : textPrimary,
+  //                   ),
+  //                 ),
+  //                 const SizedBox(height: 4),
+  //                 const Text(
+  //                   'JPG, PNG formats',
+  //                   style: TextStyle(fontSize: 12, color: textSecondary),
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     ],
+  //   );
+  // }
   Widget _professionalLicenseUploadStep(WidgetRef ref) {
     final professionalLicenseImage = ref.watch(
       professionalLicenseImageProvider,
     );
     final isUploading = ref.watch(uploadingProvider);
 
-    Future<void> pickAndUploadImage() async {
+    Future<void> pickAndUploadFile() async {
       try {
-        final ImagePicker picker = ImagePicker();
-        final XFile? pickedFile = await picker.pickImage(
-          source: ImageSource.gallery,
-          imageQuality: 85,
-          maxWidth: 1024,
+        final result = await FilePicker.platform.pickFiles(
+          type: FileType.custom,
+          allowMultiple: false,
+          withReadStream: false,
+          allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'],
         );
 
-        if (pickedFile != null) {
-          final File imageFile = File(pickedFile.path);
-          ref.read(professionalLicenseImageProvider.notifier).state = imageFile;
+        if (result == null || result.files.isEmpty) {
+          return;
+        }
 
-          // Upload immediately after selection
-          ref.read(uploadingProvider.notifier).state = true;
-          try {
-            await FileUploadService.uploadFile(
-              imageFile,
-              'professional_license',
-            );
-            if (!mounted) return;
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Professional license uploaded successfully!'),
-                backgroundColor: Colors.green,
-              ),
-            );
-          } catch (e) {
-            if (!mounted) return;
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Upload failed: $e'),
-                backgroundColor: Colors.red,
-              ),
-            );
-          } finally {
-            ref.read(uploadingProvider.notifier).state = false;
-          }
+        final picked = result.files.first;
+
+        const maxBytes = 10 * 1024 * 1024;
+        if (picked.size != null && picked.size > maxBytes) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('File too large. Max 10MB.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
+        final path = picked.path;
+        if (path == null) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Could not read the selected file path.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
+        final file = File(path);
+        ref.read(professionalLicenseImageProvider.notifier).state = file;
+
+        ref.read(uploadingProvider.notifier).state = true;
+        try {
+          await FileUploadService.uploadFile(file, 'professional_license');
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Professional license uploaded successfully!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } catch (e) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Upload failed: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        } finally {
+          ref.read(uploadingProvider.notifier).state = false;
         }
       } catch (e) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to pick image: $e'),
+            content: Text('Failed to pick file: $e'),
             backgroundColor: Colors.red,
           ),
         );
       }
+    }
+
+    String _getFileExtension(File file) {
+      final path = file.path;
+      final extension = path.split('.').last.toLowerCase();
+      return extension.toUpperCase();
+    }
+
+    String _getFileName(File file) {
+      final path = file.path;
+      return path.split('/').last;
+    }
+
+    String _formatFileSize(int bytes) {
+      if (bytes < 1024) return '$bytes B';
+      if (bytes < 1048576) return '${(bytes / 1024).toStringAsFixed(1)} KB';
+      return '${(bytes / 1048576).toStringAsFixed(1)} MB';
+    }
+
+    Widget _fileTypeBadge(String extension) {
+      Color bgColor;
+      Color textColor;
+
+      switch (extension.toLowerCase()) {
+        case 'pdf':
+          bgColor = const Color(0xFFFFEBEE);
+          textColor = const Color(0xFFD32F2F);
+          break;
+        case 'jpg':
+        case 'jpeg':
+        case 'png':
+          bgColor = const Color(0xFFE8F5E9);
+          textColor = const Color(0xFF2E7D32);
+          break;
+        case 'doc':
+        case 'docx':
+          bgColor = const Color(0xFFE3F2FD);
+          textColor = const Color(0xFF1565C0);
+          break;
+        default:
+          bgColor = const Color(0xFFF5F5F5);
+          textColor = const Color(0xFF424242);
+      }
+
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Text(
+          extension,
+          style: TextStyle(
+            color: textColor,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      );
     }
 
     return Column(
@@ -2116,56 +3671,155 @@ class _PostSignupQuestionnaireScreenState
         ),
         const SizedBox(height: 16),
         const Text(
-          'Please upload a clear image of your professional license certificate',
+          'Please upload a clear image or scan of your professional license certificate (Optional)',
           style: TextStyle(fontSize: 14, color: textSecondary),
         ),
         const SizedBox(height: 24),
 
         if (professionalLicenseImage != null) ...[
           Container(
-            height: 200,
-            width: double.infinity,
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
+              color: Colors.white,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: borderNeutral),
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.file(
-                professionalLicenseImage,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return const Center(
-                    child: Icon(
-                      Icons.error_outline,
-                      color: Colors.red,
-                      size: 48,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    _fileTypeBadge(
+                      _getFileExtension(professionalLicenseImage!),
                     ),
-                  );
-                },
-              ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _getFileName(professionalLicenseImage!),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: textPrimary,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${_getFileExtension(professionalLicenseImage!)} • ${_formatFileSize(professionalLicenseImage!.lengthSync())}',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                // if (_getFileExtension(professionalLicenseImage!).toLowerCase() in ['jpg', 'jpeg', 'png']) ...[
+                //   Container(
+                //     height: 200,
+                //     width: double.infinity,
+                //     decoration: BoxDecoration(
+                //       borderRadius: BorderRadius.circular(8),
+                //       border: Border.all(color: borderNeutral),
+                //     ),
+                //     child: ClipRRect(
+                //       borderRadius: BorderRadius.circular(8),
+                //       child: Image.file(
+                //         professionalLicenseImage!,
+                //         fit: BoxFit.cover,
+                //         errorBuilder: (context, error, stackTrace) {
+                //           return const Center(
+                //             child: Icon(
+                //               Icons.error_outline,
+                //               color: Colors.red,
+                //               size: 48,
+                //             ),
+                //           );
+                //         },
+                //       ),
+                //     ),
+                //   ),
+                //   const SizedBox(height: 16),
+                // ],
+
+                // if (_getFileExtension(professionalLicenseImage!).toLowerCase() in ['pdf', 'doc', 'docx']) ...[
+                //   Container(
+                //     height: 120,
+                //     width: double.infinity,
+                //     decoration: BoxDecoration(
+                //       color: bg,
+                //       borderRadius: BorderRadius.circular(8),
+                //       border: Border.all(color: borderNeutral),
+                //     ),
+                //     child: Column(
+                //       mainAxisAlignment: MainAxisAlignment.center,
+                //       children: [
+                //         Icon(
+                //           _getFileExtension(professionalLicenseImage!).toLowerCase() == 'pdf'
+                //               ? Icons.picture_as_pdf
+                //               : Icons.description,
+                //           color: primary,
+                //           size: 48,
+                //         ),
+                //         const SizedBox(height: 8),
+                //         Text(
+                //           '${_getFileExtension(professionalLicenseImage!)} Document',
+                //           style: const TextStyle(
+                //             fontSize: 16,
+                //             color: textPrimary,
+                //             fontWeight: FontWeight.w500,
+                //           ),
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                //   const SizedBox(height: 16),
+                // ],
+                if (isUploading)
+                  const Center(
+                    child: Column(
+                      children: [
+                        CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(primary),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'Uploading...',
+                          style: TextStyle(color: textSecondary),
+                        ),
+                      ],
+                    ),
+                  )
+                else
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: pickAndUploadFile,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: primary,
+                            foregroundColor: Colors.white,
+                            minimumSize: const Size(0, 50),
+                          ),
+                          child: const Text('Change Document'),
+                        ),
+                      ),
+                    ],
+                  ),
+              ],
             ),
           ),
-          const SizedBox(height: 16),
-          if (isUploading)
-            const Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(primary),
-              ),
-            )
-          else
-            ElevatedButton(
-              onPressed: pickAndUploadImage,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: primary,
-                foregroundColor: Colors.white,
-                minimumSize: const Size(double.infinity, 50),
-              ),
-              child: const Text('Change Image'),
-            ),
         ] else ...[
           InkWell(
-            onTap: isUploading ? null : pickAndUploadImage,
+            onTap: isUploading ? null : pickAndUploadFile,
             borderRadius: BorderRadius.circular(12),
             child: Container(
               height: 150,
@@ -2196,8 +3850,9 @@ class _PostSignupQuestionnaireScreenState
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    'JPG, PNG formats',
+                    'PDF, JPG, PNG, DOC, DOCX formats • Max 10MB (Optional)',
                     style: TextStyle(fontSize: 12, color: textSecondary),
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ),
@@ -2900,9 +4555,7 @@ class _PostSignupQuestionnaireScreenState
                   _wrapCard(
                     _professionalLicenseUploadStep(ref),
                   ), // Moved from 8 to 9
-                  // _wrapCard(
-                  //   _workExperienceUploadStep(ref),
-                  // ), // Moved from 9 to 10
+
                   _wrapCard(
                     _specialTrainingUploadStep(ref),
                   ), // Moved from 10 to 11

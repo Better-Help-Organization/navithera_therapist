@@ -217,13 +217,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
       print("dataxoxo: ${data}");
 
-      // Calculate total sessions from sessionsOverTime
-      // final sessionsOverTime = data['sessionsOverTime'] as List<dynamic>? ?? [];
-      // for (var session in sessionsOverTime) {
-      //   final count = int.tryParse(session['count']?.toString() ?? '0') ?? 0;
-      //   weeklySessions += count;
-      // }
-
       weeklySessions = data['totalSessions'];
 
       // Calculate total revenue from revenueOverTime

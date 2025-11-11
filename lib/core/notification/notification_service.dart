@@ -183,7 +183,7 @@ class FCMService {
       // Incoming call (foreground): show your custom popup
       if (_isIncomingCallMessage(message)) {
         final call = _parseIncomingCall(message);
-        print("isVideoCall3: ${call?.isVideoCall}");
+
         if (call != null) {
           _showCallInvitationDialog(
             call.room,
@@ -618,7 +618,6 @@ class FCMService {
     String chatId,
     bool isVideocall,
   ) async {
-    print("isVideoCall2: ${isVideocall}");
     final context = navigatorKey.currentContext;
     if (context == null) {
       print("Navigator context is null");
