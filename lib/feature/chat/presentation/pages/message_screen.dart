@@ -587,13 +587,14 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
                   // widget.chat.user?.phoneNumber ?? "x",
                   style: const TextStyle(fontSize: 16),
                 ),
-                Text(
-                  isOnline ? 'Online' : 'Offline',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: isOnline ? Colors.green : Colors.grey,
+                if (widget.chat.isGroup == false)
+                  Text(
+                    isOnline ? 'Online' : 'Offline',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isOnline ? Colors.green : Colors.grey,
+                    ),
                   ),
-                ),
               ],
             ),
           ],

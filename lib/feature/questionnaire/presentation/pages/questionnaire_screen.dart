@@ -518,8 +518,40 @@ class _PostSignupQuestionnaireScreenState
 
   @override
   void dispose() {
+    _resetAllProviders();
     _pageController.dispose();
     super.dispose();
+  }
+
+  void _resetAllProviders() {
+    final ref = this.ref;
+
+    // Reset all state providers
+    ref.read(currentStepProvider.notifier).state = 0;
+    ref.read(bioTextProvider.notifier).state = '';
+    ref.read(selectedExpertiseProvider.notifier).state = [];
+    ref.read(selectedModalIdsProvider.notifier).state = [];
+    ref.read(showOtherModalInputProvider.notifier).state = false;
+    ref.read(otherModalTextProvider.notifier).state = '';
+    ref.read(selectedLanguageIdsProvider.notifier).state = [];
+    ref.read(workTimeProvider.notifier).state = '';
+    ref.read(showOtherLanguageInputProvider.notifier).state = false;
+    ref.read(otherLanguageTextProvider.notifier).state = '';
+    ref.read(profileImageProvider.notifier).state = null;
+    ref.read(licenceImageProvider.notifier).state = null;
+    ref.read(degreeImageProvider.notifier).state = null;
+    ref.read(selectedModalIdProvider.notifier).state = null;
+    ref.read(normalLicenceImageProvider.notifier).state = null;
+    ref.read(workExperienceImageProvider.notifier).state = null;
+    ref.read(specialTrainingImageProvider.notifier).state = null;
+    ref.read(professionalLicenseImageProvider.notifier).state = null;
+    ref.read(uploadingProvider.notifier).state = false;
+    ref.read(bankAccountNumbersProvider.notifier).state = {};
+    ref.read(bankBranchesProvider.notifier).state = {};
+    ref.read(selectedBankIdsProvider.notifier).state = [];
+    ref.read(selectedLevelIdProvider.notifier).state = null;
+    ref.read(selectedAvailabilityProvider.notifier).state = [];
+    ref.read(goalsTextProvider.notifier).state = '';
   }
 
   bool _isStepValid(int step) {
@@ -662,6 +694,8 @@ class _PostSignupQuestionnaireScreenState
             backgroundColor: Colors.green,
           ),
         );
+
+        _resetAllProviders();
         final router = ref.watch(routerProvider);
         router.go("/blocked-user");
 
@@ -1209,224 +1243,6 @@ class _PostSignupQuestionnaireScreenState
       ],
     );
   }
-
-  // Widget _normalLicenceUploadStep(WidgetRef ref) {
-  //   final normalLicenceImage = ref.watch(normalLicenceImageProvider);
-  //   final isUploading = ref.watch(uploadingProvider);
-  //   final selectedModalId = ref.watch(selectedModalIdProvider);
-
-  //   Future<void> pickAndUploadImage() async {
-  //     try {
-  //       // Check if modal is selected
-  //       if (selectedModalId == null) {
-  //         if (!mounted) return;
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //           const SnackBar(
-  //             content: Text('Please select a modality first'),
-  //             backgroundColor: Colors.red,
-  //           ),
-  //         );
-  //         return;
-  //       }
-
-  //       final ImagePicker picker = ImagePicker();
-  //       final XFile? pickedFile = await picker.pickImage(
-  //         source: ImageSource.gallery,
-  //         imageQuality: 85,
-  //         maxWidth: 1024,
-  //       );
-
-  //       if (pickedFile != null) {
-  //         final File imageFile = File(pickedFile.path);
-  //         ref.read(normalLicenceImageProvider.notifier).state = imageFile;
-
-  //         // Upload immediately after selection with modal ID
-  //         ref.read(uploadingProvider.notifier).state = true;
-  //         try {
-  //           await FileUploadService.uploadFileWithModal(
-  //             imageFile,
-  //             'licence',
-  //             selectedModalId!,
-  //           );
-  //           if (!mounted) return;
-  //           ScaffoldMessenger.of(context).showSnackBar(
-  //             const SnackBar(
-  //               content: Text(
-  //                 'Work experience document uploaded successfully!',
-  //               ),
-  //               backgroundColor: Colors.green,
-  //             ),
-  //           );
-  //         } catch (e) {
-  //           if (!mounted) return;
-  //           ScaffoldMessenger.of(context).showSnackBar(
-  //             SnackBar(
-  //               content: Text('Upload failed'),
-  //               backgroundColor: Colors.red,
-  //             ),
-  //           );
-  //         } finally {
-  //           ref.read(uploadingProvider.notifier).state = false;
-  //         }
-  //       }
-  //     } catch (e) {
-  //       if (!mounted) return;
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(
-  //           content: Text('Failed to pick image'),
-  //           backgroundColor: Colors.red,
-  //         ),
-  //       );
-  //     }
-  //   }
-
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //       RichText(
-  //         text: TextSpan(
-  //           children: [
-  //             TextSpan(
-  //               text: 'Upload Your Work Experience Documents',
-  //               style: TextStyle(
-  //                 fontSize: 22,
-  //                 fontWeight: FontWeight.w600,
-  //                 color: textPrimary,
-  //                 height: 1.3,
-  //               ),
-  //             ),
-  //             TextSpan(
-  //               text: ' *',
-  //               style: TextStyle(
-  //                 fontSize: 14,
-  //                 color: Colors.red,
-  //                 fontWeight: FontWeight.w500,
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //       const SizedBox(height: 16),
-  //       Text(
-  //         selectedModalId == null
-  //             ? 'Please select a modality first'
-  //             : 'Upload your documents for ${ref.watch(modalsAsyncProvider).when(data: (modals) => modals.firstWhere((m) => m.id == selectedModalId, orElse: () => _Modal(id: '', name: 'Selected', order: 0, description: '')).name, loading: () => 'selected modality', error: (_, __) => 'selected modality')}',
-  //         style: TextStyle(
-  //           fontSize: 14,
-  //           color: selectedModalId == null ? Colors.red : textSecondary,
-  //         ),
-  //       ),
-  //       const SizedBox(height: 24),
-
-  //       if (selectedModalId == null) ...[
-  //         Container(
-  //           height: 150,
-  //           width: double.infinity,
-  //           padding: const EdgeInsets.all(16),
-  //           decoration: BoxDecoration(
-  //             color: bg,
-  //             borderRadius: BorderRadius.circular(12),
-  //             border: Border.all(color: Colors.red),
-  //           ),
-  //           child: const Column(
-  //             mainAxisAlignment: MainAxisAlignment.center,
-  //             children: [
-  //               Icon(Icons.warning, color: Colors.red, size: 48),
-  //               SizedBox(height: 12),
-  //               Text(
-  //                 'Please go back and select a modality first',
-  //                 style: TextStyle(fontSize: 16, color: Colors.red),
-  //                 textAlign: TextAlign.center,
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //       ] else if (normalLicenceImage != null) ...[
-  //         Container(
-  //           height: 200,
-  //           width: double.infinity,
-  //           decoration: BoxDecoration(
-  //             borderRadius: BorderRadius.circular(12),
-  //             border: Border.all(color: borderNeutral),
-  //           ),
-  //           child: ClipRRect(
-  //             borderRadius: BorderRadius.circular(12),
-  //             child: Image.file(
-  //               normalLicenceImage,
-  //               fit: BoxFit.cover,
-  //               errorBuilder: (context, error, stackTrace) {
-  //                 return const Center(
-  //                   child: Icon(
-  //                     Icons.error_outline,
-  //                     color: Colors.red,
-  //                     size: 48,
-  //                   ),
-  //                 );
-  //               },
-  //             ),
-  //           ),
-  //         ),
-  //         const SizedBox(height: 16),
-  //         if (isUploading)
-  //           const Center(
-  //             child: CircularProgressIndicator(
-  //               valueColor: AlwaysStoppedAnimation<Color>(primary),
-  //             ),
-  //           )
-  //         else
-  //           ElevatedButton(
-  //             onPressed: pickAndUploadImage,
-  //             style: ElevatedButton.styleFrom(
-  //               backgroundColor: primary,
-  //               foregroundColor: Colors.white,
-  //               minimumSize: const Size(double.infinity, 50),
-  //             ),
-  //             child: const Text('Change Document'),
-  //           ),
-  //       ] else ...[
-  //         InkWell(
-  //           onTap: isUploading ? null : pickAndUploadImage,
-  //           borderRadius: BorderRadius.circular(12),
-  //           child: Container(
-  //             height: 150,
-  //             width: double.infinity,
-  //             padding: const EdgeInsets.all(16),
-  //             decoration: BoxDecoration(
-  //               color: bg,
-  //               borderRadius: BorderRadius.circular(12),
-  //               border: Border.all(color: borderNeutral),
-  //             ),
-  //             child: Column(
-  //               mainAxisAlignment: MainAxisAlignment.center,
-  //               children: [
-  //                 Icon(
-  //                   Icons.assignment_outlined,
-  //                   color: isUploading ? textSecondary : primary,
-  //                   size: 48,
-  //                 ),
-  //                 const SizedBox(height: 12),
-  //                 Text(
-  //                   isUploading
-  //                       ? 'Uploading...'
-  //                       : 'Tap to upload work experience',
-  //                   style: TextStyle(
-  //                     fontSize: 16,
-  //                     color: isUploading ? textSecondary : textPrimary,
-  //                   ),
-  //                 ),
-  //                 const SizedBox(height: 4),
-  //                 const Text(
-  //                   'JPG, PNG formats',
-  //                   style: TextStyle(fontSize: 12, color: textSecondary),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         ),
-  //       ],
-  //     ],
-  //   );
-  // }
 
   Widget _normalLicenceUploadStep(WidgetRef ref) {
     final normalLicenceImage = ref.watch(normalLicenceImageProvider);

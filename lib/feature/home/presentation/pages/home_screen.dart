@@ -282,78 +282,81 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       _isLoadingSessions = true;
     });
 
-    final sessionService = ref.read(sessionServiceProvider);
+    try {
+      final sessionService = ref.read(sessionServiceProvider);
+      final now = DateTime.now();
+      final monday = _getMondayOfWeek(now);
+      final sunday = monday.add(const Duration(days: 6));
+      final statsData = await sessionService.fetchStats(monday, sunday);
 
-    // Fetch this week's stats for all calculations
-    final now = DateTime.now();
-    final monday = _getMondayOfWeek(now);
-    final sunday = monday.add(const Duration(days: 6));
-    final statsData = await sessionService.fetchStats(monday, sunday);
+      int weeklySessions = 0;
+      double weeklyRevenue = 0.0;
+      int weeklyUsers = 0;
+      double weeklyHours = 0.0;
 
-    int weeklySessions = 0;
-    int weeklyRevenue = 0;
-    int weeklyUsers = 0;
-    double weeklyHours = 0.0; // Add this variable
+      if (statsData != null && statsData['data'] != null) {
+        final data = statsData['data'] as Map<String, dynamic>;
 
-    if (statsData != null && statsData['data'] != null) {
-      final data = statsData['data'] as Map<String, dynamic>;
+        // Safe value extraction
+        weeklySessions = _parseIntSafely(data['totalSessions']);
+        weeklyHours = _parseDoubleSafely(data['totalHours']);
+        weeklyRevenue = _parseDoubleSafely(data['totalRevenue']);
+        weeklyUsers = _parseIntSafely(data['totalUsers']);
 
-      print("dataxoxo: ${data}");
-
-      weeklySessions = data['totalSessions'] ?? 0;
-      weeklyHours =
-          (data['totalHours'] ?? 0.0).toDouble(); // Get hours from API
-
-      // Calculate total revenue from revenueOverTime
-      final revenueOverTime = data['revenueOverTime'] as List<dynamic>? ?? [];
-      for (var revenue in revenueOverTime) {
-        final revenueValue = revenue['revenue'];
-        if (revenueValue != null) {
-          weeklyRevenue += int.tryParse(revenueValue.toString()) ?? 0;
+        // If users is 0, try to calculate from other fields
+        if (weeklyUsers == 0) {
+          final usersTreatedOverTime =
+              data['usersTreatedOverTime'] as List<dynamic>? ?? [];
+          for (var user in usersTreatedOverTime) {
+            weeklyUsers += _parseIntSafely(user['treatedUsers']);
+          }
         }
       }
 
-      // Calculate total users from usersTreatedOverTime
-      final usersTreatedOverTime =
-          data['usersTreatedOverTime'] as List<dynamic>? ?? [];
-      for (var user in usersTreatedOverTime) {
-        final count =
-            int.tryParse(user['treatedUsers']?.toString() ?? '0') ?? 0;
-        weeklyUsers += count;
+      // Fallback to session count if no stats data available
+      if (weeklySessions == 0) {
+        final count = await sessionService.fetchSessions();
+        weeklySessions = count ?? 0;
       }
 
-      // Also check therapistWorkload as a fallback for total users
-      final therapistWorkload =
-          data['therapistWorkload'] as List<dynamic>? ?? [];
-      if (weeklyUsers == 0 && therapistWorkload.isNotEmpty) {
-        weeklyUsers =
-            int.tryParse(
-              therapistWorkload[0]['sessionCount']?.toString() ?? '0',
-            ) ??
-            0;
-      }
-
-      weeklyUsers = data['totalUsers'] ?? weeklyUsers;
+      setState(() {
+        totalSessions = weeklySessions;
+        totalRevenue = weeklyRevenue.toInt();
+        totalHours = weeklyHours;
+        totalUsers = weeklyUsers;
+        _isLoadingSessions = false;
+      });
+    } catch (e) {
+      log("Error in _loadSession: $e");
+      setState(() {
+        totalSessions = 0;
+        totalRevenue = 0;
+        totalHours = 0.0;
+        totalUsers = 0;
+        _isLoadingSessions = false;
+      });
     }
+  }
 
-    // Fallback to session count if no stats data available
-    if (weeklySessions == 0) {
-      final count = await sessionService.fetchSessions();
-      weeklySessions = count ?? 0;
+  // Helper methods
+  int _parseIntSafely(dynamic value) {
+    if (value == null) return 0;
+    if (value is num) return value.toInt();
+    if (value is String) {
+      if (value == "N/A" || value.isEmpty) return 0;
+      return int.tryParse(value) ?? 0;
     }
+    return 0;
+  }
 
-    // Remove the manual hours calculation since we get it from API now
-    // final totalMinutes = weeklySessions * 60;
-    // final totalHours = (totalMinutes / 60).toStringAsFixed(1);
-
-    setState(() {
-      totalSessions = weeklySessions;
-      totalRevenue = weeklyRevenue;
-      totalHours = weeklyHours; // Use the value from API directly
-      totalUsers = weeklyUsers;
-
-      _isLoadingSessions = false;
-    });
+  double _parseDoubleSafely(dynamic value) {
+    if (value == null) return 0.0;
+    if (value is num) return value.toDouble();
+    if (value is String) {
+      if (value == "N/A" || value.isEmpty) return 0.0;
+      return double.tryParse(value) ?? 0.0;
+    }
+    return 0.0;
   }
 
   Widget _buildNotificationIcon() {

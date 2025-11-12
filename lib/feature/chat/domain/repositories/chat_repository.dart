@@ -80,7 +80,7 @@ class ChatRepositoryImpl implements ChatRepository {
       final response = await remoteDataSource.getChatThreads(
         page: page,
         take: limit,
-        fields: 'client.*,therapist.*,group.*,updatedAt',
+        fields: 'client.*,therapist.*,group.*,updatedAt,groupName',
         sort: "updatedAt=Desc",
       );
       return Right(response);
@@ -251,7 +251,7 @@ class ChatRepositoryImpl implements ChatRepository {
       final response = await remoteDataSource.getChatThreads(
         page: page,
         take: limit,
-        fields: 'client.*,group.*,updatedAt',
+        fields: 'client.*,group.*,updatedAt,groupName',
         sort: sort,
         // You'll need to update the remote data source to accept filter parameter
         filters: 'client.firstName=$query', // or implement proper filtering
