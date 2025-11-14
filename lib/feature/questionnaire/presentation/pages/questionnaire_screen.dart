@@ -644,6 +644,10 @@ class _PostSignupQuestionnaireScreenState
       final accountNumbers = ref.read(bankAccountNumbersProvider);
       final branches = ref.read(bankBranchesProvider);
       final bio = ref.read(bioTextProvider);
+      final selectedLanguages = ref.read(
+        selectedLanguageIdsProvider,
+      ); // Get selected languages
+      print("selectedLanguages before submit: ${selectedLanguages}");
 
       final expertiseArray =
           ref.read(selectedExpertiseProvider).map((expertiseKey) {
@@ -664,15 +668,18 @@ class _PostSignupQuestionnaireScreenState
             };
           }).toList();
 
-      // Prepare the payload
+      // Prepare the payload with languages
       final payload = {
         'hoursDedicatedPerWeek': int.tryParse(workTime) ?? 0,
         'expertise': expertiseArray,
         'therapistBank': therapistBanks,
         'bio': bio.trim(),
+        'language': selectedLanguages, // Add languages to payload
       };
 
-      print("expertise: ${payload}");
+      print("Submitting payload: ${payload}");
+      print("Selected languages: $selectedLanguages");
+
       // Submit to therapist/me endpoint
       final response = await http.patch(
         Uri.parse('$base_url_dev/therapist/me'),
@@ -698,9 +705,6 @@ class _PostSignupQuestionnaireScreenState
         _resetAllProviders();
         final router = ref.watch(routerProvider);
         router.go("/blocked-user");
-
-        // Navigate to next screen or main app
-        // Navigator.of(context).pushReplacementNamed('/main');
       } else {
         throw Exception(
           'Failed to update profile: ${response.statusCode} - ${response.body}',
@@ -1204,7 +1208,7 @@ class _PostSignupQuestionnaireScreenState
             onTap: isUploading ? null : pickAndUploadImage,
             borderRadius: BorderRadius.circular(12),
             child: Container(
-              height: 150,
+              height: 400,
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -1439,7 +1443,7 @@ class _PostSignupQuestionnaireScreenState
 
         if (selectedModalId == null) ...[
           Container(
-            height: 150,
+            height: 400,
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -1608,7 +1612,7 @@ class _PostSignupQuestionnaireScreenState
             onTap: isUploading ? null : pickAndUploadFile,
             borderRadius: BorderRadius.circular(12),
             child: Container(
-              height: 150,
+              height: 400,
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -1956,7 +1960,7 @@ class _PostSignupQuestionnaireScreenState
             onTap: isUploading ? null : pickAndUploadFile,
             borderRadius: BorderRadius.circular(12),
             child: Container(
-              height: 150,
+              height: 400,
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -2610,7 +2614,7 @@ class _PostSignupQuestionnaireScreenState
             onTap: isUploading ? null : pickAndUploadFile,
             borderRadius: BorderRadius.circular(12),
             child: Container(
-              height: 150,
+              height: 400,
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -3134,7 +3138,7 @@ class _PostSignupQuestionnaireScreenState
             onTap: isUploading ? null : pickAndUploadFile,
             borderRadius: BorderRadius.circular(12),
             child: Container(
-              height: 150,
+              height: 400,
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -3638,7 +3642,7 @@ class _PostSignupQuestionnaireScreenState
             onTap: isUploading ? null : pickAndUploadFile,
             borderRadius: BorderRadius.circular(12),
             child: Container(
-              height: 150,
+              height: 200,
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -4175,7 +4179,7 @@ class _PostSignupQuestionnaireScreenState
             onTap: isUploading ? null : pickAndUpload,
             borderRadius: BorderRadius.circular(12),
             child: Container(
-              height: 150,
+              height: 400,
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(

@@ -181,6 +181,7 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
                   participantName: widget.chat.name ?? "Unknown",
                   isVideoCall: isVideoCall,
                   chatId: widget.chat.id,
+                  //   isGroupCall: widget.chat.isGroup ?? false,
                 ),
           ),
         );
@@ -488,6 +489,7 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
                           (context) => GroupProfileScreen(
                             groupName: widget.chat.name ?? 'Group Chat',
                             groupMembers: widget.chat.groupList,
+                            chatId: widget.chat.id,
                           ),
                     ),
                   );

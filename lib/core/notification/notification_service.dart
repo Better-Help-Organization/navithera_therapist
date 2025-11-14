@@ -14,9 +14,11 @@ import 'package:navicare/core/constants/base_url.dart';
 import 'package:navicare/core/notification/new_message_notificaiton.dart';
 import 'package:navicare/feature/auth/data/models/auth_models.dart';
 import 'package:navicare/feature/auth/presentation/providers/auth_provider.dart';
+import 'package:navicare/feature/calendar/presentation/pages/pages/events_example.dart';
 import 'package:navicare/feature/chat/presentation/pages/chat_list_screen.dart';
 import 'package:navicare/feature/chat/presentation/providers/chat_provider.dart';
 import 'package:navicare/feature/chat/presentation/providers/message_provider.dart';
+import 'package:navicare/feature/home/presentation/providers/chart_data_provider.dart';
 import 'package:navicare/feature/questionnaire/presentation/pages/match_request_screen.dart';
 import 'package:navicare/feature/therapy/presentation/pages/call_screen.dart';
 import 'package:navicare/main.dart';
@@ -127,12 +129,65 @@ class FCMService {
     log("Full message: ${message.data}");
     print("Message Info: ${message.notification?.body}");
 
+    const refreshArr = [
+      "1",
+      "8",
+      "9",
+      "29",
+      "11",
+      "12",
+      "15",
+      "24",
+      "26",
+      "27",
+      "28",
+      "29",
+      "18",
+      '11',
+    ];
+    // final context = navigatorKey.currentContext;
+    //         if (context == null) return;
+    //         final container = ProviderScope.containerOf(context);
+    //         //container.read(chatProvider.notifier).getChatThreads(silent: true);
+    //         container.read(chartDataProvider.notifier).load();
+    //         _showNewMessageNotificationBanner(message);
+    //         return;
+
     try {
+      final messageCode = message.data['code']?.toString();
+      if (messageCode != null && refreshArr.contains(messageCode)) {
+        final context = navigatorKey.currentContext;
+        if (context == null) return;
+
+        final container = ProviderScope.containerOf(context);
+        // Refresh chat data
+        container.read(chartDataProvider.notifier).load();
+        // Show notification banner
+        // _showNewMessageNotificationBanner(message);
+        // return;
+      }
+
       if (message.data['code'] == '14' || message.data['code'] == 14) {
         final idJson = message.data['id'];
         final idMap = jsonDecode(idJson);
         final chatId = idMap['chat'];
         _updateChatData(chatId);
+        return;
+      }
+
+      if (message.data['code'] == '29' || message.data['code'] == 29) {
+        final context = navigatorKey.currentContext;
+        if (context == null) return;
+        final container = ProviderScope.containerOf(context);
+        container.read(sessionProvider.notifier).loadSessions();
+        return;
+      }
+
+      if (message.data['code'] == '15' || message.data['code'] == 15) {
+        final context = navigatorKey.currentContext;
+        if (context == null) return;
+        final container = ProviderScope.containerOf(context);
+        container.read(sessionProvider.notifier).loadSessions();
         return;
       }
 
@@ -247,6 +302,22 @@ class FCMService {
       return;
     }
 
+    if (message.data['code'] == '29' || message.data['code'] == 29) {
+      final context = navigatorKey.currentContext;
+      if (context == null) return;
+      final container = ProviderScope.containerOf(context);
+      container.read(sessionProvider.notifier).loadSessions();
+      return;
+    }
+
+    if (message.data['code'] == '15' || message.data['code'] == 15) {
+      final context = navigatorKey.currentContext;
+      if (context == null) return;
+      final container = ProviderScope.containerOf(context);
+      container.read(sessionProvider.notifier).loadSessions();
+      return;
+    }
+
     if (message.notification?.title == 'Session scheduled') {
       final context = navigatorKey.currentContext;
       if (context == null) return;
@@ -323,6 +394,22 @@ class FCMService {
 
     if (message.data['code'] == '4' || message.data['code'] == 4) {
       _handleMessageReadEvent(message);
+      return;
+    }
+
+    if (message.data['code'] == '29' || message.data['code'] == 29) {
+      final context = navigatorKey.currentContext;
+      if (context == null) return;
+      final container = ProviderScope.containerOf(context);
+      container.read(sessionProvider.notifier).loadSessions();
+      return;
+    }
+
+    if (message.data['code'] == '15' || message.data['code'] == 15) {
+      final context = navigatorKey.currentContext;
+      if (context == null) return;
+      final container = ProviderScope.containerOf(context);
+      container.read(sessionProvider.notifier).loadSessions();
       return;
     }
 
