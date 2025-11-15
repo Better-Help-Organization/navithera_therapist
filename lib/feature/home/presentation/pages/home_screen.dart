@@ -408,7 +408,7 @@ class _SecondRowSection extends StatelessWidget {
             Expanded(
               child: _MetricCard(
                 title: 'Hours this week',
-                value: '${totalHours.toStringAsFixed(1)} h',
+                value: '${totalHours.toStringAsFixed(2)} h',
                 icon: Icons.access_time_filled_rounded,
                 gradient: LinearGradient(
                   colors: [

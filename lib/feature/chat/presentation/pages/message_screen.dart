@@ -602,14 +602,16 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
           ],
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.phone),
-            onPressed: () => _startCall(isVideoCall: false),
-          ),
-          IconButton(
-            icon: const Icon(Icons.videocam_outlined),
-            onPressed: () => _startCall(isVideoCall: true),
-          ),
+          if (widget.chat.isGroup != null && widget.chat.isGroup == false)
+            IconButton(
+              icon: const Icon(Icons.phone),
+              onPressed: () => _startCall(isVideoCall: false),
+            ),
+          if (widget.chat.isGroup != null && widget.chat.isGroup == false)
+            IconButton(
+              icon: const Icon(Icons.videocam_outlined),
+              onPressed: () => _startCall(isVideoCall: true),
+            ),
         ],
       ),
       body: Column(

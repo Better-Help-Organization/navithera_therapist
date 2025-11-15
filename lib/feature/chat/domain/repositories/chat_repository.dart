@@ -281,8 +281,8 @@ class ChatRepositoryImpl implements ChatRepository {
       final response = await remoteDataSource.getClientSessions(
         filters: 'client.id=$clientId,approvalStatus=confirmed',
         page: page,
-        take: limit,
-        sort: sort,
+        take: 0,
+        sort: 'schedule=Asc',
       );
       log("here: ${response}");
       return Right(response);

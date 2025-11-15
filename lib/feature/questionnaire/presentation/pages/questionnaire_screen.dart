@@ -76,10 +76,10 @@ class FileUploadService {
       case 'doc':
         mimeType = 'application/msword';
         break;
-      case 'docx':
-        mimeType =
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-        break;
+      // case 'docx':
+      //   mimeType =
+      //       'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+      //   break;
       default:
         mimeType = 'application/octet-stream';
     }
@@ -175,10 +175,10 @@ class FileUploadService {
       case 'doc':
         mimeType = 'application/msword';
         break;
-      case 'docx':
-        mimeType =
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-        break;
+      // case 'docx':
+      //   mimeType =
+      //       'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+      //   break;
       default:
         mimeType = 'application/octet-stream';
     }
@@ -1208,7 +1208,7 @@ class _PostSignupQuestionnaireScreenState
             onTap: isUploading ? null : pickAndUploadImage,
             borderRadius: BorderRadius.circular(12),
             child: Container(
-              height: 400,
+              height: 150,
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -1272,7 +1272,7 @@ class _PostSignupQuestionnaireScreenState
           type: FileType.custom,
           allowMultiple: false,
           withReadStream: false,
-          allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'],
+          allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png', 'doc'],
         );
 
         if (result == null || result.files.isEmpty) {
@@ -1377,7 +1377,7 @@ class _PostSignupQuestionnaireScreenState
           textColor = const Color(0xFF2E7D32);
           break;
         case 'doc':
-        case 'docx':
+          // case 'docx':
           bgColor = const Color(0xFFE3F2FD);
           textColor = const Color(0xFF1565C0);
           break;
@@ -1443,7 +1443,7 @@ class _PostSignupQuestionnaireScreenState
 
         if (selectedModalId == null) ...[
           Container(
-            height: 400,
+            height: 150,
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -1508,71 +1508,6 @@ class _PostSignupQuestionnaireScreenState
                 ),
                 const SizedBox(height: 16),
 
-                // Show preview for images
-                // if (_getFileExtension(normalLicenceImage!).toLowerCase()
-                //     in ['jpg', 'jpeg', 'png']) ...[
-                //   Container(
-                //     height: 200,
-                //     width: double.infinity,
-                //     decoration: BoxDecoration(
-                //       borderRadius: BorderRadius.circular(8),
-                //       border: Border.all(color: borderNeutral),
-                //     ),
-                //     child: ClipRRect(
-                //       borderRadius: BorderRadius.circular(8),
-                //       child: Image.file(
-                //         normalLicenceImage!,
-                //         fit: BoxFit.cover,
-                //         errorBuilder: (context, error, stackTrace) {
-                //           return const Center(
-                //             child: Icon(
-                //               Icons.error_outline,
-                //               color: Colors.red,
-                //               size: 48,
-                //             ),
-                //           );
-                //         },
-                //       ),
-                //     ),
-                //   ),
-                //   const SizedBox(height: 16),
-                // ],
-
-                // Show document icon for non-image files
-                // if (_getFileExtension(normalLicenceImage!).toLowerCase()
-                //     in ['pdf', 'doc', 'docx']) ...[
-                //   Container(
-                //     height: 120,
-                //     width: double.infinity,
-                //     decoration: BoxDecoration(
-                //       color: bg,
-                //       borderRadius: BorderRadius.circular(8),
-                //       border: Border.all(color: borderNeutral),
-                //     ),
-                //     child: Column(
-                //       mainAxisAlignment: MainAxisAlignment.center,
-                //       children: [
-                //         Icon(
-                //           _getFileExtension(normalLicenceImage!).toLowerCase() == 'pdf'
-                //               ? Icons.picture_as_pdf
-                //               : Icons.description,
-                //           color: primary,
-                //           size: 48,
-                //         ),
-                //         const SizedBox(height: 8),
-                //         Text(
-                //           '${_getFileExtension(normalLicenceImage!)} Document',
-                //           style: const TextStyle(
-                //             fontSize: 16,
-                //             color: textPrimary,
-                //             fontWeight: FontWeight.w500,
-                //           ),
-                //         ),
-                //       ],
-                //     ),
-                //   ),
-                //   const SizedBox(height: 16),
-                // ],
                 if (isUploading)
                   const Center(
                     child: Column(
@@ -1612,7 +1547,7 @@ class _PostSignupQuestionnaireScreenState
             onTap: isUploading ? null : pickAndUploadFile,
             borderRadius: BorderRadius.circular(12),
             child: Container(
-              height: 400,
+              height: 150,
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -1668,7 +1603,7 @@ class _PostSignupQuestionnaireScreenState
           type: FileType.custom,
           allowMultiple: false,
           withReadStream: false,
-          allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'],
+          allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png', 'doc'],
         );
 
         if (result == null || result.files.isEmpty) {
@@ -1771,7 +1706,7 @@ class _PostSignupQuestionnaireScreenState
           textColor = const Color(0xFF2E7D32);
           break;
         case 'doc':
-        case 'docx':
+          // case 'docx':
           bgColor = const Color(0xFFE3F2FD);
           textColor = const Color(0xFF1565C0);
           break;
@@ -1960,7 +1895,7 @@ class _PostSignupQuestionnaireScreenState
             onTap: isUploading ? null : pickAndUploadFile,
             borderRadius: BorderRadius.circular(12),
             child: Container(
-              height: 400,
+              height: 150,
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -2310,7 +2245,7 @@ class _PostSignupQuestionnaireScreenState
           type: FileType.custom,
           allowMultiple: false,
           withReadStream: false,
-          allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'],
+          allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png', 'doc'],
         );
 
         if (result == null || result.files.isEmpty) {
@@ -2411,7 +2346,7 @@ class _PostSignupQuestionnaireScreenState
           textColor = const Color(0xFF2E7D32);
           break;
         case 'doc':
-        case 'docx':
+          //case 'docx':
           bgColor = const Color(0xFFE3F2FD);
           textColor = const Color(0xFF1565C0);
           break;
@@ -2614,7 +2549,7 @@ class _PostSignupQuestionnaireScreenState
             onTap: isUploading ? null : pickAndUploadFile,
             borderRadius: BorderRadius.circular(12),
             child: Container(
-              height: 400,
+              height: 150,
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -2834,7 +2769,7 @@ class _PostSignupQuestionnaireScreenState
           type: FileType.custom,
           allowMultiple: false,
           withReadStream: false,
-          allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'],
+          allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png', 'doc'],
         );
 
         if (result == null || result.files.isEmpty) {
@@ -2935,7 +2870,7 @@ class _PostSignupQuestionnaireScreenState
           textColor = const Color(0xFF2E7D32);
           break;
         case 'doc':
-        case 'docx':
+          // case 'docx':
           bgColor = const Color(0xFFE3F2FD);
           textColor = const Color(0xFF1565C0);
           break;
@@ -3138,7 +3073,7 @@ class _PostSignupQuestionnaireScreenState
             onTap: isUploading ? null : pickAndUploadFile,
             borderRadius: BorderRadius.circular(12),
             child: Container(
-              height: 400,
+              height: 150,
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -3177,167 +3112,6 @@ class _PostSignupQuestionnaireScreenState
     );
   }
 
-  // Widget _professionalLicenseUploadStep(WidgetRef ref) {
-  //   final professionalLicenseImage = ref.watch(
-  //     professionalLicenseImageProvider,
-  //   );
-  //   final isUploading = ref.watch(uploadingProvider);
-
-  //   Future<void> pickAndUploadImage() async {
-  //     try {
-  //       final ImagePicker picker = ImagePicker();
-  //       final XFile? pickedFile = await picker.pickImage(
-  //         source: ImageSource.gallery,
-  //         imageQuality: 85,
-  //         maxWidth: 1024,
-  //       );
-
-  //       if (pickedFile != null) {
-  //         final File imageFile = File(pickedFile.path);
-  //         ref.read(professionalLicenseImageProvider.notifier).state = imageFile;
-
-  //         // Upload immediately after selection
-  //         ref.read(uploadingProvider.notifier).state = true;
-  //         try {
-  //           await FileUploadService.uploadFile(
-  //             imageFile,
-  //             'professional_license',
-  //           );
-  //           if (!mounted) return;
-  //           ScaffoldMessenger.of(context).showSnackBar(
-  //             const SnackBar(
-  //               content: Text('Professional license uploaded successfully!'),
-  //               backgroundColor: Colors.green,
-  //             ),
-  //           );
-  //         } catch (e) {
-  //           if (!mounted) return;
-  //           ScaffoldMessenger.of(context).showSnackBar(
-  //             SnackBar(
-  //               content: Text('Upload failed: $e'),
-  //               backgroundColor: Colors.red,
-  //             ),
-  //           );
-  //         } finally {
-  //           ref.read(uploadingProvider.notifier).state = false;
-  //         }
-  //       }
-  //     } catch (e) {
-  //       if (!mounted) return;
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(
-  //           content: Text('Failed to pick image: $e'),
-  //           backgroundColor: Colors.red,
-  //         ),
-  //       );
-  //     }
-  //   }
-
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //       const Text(
-  //         'Upload Your Professional License',
-  //         style: TextStyle(
-  //           fontSize: 22,
-  //           fontWeight: FontWeight.w600,
-  //           color: textPrimary,
-  //           height: 1.3,
-  //         ),
-  //       ),
-  //       const SizedBox(height: 16),
-  //       const Text(
-  //         'Please upload a clear image of your professional license certificate',
-  //         style: TextStyle(fontSize: 14, color: textSecondary),
-  //       ),
-  //       const SizedBox(height: 24),
-
-  //       if (professionalLicenseImage != null) ...[
-  //         Container(
-  //           height: 200,
-  //           width: double.infinity,
-  //           decoration: BoxDecoration(
-  //             borderRadius: BorderRadius.circular(12),
-  //             border: Border.all(color: borderNeutral),
-  //           ),
-  //           child: ClipRRect(
-  //             borderRadius: BorderRadius.circular(12),
-  //             child: Image.file(
-  //               professionalLicenseImage,
-  //               fit: BoxFit.cover,
-  //               errorBuilder: (context, error, stackTrace) {
-  //                 return const Center(
-  //                   child: Icon(
-  //                     Icons.error_outline,
-  //                     color: Colors.red,
-  //                     size: 48,
-  //                   ),
-  //                 );
-  //               },
-  //             ),
-  //           ),
-  //         ),
-  //         const SizedBox(height: 16),
-  //         if (isUploading)
-  //           const Center(
-  //             child: CircularProgressIndicator(
-  //               valueColor: AlwaysStoppedAnimation<Color>(primary),
-  //             ),
-  //           )
-  //         else
-  //           ElevatedButton(
-  //             onPressed: pickAndUploadImage,
-  //             style: ElevatedButton.styleFrom(
-  //               backgroundColor: primary,
-  //               foregroundColor: Colors.white,
-  //               minimumSize: const Size(double.infinity, 50),
-  //             ),
-  //             child: const Text('Change Image'),
-  //           ),
-  //       ] else ...[
-  //         InkWell(
-  //           onTap: isUploading ? null : pickAndUploadImage,
-  //           borderRadius: BorderRadius.circular(12),
-  //           child: Container(
-  //             height: 150,
-  //             width: double.infinity,
-  //             padding: const EdgeInsets.all(16),
-  //             decoration: BoxDecoration(
-  //               color: bg,
-  //               borderRadius: BorderRadius.circular(12),
-  //               border: Border.all(color: borderNeutral),
-  //             ),
-  //             child: Column(
-  //               mainAxisAlignment: MainAxisAlignment.center,
-  //               children: [
-  //                 Icon(
-  //                   Icons.verified_user_outlined,
-  //                   color: isUploading ? textSecondary : primary,
-  //                   size: 48,
-  //                 ),
-  //                 const SizedBox(height: 12),
-  //                 Text(
-  //                   isUploading
-  //                       ? 'Uploading...'
-  //                       : 'Tap to upload professional license',
-  //                   style: TextStyle(
-  //                     fontSize: 16,
-  //                     color: isUploading ? textSecondary : textPrimary,
-  //                   ),
-  //                 ),
-  //                 const SizedBox(height: 4),
-  //                 const Text(
-  //                   'JPG, PNG formats',
-  //                   style: TextStyle(fontSize: 12, color: textSecondary),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         ),
-  //       ],
-  //     ],
-  //   );
-  // }
   Widget _professionalLicenseUploadStep(WidgetRef ref) {
     final professionalLicenseImage = ref.watch(
       professionalLicenseImageProvider,
@@ -3350,7 +3124,7 @@ class _PostSignupQuestionnaireScreenState
           type: FileType.custom,
           allowMultiple: false,
           withReadStream: false,
-          allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'],
+          allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png', 'doc'],
         );
 
         if (result == null || result.files.isEmpty) {
@@ -3451,7 +3225,7 @@ class _PostSignupQuestionnaireScreenState
           textColor = const Color(0xFF2E7D32);
           break;
         case 'doc':
-        case 'docx':
+          // case 'docx':
           bgColor = const Color(0xFFE3F2FD);
           textColor = const Color(0xFF1565C0);
           break;
@@ -4179,7 +3953,7 @@ class _PostSignupQuestionnaireScreenState
             onTap: isUploading ? null : pickAndUpload,
             borderRadius: BorderRadius.circular(12),
             child: Container(
-              height: 400,
+              height: 150,
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -4356,31 +4130,68 @@ class _PostSignupQuestionnaireScreenState
                 totalQuestions: totalSteps,
               ),
             ),
-            Expanded(
-              child: PageView(
-                controller: _pageController,
-                physics: const NeverScrollableScrollPhysics(),
-                onPageChanged:
-                    (i) => ref.read(currentStepProvider.notifier).state = i,
-                children: [
-                  _wrapCard(_modalSelectionStep(ref)),
-                  _wrapCard(_languagesStep(ref)),
-                  _wrapCard(_workTimeStep(ref)),
-                  _wrapCard(_bioStep(ref)),
-                  _wrapCard(_expertiseStep(ref)), // NEW: Step 4 - Expertise
-                  _wrapCard(_banksStep(ref)), // Moved from 4 to 5
-                  _wrapCard(_normalLicenceUploadStep(ref)), // Moved from 5 to 6
-                  _wrapCard(_licenceUploadStep(ref)), // Moved from 6 to 7
-                  _wrapCard(_degreeUploadStep(ref)), // Moved from 7 to 8
-                  _wrapCard(
-                    _professionalLicenseUploadStep(ref),
-                  ), // Moved from 8 to 9
 
-                  _wrapCard(
-                    _specialTrainingUploadStep(ref),
-                  ), // Moved from 10 to 11
-                  _wrapCard(_profileUploadStep(ref)), // Moved from 11 to 12
-                ],
+            // Expanded(
+            //   child: PageView(
+            //     controller: _pageController,
+            //     physics: const NeverScrollableScrollPhysics(),
+            //     onPageChanged:
+            //         (i) => ref.read(currentStepProvider.notifier).state = i,
+            //     children: [
+            //       _wrapCard(_modalSelectionStep(ref)),
+            //       _wrapCard(_languagesStep(ref)),
+            //       _wrapCard(_workTimeStep(ref)),
+            //       _wrapCard(_bioStep(ref)),
+            //       _wrapCard(_expertiseStep(ref)), // NEW: Step 4 - Expertise
+            //       _wrapCard(_banksStep(ref)), // Moved from 4 to 5
+            //       _wrapCard(_normalLicenceUploadStep(ref)), // Moved from 5 to 6
+            //       _wrapCard(_licenceUploadStep(ref)), // Moved from 6 to 7
+            //       _wrapCard(_degreeUploadStep(ref)), // Moved from 7 to 8
+            //       _wrapCard(
+            //         _professionalLicenseUploadStep(ref),
+            //       ), // Moved from 8 to 9
+
+            //       _wrapCard(
+            //         _specialTrainingUploadStep(ref),
+            //       ), // Moved from 10 to 11
+            //       _wrapCard(_profileUploadStep(ref)), // Moved from 11 to 12
+            //     ],
+            //   ),
+            // ),
+            Expanded(
+              child: SingleChildScrollView(
+                child: SizedBox(
+                  height:
+                      MediaQuery.of(context).size.height, // Ensure full height
+                  child: PageView(
+                    controller: _pageController,
+                    physics: const NeverScrollableScrollPhysics(),
+                    onPageChanged:
+                        (i) => ref.read(currentStepProvider.notifier).state = i,
+                    children: [
+                      _wrapCard(_modalSelectionStep(ref)),
+                      _wrapCard(_languagesStep(ref)),
+                      _wrapCard(_workTimeStep(ref)),
+                      _wrapCard(_bioStep(ref)),
+                      _wrapCard(_expertiseStep(ref)), // NEW: Step 4 - Expertise
+                      _wrapCard(_banksStep(ref)), // Moved from 4 to 5
+                      _wrapCard(
+                        _normalLicenceUploadStep(ref),
+                      ), // Moved from 5 to 6
+                      _wrapCard(_licenceUploadStep(ref)), // Moved from 6 to 7
+                      _wrapCard(_degreeUploadStep(ref)), // Moved from 7 to 8
+                      _wrapCard(
+                        _professionalLicenseUploadStep(ref),
+                      ), // Moved from 8 to 9
+
+                      _wrapCard(
+                        _specialTrainingUploadStep(ref),
+                      ), // Moved from 10 to 11
+                      _wrapCard(_profileUploadStep(ref)),
+                      // ... other steps
+                    ],
+                  ),
+                ),
               ),
             ),
           ],

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:navicare/core/theme/app_colors.dart';
@@ -53,6 +55,7 @@ class _ContactDetailPageState extends ConsumerState<ContactDetailPage> {
           .read(chatRepositoryProvider)
           .getClientSessions(clientId: widget.clientId);
 
+      log("Fetch sessions response: $response");
       response.fold(
         (failure) {
           setState(() {
@@ -138,22 +141,22 @@ class _ContactDetailPageState extends ConsumerState<ContactDetailPage> {
     }
   }
 
-  String _formatDateTime(DateTime dateTime) {
-    return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
-  }
+  // String _formatDateTime(DateTime dateTime) {
+  //   return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
+  // }
 
-  String _getSessionTypeIcon(String type) {
-    switch (type.toLowerCase()) {
-      case 'video':
-        return '🎥';
-      case 'audio':
-        return '🎧';
-      case 'in-person':
-        return '👥';
-      default:
-        return '📅';
-    }
-  }
+  // String _getSessionTypeIcon(String type) {
+  //   switch (type.toLowerCase()) {
+  //     case 'video':
+  //       return '🎥';
+  //     case 'audio':
+  //       return '🎧';
+  //     case 'in-person':
+  //       return '👥';
+  //     default:
+  //       return '📅';
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -201,13 +204,16 @@ class _ContactDetailPageState extends ConsumerState<ContactDetailPage> {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            if (widget.avatarUrl != null && widget.avatarUrl!.isNotEmpty) {
+                            if (widget.avatarUrl != null &&
+                                widget.avatarUrl!.isNotEmpty) {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (context) => FullScreenImageViewer(
-                                    imageUrl: widget.avatarUrl!,
-                                    heroTag: 'userprofile-avatar-${widget.clientId}',
-                                  ),
+                                  builder:
+                                      (context) => FullScreenImageViewer(
+                                        imageUrl: widget.avatarUrl!,
+                                        heroTag:
+                                            'userprofile-avatar-${widget.clientId}',
+                                      ),
                                 ),
                               );
                             }
@@ -216,34 +222,38 @@ class _ContactDetailPageState extends ConsumerState<ContactDetailPage> {
                             tag: 'userprofile-avatar-${widget.clientId}',
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(25),
-                              child: widget.avatarUrl != null && widget.avatarUrl!.isNotEmpty
-                                  ? Image(
-                                      image: NetworkImage(
-                                        '${widget.avatarUrl}',
+                              child:
+                                  widget.avatarUrl != null &&
+                                          widget.avatarUrl!.isNotEmpty
+                                      ? Image(
+                                        image: NetworkImage(
+                                          '${widget.avatarUrl}',
+                                        ),
+                                        width: 50,
+                                        height: 50,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (
+                                          context,
+                                          error,
+                                          stackTrace,
+                                        ) {
+                                          return Image(
+                                            image: AssetImage(
+                                              getAvatarImage(
+                                                widget.avatar ?? 0,
+                                              ),
+                                            ),
+                                            width: 50,
+                                            height: 50,
+                                          );
+                                        },
+                                      )
+                                      : Image.asset(
+                                        getAvatarImage(widget.avatar ?? 0),
+                                        width: 50,
+                                        height: 50,
+                                        fit: BoxFit.cover,
                                       ),
-                                      width: 50,
-                                      height: 50,
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (
-                                        context,
-                                        error,
-                                        stackTrace,
-                                      ) {
-                                        return Image(
-                                          image: AssetImage(
-                                            getAvatarImage(widget.avatar ?? 0),
-                                          ),
-                                          width: 50,
-                                          height: 50,
-                                        );
-                                      },
-                                    )
-                                  : Image.asset(
-                                      getAvatarImage(widget.avatar ?? 0),
-                                      width: 50,
-                                      height: 50,
-                                      fit: BoxFit.cover,
-                                    ),
                             ),
                           ),
                         ),
@@ -483,6 +493,7 @@ class _SessionTileState extends State<_SessionTile> {
   }
 
   String _formatDateTime(DateTime dateTime) {
-    return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
+    final localTime = dateTime;
+    return '${localTime.day}/${localTime.month}/${localTime.year} ${localTime.hour}:${localTime.minute.toString().padLeft(2, '0')}';
   }
 }
