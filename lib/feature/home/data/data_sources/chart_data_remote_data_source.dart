@@ -1,9 +1,7 @@
-// chart_data_remote_data_source.dart
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:navicare/core/network/dio_client.dart';
 import 'package:retrofit/retrofit.dart';
-//import 'package:navithera_client/core/network/dio_client.dart';
 import '../models/chart_data_models.dart';
 
 part 'chart_data_remote_data_source.g.dart';

@@ -480,6 +480,7 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
           children: [
             GestureDetector(
               onTap: () {
+                print("Tapped avatar ${widget.chat.groupList}");
                 if (widget.chat.isGroup != null &&
                     widget.chat.isGroup == true) {
                   Navigator.push(

@@ -424,7 +424,7 @@ class _SecondRowSection extends StatelessWidget {
             SizedBox(width: isNarrow ? 8 : 12),
             Expanded(
               child: _MetricCard(
-                title: 'Revenue/week',
+                title: 'Revenue per week',
                 value: totalRevenueFormatted,
                 icon: Icons.payments_rounded,
                 gradient: LinearGradient(

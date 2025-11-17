@@ -923,15 +923,6 @@ class _PostSignupQuestionnaireScreenState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // const Text(
-        //   'Select your primary therapy modality',
-        //   style: TextStyle(
-        //     fontSize: 22,
-        //     fontWeight: FontWeight.w600,
-        //     color: textPrimary,
-        //     height: 1.3,
-        //   ),
-        // ),
         RichText(
           text: TextSpan(
             children: [
@@ -4158,40 +4149,62 @@ class _PostSignupQuestionnaireScreenState
             //     ],
             //   ),
             // ),
-            Expanded(
-              child: SingleChildScrollView(
-                child: SizedBox(
-                  height:
-                      MediaQuery.of(context).size.height, // Ensure full height
-                  child: PageView(
-                    controller: _pageController,
-                    physics: const NeverScrollableScrollPhysics(),
-                    onPageChanged:
-                        (i) => ref.read(currentStepProvider.notifier).state = i,
-                    children: [
-                      _wrapCard(_modalSelectionStep(ref)),
-                      _wrapCard(_languagesStep(ref)),
-                      _wrapCard(_workTimeStep(ref)),
-                      _wrapCard(_bioStep(ref)),
-                      _wrapCard(_expertiseStep(ref)), // NEW: Step 4 - Expertise
-                      _wrapCard(_banksStep(ref)), // Moved from 4 to 5
-                      _wrapCard(
-                        _normalLicenceUploadStep(ref),
-                      ), // Moved from 5 to 6
-                      _wrapCard(_licenceUploadStep(ref)), // Moved from 6 to 7
-                      _wrapCard(_degreeUploadStep(ref)), // Moved from 7 to 8
-                      _wrapCard(
-                        _professionalLicenseUploadStep(ref),
-                      ), // Moved from 8 to 9
+            // Expanded(
+            //   child: SingleChildScrollView(
+            //     child: SizedBox(
+            //       height:
+            //           MediaQuery.of(context).size.height, // Ensure full height
+            //       child: PageView(
+            //         controller: _pageController,
+            //         physics: const NeverScrollableScrollPhysics(),
+            //         onPageChanged:
+            //             (i) => ref.read(currentStepProvider.notifier).state = i,
+            //         children: [
+            //           _wrapCard(_modalSelectionStep(ref)),
+            //           _wrapCard(_languagesStep(ref)),
+            //           _wrapCard(_workTimeStep(ref)),
+            //           _wrapCard(_bioStep(ref)),
+            //           _wrapCard(_expertiseStep(ref)), // NEW: Step 4 - Expertise
+            //           _wrapCard(_banksStep(ref)), // Moved from 4 to 5
+            //           _wrapCard(
+            //             _normalLicenceUploadStep(ref),
+            //           ), // Moved from 5 to 6
+            //           _wrapCard(_licenceUploadStep(ref)), // Moved from 6 to 7
+            //           _wrapCard(_degreeUploadStep(ref)), // Moved from 7 to 8
+            //           _wrapCard(
+            //             _professionalLicenseUploadStep(ref),
+            //           ), // Moved from 8 to 9
 
-                      _wrapCard(
-                        _specialTrainingUploadStep(ref),
-                      ), // Moved from 10 to 11
-                      _wrapCard(_profileUploadStep(ref)),
-                      // ... other steps
-                    ],
-                  ),
-                ),
+            //           _wrapCard(
+            //             _specialTrainingUploadStep(ref),
+            //           ), // Moved from 10 to 11
+            //           _wrapCard(_profileUploadStep(ref)),
+            //           // ... other steps
+            //         ],
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            Expanded(
+              child: PageView(
+                controller: _pageController,
+                physics: const NeverScrollableScrollPhysics(),
+                onPageChanged:
+                    (i) => ref.read(currentStepProvider.notifier).state = i,
+                children: [
+                  _wrapCard(_modalSelectionStep(ref)),
+                  _wrapCard(_languagesStep(ref)),
+                  _wrapCard(_workTimeStep(ref)),
+                  _wrapCard(_bioStep(ref)),
+                  _wrapCard(_expertiseStep(ref)),
+                  _wrapCard(_banksStep(ref)),
+                  _wrapCard(_normalLicenceUploadStep(ref)),
+                  _wrapCard(_licenceUploadStep(ref)),
+                  _wrapCard(_degreeUploadStep(ref)),
+                  _wrapCard(_professionalLicenseUploadStep(ref)),
+                  _wrapCard(_specialTrainingUploadStep(ref)),
+                  _wrapCard(_profileUploadStep(ref)),
+                ],
               ),
             ),
           ],

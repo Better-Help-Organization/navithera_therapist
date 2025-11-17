@@ -279,7 +279,7 @@ class ChatRepositoryImpl implements ChatRepository {
   }) async {
     try {
       final response = await remoteDataSource.getClientSessions(
-        filters: 'client.id=$clientId,approvalStatus=confirmed',
+        filters: 'client.id:=$clientId,approvalStatus=confirmed',
         page: page,
         take: 0,
         sort: 'schedule=Asc',

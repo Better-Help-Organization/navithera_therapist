@@ -18,6 +18,7 @@ import 'package:navicare/feature/calendar/presentation/pages/pages/events_exampl
 import 'package:navicare/feature/chat/presentation/pages/chat_list_screen.dart';
 import 'package:navicare/feature/chat/presentation/providers/chat_provider.dart';
 import 'package:navicare/feature/chat/presentation/providers/message_provider.dart';
+import 'package:navicare/feature/home/presentation/pages/home_screen.dart';
 import 'package:navicare/feature/home/presentation/providers/chart_data_provider.dart';
 import 'package:navicare/feature/questionnaire/presentation/pages/match_request_screen.dart';
 import 'package:navicare/feature/therapy/presentation/pages/call_screen.dart';
@@ -123,11 +124,27 @@ class FCMService {
     print("token $token");
   }
 
+  Future<void> _loadUnreadCount() async {
+    final context = navigatorKey.currentContext;
+    if (context == null) return;
+    final container = ProviderScope.containerOf(context);
+    final notificationService = container.read(notificationServiceProvider);
+    final unreadCount = await notificationService.fetchUnreadCount();
+
+    // if (mounted) {
+    container
+        .read(notificationCountProvider.notifier)
+        .setCount(unreadCount ?? 0);
+    // }
+  }
+
   // ========= INCOMING PROCESSING =========
 
   void _handleForegroundMessage(RemoteMessage message) async {
     log("Full message: ${message.data}");
     print("Message Info: ${message.notification?.body}");
+
+    _loadUnreadCount();
 
     const refreshArr = [
       "1",
@@ -391,6 +408,8 @@ class FCMService {
 
   void _handleBackgroundMessage(RemoteMessage message) async {
     print("onMessageOpenedApp: ${message.data}");
+
+    _loadUnreadCount();
 
     if (message.data['code'] == '4' || message.data['code'] == 4) {
       _handleMessageReadEvent(message);
