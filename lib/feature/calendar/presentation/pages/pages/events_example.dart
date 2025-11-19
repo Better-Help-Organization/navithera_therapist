@@ -1076,14 +1076,14 @@ class _DayCalendarView extends StatelessWidget {
       final durationMinutes = session.duration % 60;
 
       // Calculate position and height based on time
-      final top = (startHour + startMinute / 60) * (600 / 24);
+      final top = (startHour + 1 / 60) * (600 / 24);
       final height = (durationHours + durationMinutes / 60) * (600 / 24);
 
       return Positioned(
         left: 60, // Offset for time markers
         top: top,
         right: 16,
-        height: height,
+        height: 20,
         child: _SessionTimeBlock(
           session: session,
           onTap: () => onSessionTap(session),
