@@ -51,6 +51,14 @@ _$WeeklyStatsDataImpl _$$WeeklyStatsDataImplFromJson(
       (json['usersTreatedOverTime'] as List<dynamic>)
           .map((e) => UsersTreatedOverTime.fromJson(e as Map<String, dynamic>))
           .toList(),
+  revenueOverTime:
+      (json['revenueOverTime'] as List<dynamic>)
+          .map((e) => RevenueOverTime.fromJson(e as Map<String, dynamic>))
+          .toList(),
+  therapistHoursPerWeek:
+      (json['therapistHoursPerWeek'] as List<dynamic>)
+          .map((e) => TherapistHoursPerWeek.fromJson(e as Map<String, dynamic>))
+          .toList(),
 );
 
 Map<String, dynamic> _$$WeeklyStatsDataImplToJson(
@@ -62,6 +70,38 @@ Map<String, dynamic> _$$WeeklyStatsDataImplToJson(
   'totalUsers': instance.totalUsers,
   'sessionsOverTime': instance.sessionsOverTime,
   'usersTreatedOverTime': instance.usersTreatedOverTime,
+  'revenueOverTime': instance.revenueOverTime,
+  'therapistHoursPerWeek': instance.therapistHoursPerWeek,
+};
+
+_$RevenueOverTimeImpl _$$RevenueOverTimeImplFromJson(
+  Map<String, dynamic> json,
+) => _$RevenueOverTimeImpl(
+  date: json['date'] as String,
+  revenueOverTime: _parseDoubleSafely(json['revenueOverTime']),
+);
+
+Map<String, dynamic> _$$RevenueOverTimeImplToJson(
+  _$RevenueOverTimeImpl instance,
+) => <String, dynamic>{
+  'date': instance.date,
+  'revenueOverTime': instance.revenueOverTime,
+};
+
+_$TherapistHoursPerWeekImpl _$$TherapistHoursPerWeekImplFromJson(
+  Map<String, dynamic> json,
+) => _$TherapistHoursPerWeekImpl(
+  year: _parseIntSafely(json['year']),
+  week: _parseIntSafely(json['week']),
+  totalHours: _parseDoubleSafely(json['totalHours']),
+);
+
+Map<String, dynamic> _$$TherapistHoursPerWeekImplToJson(
+  _$TherapistHoursPerWeekImpl instance,
+) => <String, dynamic>{
+  'year': instance.year,
+  'week': instance.week,
+  'totalHours': instance.totalHours,
 };
 
 _$SessionOverTimeImpl _$$SessionOverTimeImplFromJson(

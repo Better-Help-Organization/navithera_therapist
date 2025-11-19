@@ -377,6 +377,10 @@ mixin _$WeeklyStatsData {
       throw _privateConstructorUsedError;
   List<UsersTreatedOverTime> get usersTreatedOverTime =>
       throw _privateConstructorUsedError;
+  List<RevenueOverTime> get revenueOverTime =>
+      throw _privateConstructorUsedError; // Add this
+  List<TherapistHoursPerWeek> get therapistHoursPerWeek =>
+      throw _privateConstructorUsedError;
 
   /// Serializes this WeeklyStatsData to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -402,6 +406,8 @@ abstract class $WeeklyStatsDataCopyWith<$Res> {
     @JsonKey(fromJson: _parseIntSafely) int totalUsers,
     List<SessionOverTime> sessionsOverTime,
     List<UsersTreatedOverTime> usersTreatedOverTime,
+    List<RevenueOverTime> revenueOverTime,
+    List<TherapistHoursPerWeek> therapistHoursPerWeek,
   });
 }
 
@@ -426,6 +432,8 @@ class _$WeeklyStatsDataCopyWithImpl<$Res, $Val extends WeeklyStatsData>
     Object? totalUsers = null,
     Object? sessionsOverTime = null,
     Object? usersTreatedOverTime = null,
+    Object? revenueOverTime = null,
+    Object? therapistHoursPerWeek = null,
   }) {
     return _then(
       _value.copyWith(
@@ -459,6 +467,16 @@ class _$WeeklyStatsDataCopyWithImpl<$Res, $Val extends WeeklyStatsData>
                     ? _value.usersTreatedOverTime
                     : usersTreatedOverTime // ignore: cast_nullable_to_non_nullable
                         as List<UsersTreatedOverTime>,
+            revenueOverTime:
+                null == revenueOverTime
+                    ? _value.revenueOverTime
+                    : revenueOverTime // ignore: cast_nullable_to_non_nullable
+                        as List<RevenueOverTime>,
+            therapistHoursPerWeek:
+                null == therapistHoursPerWeek
+                    ? _value.therapistHoursPerWeek
+                    : therapistHoursPerWeek // ignore: cast_nullable_to_non_nullable
+                        as List<TherapistHoursPerWeek>,
           )
           as $Val,
     );
@@ -481,6 +499,8 @@ abstract class _$$WeeklyStatsDataImplCopyWith<$Res>
     @JsonKey(fromJson: _parseIntSafely) int totalUsers,
     List<SessionOverTime> sessionsOverTime,
     List<UsersTreatedOverTime> usersTreatedOverTime,
+    List<RevenueOverTime> revenueOverTime,
+    List<TherapistHoursPerWeek> therapistHoursPerWeek,
   });
 }
 
@@ -504,6 +524,8 @@ class __$$WeeklyStatsDataImplCopyWithImpl<$Res>
     Object? totalUsers = null,
     Object? sessionsOverTime = null,
     Object? usersTreatedOverTime = null,
+    Object? revenueOverTime = null,
+    Object? therapistHoursPerWeek = null,
   }) {
     return _then(
       _$WeeklyStatsDataImpl(
@@ -537,6 +559,16 @@ class __$$WeeklyStatsDataImplCopyWithImpl<$Res>
                 ? _value._usersTreatedOverTime
                 : usersTreatedOverTime // ignore: cast_nullable_to_non_nullable
                     as List<UsersTreatedOverTime>,
+        revenueOverTime:
+            null == revenueOverTime
+                ? _value._revenueOverTime
+                : revenueOverTime // ignore: cast_nullable_to_non_nullable
+                    as List<RevenueOverTime>,
+        therapistHoursPerWeek:
+            null == therapistHoursPerWeek
+                ? _value._therapistHoursPerWeek
+                : therapistHoursPerWeek // ignore: cast_nullable_to_non_nullable
+                    as List<TherapistHoursPerWeek>,
       ),
     );
   }
@@ -552,8 +584,12 @@ class _$WeeklyStatsDataImpl implements _WeeklyStatsData {
     @JsonKey(fromJson: _parseIntSafely) required this.totalUsers,
     required final List<SessionOverTime> sessionsOverTime,
     required final List<UsersTreatedOverTime> usersTreatedOverTime,
+    required final List<RevenueOverTime> revenueOverTime,
+    required final List<TherapistHoursPerWeek> therapistHoursPerWeek,
   }) : _sessionsOverTime = sessionsOverTime,
-       _usersTreatedOverTime = usersTreatedOverTime;
+       _usersTreatedOverTime = usersTreatedOverTime,
+       _revenueOverTime = revenueOverTime,
+       _therapistHoursPerWeek = therapistHoursPerWeek;
 
   factory _$WeeklyStatsDataImpl.fromJson(Map<String, dynamic> json) =>
       _$$WeeklyStatsDataImplFromJson(json);
@@ -588,9 +624,28 @@ class _$WeeklyStatsDataImpl implements _WeeklyStatsData {
     return EqualUnmodifiableListView(_usersTreatedOverTime);
   }
 
+  final List<RevenueOverTime> _revenueOverTime;
+  @override
+  List<RevenueOverTime> get revenueOverTime {
+    if (_revenueOverTime is EqualUnmodifiableListView) return _revenueOverTime;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_revenueOverTime);
+  }
+
+  // Add this
+  final List<TherapistHoursPerWeek> _therapistHoursPerWeek;
+  // Add this
+  @override
+  List<TherapistHoursPerWeek> get therapistHoursPerWeek {
+    if (_therapistHoursPerWeek is EqualUnmodifiableListView)
+      return _therapistHoursPerWeek;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_therapistHoursPerWeek);
+  }
+
   @override
   String toString() {
-    return 'WeeklyStatsData(totalSessions: $totalSessions, totalHours: $totalHours, totalRevenue: $totalRevenue, totalUsers: $totalUsers, sessionsOverTime: $sessionsOverTime, usersTreatedOverTime: $usersTreatedOverTime)';
+    return 'WeeklyStatsData(totalSessions: $totalSessions, totalHours: $totalHours, totalRevenue: $totalRevenue, totalUsers: $totalUsers, sessionsOverTime: $sessionsOverTime, usersTreatedOverTime: $usersTreatedOverTime, revenueOverTime: $revenueOverTime, therapistHoursPerWeek: $therapistHoursPerWeek)';
   }
 
   @override
@@ -613,6 +668,14 @@ class _$WeeklyStatsDataImpl implements _WeeklyStatsData {
             const DeepCollectionEquality().equals(
               other._usersTreatedOverTime,
               _usersTreatedOverTime,
+            ) &&
+            const DeepCollectionEquality().equals(
+              other._revenueOverTime,
+              _revenueOverTime,
+            ) &&
+            const DeepCollectionEquality().equals(
+              other._therapistHoursPerWeek,
+              _therapistHoursPerWeek,
             ));
   }
 
@@ -626,6 +689,8 @@ class _$WeeklyStatsDataImpl implements _WeeklyStatsData {
     totalUsers,
     const DeepCollectionEquality().hash(_sessionsOverTime),
     const DeepCollectionEquality().hash(_usersTreatedOverTime),
+    const DeepCollectionEquality().hash(_revenueOverTime),
+    const DeepCollectionEquality().hash(_therapistHoursPerWeek),
   );
 
   /// Create a copy of WeeklyStatsData
@@ -653,6 +718,8 @@ abstract class _WeeklyStatsData implements WeeklyStatsData {
     @JsonKey(fromJson: _parseIntSafely) required final int totalUsers,
     required final List<SessionOverTime> sessionsOverTime,
     required final List<UsersTreatedOverTime> usersTreatedOverTime,
+    required final List<RevenueOverTime> revenueOverTime,
+    required final List<TherapistHoursPerWeek> therapistHoursPerWeek,
   }) = _$WeeklyStatsDataImpl;
 
   factory _WeeklyStatsData.fromJson(Map<String, dynamic> json) =
@@ -674,6 +741,10 @@ abstract class _WeeklyStatsData implements WeeklyStatsData {
   List<SessionOverTime> get sessionsOverTime;
   @override
   List<UsersTreatedOverTime> get usersTreatedOverTime;
+  @override
+  List<RevenueOverTime> get revenueOverTime; // Add this
+  @override
+  List<TherapistHoursPerWeek> get therapistHoursPerWeek;
 
   /// Create a copy of WeeklyStatsData
   /// with the given fields replaced by the non-null parameter values.
@@ -681,6 +752,424 @@ abstract class _WeeklyStatsData implements WeeklyStatsData {
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$WeeklyStatsDataImplCopyWith<_$WeeklyStatsDataImpl> get copyWith =>
       throw _privateConstructorUsedError;
+}
+
+RevenueOverTime _$RevenueOverTimeFromJson(Map<String, dynamic> json) {
+  return _RevenueOverTime.fromJson(json);
+}
+
+/// @nodoc
+mixin _$RevenueOverTime {
+  String get date => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: _parseDoubleSafely)
+  double get revenueOverTime => throw _privateConstructorUsedError;
+
+  /// Serializes this RevenueOverTime to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of RevenueOverTime
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $RevenueOverTimeCopyWith<RevenueOverTime> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $RevenueOverTimeCopyWith<$Res> {
+  factory $RevenueOverTimeCopyWith(
+    RevenueOverTime value,
+    $Res Function(RevenueOverTime) then,
+  ) = _$RevenueOverTimeCopyWithImpl<$Res, RevenueOverTime>;
+  @useResult
+  $Res call({
+    String date,
+    @JsonKey(fromJson: _parseDoubleSafely) double revenueOverTime,
+  });
+}
+
+/// @nodoc
+class _$RevenueOverTimeCopyWithImpl<$Res, $Val extends RevenueOverTime>
+    implements $RevenueOverTimeCopyWith<$Res> {
+  _$RevenueOverTimeCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of RevenueOverTime
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? date = null, Object? revenueOverTime = null}) {
+    return _then(
+      _value.copyWith(
+            date:
+                null == date
+                    ? _value.date
+                    : date // ignore: cast_nullable_to_non_nullable
+                        as String,
+            revenueOverTime:
+                null == revenueOverTime
+                    ? _value.revenueOverTime
+                    : revenueOverTime // ignore: cast_nullable_to_non_nullable
+                        as double,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$RevenueOverTimeImplCopyWith<$Res>
+    implements $RevenueOverTimeCopyWith<$Res> {
+  factory _$$RevenueOverTimeImplCopyWith(
+    _$RevenueOverTimeImpl value,
+    $Res Function(_$RevenueOverTimeImpl) then,
+  ) = __$$RevenueOverTimeImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    String date,
+    @JsonKey(fromJson: _parseDoubleSafely) double revenueOverTime,
+  });
+}
+
+/// @nodoc
+class __$$RevenueOverTimeImplCopyWithImpl<$Res>
+    extends _$RevenueOverTimeCopyWithImpl<$Res, _$RevenueOverTimeImpl>
+    implements _$$RevenueOverTimeImplCopyWith<$Res> {
+  __$$RevenueOverTimeImplCopyWithImpl(
+    _$RevenueOverTimeImpl _value,
+    $Res Function(_$RevenueOverTimeImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of RevenueOverTime
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? date = null, Object? revenueOverTime = null}) {
+    return _then(
+      _$RevenueOverTimeImpl(
+        date:
+            null == date
+                ? _value.date
+                : date // ignore: cast_nullable_to_non_nullable
+                    as String,
+        revenueOverTime:
+            null == revenueOverTime
+                ? _value.revenueOverTime
+                : revenueOverTime // ignore: cast_nullable_to_non_nullable
+                    as double,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$RevenueOverTimeImpl implements _RevenueOverTime {
+  const _$RevenueOverTimeImpl({
+    required this.date,
+    @JsonKey(fromJson: _parseDoubleSafely) required this.revenueOverTime,
+  });
+
+  factory _$RevenueOverTimeImpl.fromJson(Map<String, dynamic> json) =>
+      _$$RevenueOverTimeImplFromJson(json);
+
+  @override
+  final String date;
+  @override
+  @JsonKey(fromJson: _parseDoubleSafely)
+  final double revenueOverTime;
+
+  @override
+  String toString() {
+    return 'RevenueOverTime(date: $date, revenueOverTime: $revenueOverTime)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$RevenueOverTimeImpl &&
+            (identical(other.date, date) || other.date == date) &&
+            (identical(other.revenueOverTime, revenueOverTime) ||
+                other.revenueOverTime == revenueOverTime));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, date, revenueOverTime);
+
+  /// Create a copy of RevenueOverTime
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$RevenueOverTimeImplCopyWith<_$RevenueOverTimeImpl> get copyWith =>
+      __$$RevenueOverTimeImplCopyWithImpl<_$RevenueOverTimeImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$RevenueOverTimeImplToJson(this);
+  }
+}
+
+abstract class _RevenueOverTime implements RevenueOverTime {
+  const factory _RevenueOverTime({
+    required final String date,
+    @JsonKey(fromJson: _parseDoubleSafely)
+    required final double revenueOverTime,
+  }) = _$RevenueOverTimeImpl;
+
+  factory _RevenueOverTime.fromJson(Map<String, dynamic> json) =
+      _$RevenueOverTimeImpl.fromJson;
+
+  @override
+  String get date;
+  @override
+  @JsonKey(fromJson: _parseDoubleSafely)
+  double get revenueOverTime;
+
+  /// Create a copy of RevenueOverTime
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$RevenueOverTimeImplCopyWith<_$RevenueOverTimeImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+TherapistHoursPerWeek _$TherapistHoursPerWeekFromJson(
+  Map<String, dynamic> json,
+) {
+  return _TherapistHoursPerWeek.fromJson(json);
+}
+
+/// @nodoc
+mixin _$TherapistHoursPerWeek {
+  @JsonKey(fromJson: _parseIntSafely)
+  int get year => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: _parseIntSafely)
+  int get week => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: _parseDoubleSafely)
+  double get totalHours => throw _privateConstructorUsedError;
+
+  /// Serializes this TherapistHoursPerWeek to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of TherapistHoursPerWeek
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $TherapistHoursPerWeekCopyWith<TherapistHoursPerWeek> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $TherapistHoursPerWeekCopyWith<$Res> {
+  factory $TherapistHoursPerWeekCopyWith(
+    TherapistHoursPerWeek value,
+    $Res Function(TherapistHoursPerWeek) then,
+  ) = _$TherapistHoursPerWeekCopyWithImpl<$Res, TherapistHoursPerWeek>;
+  @useResult
+  $Res call({
+    @JsonKey(fromJson: _parseIntSafely) int year,
+    @JsonKey(fromJson: _parseIntSafely) int week,
+    @JsonKey(fromJson: _parseDoubleSafely) double totalHours,
+  });
+}
+
+/// @nodoc
+class _$TherapistHoursPerWeekCopyWithImpl<
+  $Res,
+  $Val extends TherapistHoursPerWeek
+>
+    implements $TherapistHoursPerWeekCopyWith<$Res> {
+  _$TherapistHoursPerWeekCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of TherapistHoursPerWeek
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? year = null,
+    Object? week = null,
+    Object? totalHours = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            year:
+                null == year
+                    ? _value.year
+                    : year // ignore: cast_nullable_to_non_nullable
+                        as int,
+            week:
+                null == week
+                    ? _value.week
+                    : week // ignore: cast_nullable_to_non_nullable
+                        as int,
+            totalHours:
+                null == totalHours
+                    ? _value.totalHours
+                    : totalHours // ignore: cast_nullable_to_non_nullable
+                        as double,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$TherapistHoursPerWeekImplCopyWith<$Res>
+    implements $TherapistHoursPerWeekCopyWith<$Res> {
+  factory _$$TherapistHoursPerWeekImplCopyWith(
+    _$TherapistHoursPerWeekImpl value,
+    $Res Function(_$TherapistHoursPerWeekImpl) then,
+  ) = __$$TherapistHoursPerWeekImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    @JsonKey(fromJson: _parseIntSafely) int year,
+    @JsonKey(fromJson: _parseIntSafely) int week,
+    @JsonKey(fromJson: _parseDoubleSafely) double totalHours,
+  });
+}
+
+/// @nodoc
+class __$$TherapistHoursPerWeekImplCopyWithImpl<$Res>
+    extends
+        _$TherapistHoursPerWeekCopyWithImpl<$Res, _$TherapistHoursPerWeekImpl>
+    implements _$$TherapistHoursPerWeekImplCopyWith<$Res> {
+  __$$TherapistHoursPerWeekImplCopyWithImpl(
+    _$TherapistHoursPerWeekImpl _value,
+    $Res Function(_$TherapistHoursPerWeekImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of TherapistHoursPerWeek
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? year = null,
+    Object? week = null,
+    Object? totalHours = null,
+  }) {
+    return _then(
+      _$TherapistHoursPerWeekImpl(
+        year:
+            null == year
+                ? _value.year
+                : year // ignore: cast_nullable_to_non_nullable
+                    as int,
+        week:
+            null == week
+                ? _value.week
+                : week // ignore: cast_nullable_to_non_nullable
+                    as int,
+        totalHours:
+            null == totalHours
+                ? _value.totalHours
+                : totalHours // ignore: cast_nullable_to_non_nullable
+                    as double,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$TherapistHoursPerWeekImpl implements _TherapistHoursPerWeek {
+  const _$TherapistHoursPerWeekImpl({
+    @JsonKey(fromJson: _parseIntSafely) required this.year,
+    @JsonKey(fromJson: _parseIntSafely) required this.week,
+    @JsonKey(fromJson: _parseDoubleSafely) required this.totalHours,
+  });
+
+  factory _$TherapistHoursPerWeekImpl.fromJson(Map<String, dynamic> json) =>
+      _$$TherapistHoursPerWeekImplFromJson(json);
+
+  @override
+  @JsonKey(fromJson: _parseIntSafely)
+  final int year;
+  @override
+  @JsonKey(fromJson: _parseIntSafely)
+  final int week;
+  @override
+  @JsonKey(fromJson: _parseDoubleSafely)
+  final double totalHours;
+
+  @override
+  String toString() {
+    return 'TherapistHoursPerWeek(year: $year, week: $week, totalHours: $totalHours)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$TherapistHoursPerWeekImpl &&
+            (identical(other.year, year) || other.year == year) &&
+            (identical(other.week, week) || other.week == week) &&
+            (identical(other.totalHours, totalHours) ||
+                other.totalHours == totalHours));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, year, week, totalHours);
+
+  /// Create a copy of TherapistHoursPerWeek
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$TherapistHoursPerWeekImplCopyWith<_$TherapistHoursPerWeekImpl>
+  get copyWith =>
+      __$$TherapistHoursPerWeekImplCopyWithImpl<_$TherapistHoursPerWeekImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$TherapistHoursPerWeekImplToJson(this);
+  }
+}
+
+abstract class _TherapistHoursPerWeek implements TherapistHoursPerWeek {
+  const factory _TherapistHoursPerWeek({
+    @JsonKey(fromJson: _parseIntSafely) required final int year,
+    @JsonKey(fromJson: _parseIntSafely) required final int week,
+    @JsonKey(fromJson: _parseDoubleSafely) required final double totalHours,
+  }) = _$TherapistHoursPerWeekImpl;
+
+  factory _TherapistHoursPerWeek.fromJson(Map<String, dynamic> json) =
+      _$TherapistHoursPerWeekImpl.fromJson;
+
+  @override
+  @JsonKey(fromJson: _parseIntSafely)
+  int get year;
+  @override
+  @JsonKey(fromJson: _parseIntSafely)
+  int get week;
+  @override
+  @JsonKey(fromJson: _parseDoubleSafely)
+  double get totalHours;
+
+  /// Create a copy of TherapistHoursPerWeek
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$TherapistHoursPerWeekImplCopyWith<_$TherapistHoursPerWeekImpl>
+  get copyWith => throw _privateConstructorUsedError;
 }
 
 SessionOverTime _$SessionOverTimeFromJson(Map<String, dynamic> json) {

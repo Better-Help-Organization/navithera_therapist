@@ -44,6 +44,18 @@ class ChartDataRepositoryImpl implements ChartDataRepository {
 
       final statsData = response.data;
 
+      // Calculate total hours from therapistHoursPerWeek array
+      final totalHoursFromArray = statsData.therapistHoursPerWeek.fold<double>(
+        0.0,
+        (sum, item) => sum + item.totalHours,
+      );
+
+      // Calculate total revenue from revenueOverTime array
+      final totalRevenueFromArray = statsData.revenueOverTime.fold<double>(
+        0.0,
+        (sum, item) => sum + item.revenueOverTime,
+      );
+
       // Process chart data
       final sessionsOverTime = statsData.sessionsOverTime;
       final usersTreatedOverTime = statsData.usersTreatedOverTime;
@@ -99,8 +111,8 @@ class ChartDataRepositoryImpl implements ChartDataRepository {
 
       final weeklyStats = WeeklyStats(
         totalSessions: statsData.totalSessions,
-        totalRevenue: statsData.totalRevenue,
-        totalHours: statsData.totalHours,
+        totalRevenue: totalRevenueFromArray.round(), // Use calculated revenue
+        totalHours: totalHoursFromArray, // Use calculated hours
         totalUsers: statsData.totalUsers,
         chartData: chartData,
       );

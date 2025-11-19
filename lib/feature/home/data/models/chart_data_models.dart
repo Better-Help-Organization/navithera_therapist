@@ -31,10 +31,35 @@ class WeeklyStatsData with _$WeeklyStatsData {
     @JsonKey(fromJson: _parseIntSafely) required int totalUsers,
     required List<SessionOverTime> sessionsOverTime,
     required List<UsersTreatedOverTime> usersTreatedOverTime,
+    required List<RevenueOverTime> revenueOverTime, // Add this
+    required List<TherapistHoursPerWeek> therapistHoursPerWeek, // Add this
   }) = _WeeklyStatsData;
 
   factory WeeklyStatsData.fromJson(Map<String, dynamic> json) =>
       _$WeeklyStatsDataFromJson(json);
+}
+
+@freezed
+class RevenueOverTime with _$RevenueOverTime {
+  const factory RevenueOverTime({
+    required String date,
+    @JsonKey(fromJson: _parseDoubleSafely) required double revenueOverTime,
+  }) = _RevenueOverTime;
+
+  factory RevenueOverTime.fromJson(Map<String, dynamic> json) =>
+      _$RevenueOverTimeFromJson(json);
+}
+
+@freezed
+class TherapistHoursPerWeek with _$TherapistHoursPerWeek {
+  const factory TherapistHoursPerWeek({
+    @JsonKey(fromJson: _parseIntSafely) required int year,
+    @JsonKey(fromJson: _parseIntSafely) required int week,
+    @JsonKey(fromJson: _parseDoubleSafely) required double totalHours,
+  }) = _TherapistHoursPerWeek;
+
+  factory TherapistHoursPerWeek.fromJson(Map<String, dynamic> json) =>
+      _$TherapistHoursPerWeekFromJson(json);
 }
 
 @freezed
