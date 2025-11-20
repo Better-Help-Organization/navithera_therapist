@@ -30,10 +30,10 @@ class SessionNotifier extends StateNotifier<List<Session>> {
     try {
       await _attachAuthHeader();
       final response = await _dio.get(
-        '${base_url_dev}/therapist/me/sessions?fields=client.*,schedule,duration,hasTherapistAttended,approvalStatus&take=100',
+        '${base_url_dev}/therapist/me/sessions?fields=client.*,schedule,duration,hasTherapistAttended,approvalStatus,groupName&take=100',
       );
 
-      print("response data: ${response.data}");
+      log("response data: ${response.data}");
 
       final sessionsData = (response.data['data'] as List);
       final sessions = sessionsData.map((e) => Session.fromMap(e)).toList();
@@ -66,6 +66,7 @@ class Session {
   final String? note;
   final bool hasTherapistAttended;
   final String approvalStatus;
+  final String? groupName; // Add groupName field
 
   Session({
     required this.id,
@@ -75,6 +76,7 @@ class Session {
     required this.approvalStatus,
     this.note,
     this.hasTherapistAttended = false,
+    this.groupName, // Add groupName to constructor
   });
 
   factory Session.fromMap(Map<String, dynamic> map) {
@@ -96,6 +98,7 @@ class Session {
           map['hasTherapistAttended'] is bool
               ? map['hasTherapistAttended'] as bool
               : false,
+      groupName: map['groupName']?.toString(), // Parse groupName
     );
   }
 
@@ -107,6 +110,7 @@ class Session {
     String? note,
     bool? hasTherapistAttended,
     String? approvalStatus,
+    String? groupName,
   }) {
     return Session(
       id: id ?? this.id,
@@ -116,10 +120,22 @@ class Session {
       note: note ?? this.note,
       hasTherapistAttended: hasTherapistAttended ?? this.hasTherapistAttended,
       approvalStatus: approvalStatus ?? this.approvalStatus,
+      groupName: groupName ?? this.groupName,
     );
   }
 
   DateTime get endTime => schedule.add(Duration(minutes: duration));
+
+  // Helper method to get display name
+  String get displayName {
+    if (client != null) {
+      return client!.fullName;
+    } else if (groupName != null && groupName!.isNotEmpty) {
+      return groupName!;
+    } else {
+      return "Group Session";
+    }
+  }
 }
 
 class Client {
@@ -472,18 +488,6 @@ class _SessionCalendarScreenState extends ConsumerState<SessionCalendarScreen>
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // Attendance icon - only show if client hasn't attended
-                        // if (!session.hasTherapistAttended)
-                        //   IconButton(
-                        //     icon: Icon(
-                        //       Icons.check_circle_outline,
-                        //       color: AppColors.primary,
-                        //     ),
-                        //     onPressed: () {
-                        //       Navigator.of(context).pop(); // Close the dialog
-                        //       _updateSessionAttendance(session.id, true);
-                        //     },
-                        //   ),
                         IconButton(
                           icon: Icon(Icons.edit, color: AppColors.primary),
                           onPressed: () {
@@ -497,10 +501,14 @@ class _SessionCalendarScreenState extends ConsumerState<SessionCalendarScreen>
                 ),
                 const SizedBox(height: 16),
                 _buildDetailRow(
-                  'Client',
+                  'Session Type',
                   session.client != null
-                      ? session.client!.fullName
-                      : "Group Session",
+                      ? 'Individual'
+                      : 'Group', // Show session type
+                ),
+                _buildDetailRow(
+                  session.client != null ? 'Client' : 'Group',
+                  session.displayName, // Use the new displayName getter
                 ),
                 _buildDetailRow('Date', _formatDate(session.schedule)),
                 _buildDetailRow('Time', _formatTime(session.schedule)),
@@ -510,8 +518,6 @@ class _SessionCalendarScreenState extends ConsumerState<SessionCalendarScreen>
                   session.hasTherapistAttended ? 'Attended' : 'Not Attended',
                 ),
                 _buildDetailRow('Status', session.approvalStatus),
-                // if (session.note != null && session.note!.isNotEmpty)
-                //   _buildDetailRow('Notes', session.note!),
                 const SizedBox(height: 16),
                 SizedBox(
                   width: double.infinity,
@@ -1133,9 +1139,7 @@ class _SessionTimeBlock extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                session.client != null
-                    ? session.client!.fullName
-                    : "Group Session",
+                session.displayName, // Use the new displayName getter
                 style: TextStyle(
                   color:
                       session.approvalStatus == 'pending'
