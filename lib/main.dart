@@ -38,7 +38,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     log("⚠️ No notification object found (maybe data-only message)");
   }
 
-  // If you want raw JSON (for debugging)
+  // If you want raw JSON (for debuggingr
   try {
     log("🔔 FULL RemoteMessage JSON: ${jsonEncode(message.toMap())}");
   } catch (e) {

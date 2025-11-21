@@ -97,6 +97,8 @@ class CallController extends StateNotifier<CallState> {
   LocalParticipant? _localParticipant;
   Timer? _callDurationTimer;
   DateTime? _callStartTime;
+  EventsListener<RoomEvent>? _roomListener;
+  bool _eventListenersSetup = false;
 
   // LiveKit credentials
   static const String _serverUrl = 'wss://navicare-dmw0dh3w.livekit.cloud';
@@ -253,6 +255,9 @@ class CallController extends StateNotifier<CallState> {
       if (_room != null) {
         try {
           _room!.removeListener(_onRoomUpdate);
+          _roomListener?.dispose();
+          _roomListener = null;
+          _eventListenersSetup = false;
           await _room!.disconnect();
           _room!.dispose();
         } catch (_) {}
@@ -266,6 +271,38 @@ class CallController extends StateNotifier<CallState> {
 
   void _onRoomUpdate() {
     if (!mounted) return;
+    
+    // Set up detailed event listeners after first successful connection
+    if (!_eventListenersSetup && _room != null && state.isConnected) {
+      _eventListenersSetup = true;
+      _roomListener = _room!.createListener()
+        ..on<TrackPublishedEvent>((event) {
+          print('📹 Track published by ${event.participant.name}');
+          _updateParticipantTracks();
+        })
+        ..on<TrackUnpublishedEvent>((event) {
+          print('📹 Track unpublished by ${event.participant.name}');
+          _updateParticipantTracks();
+        })
+        ..on<TrackMutedEvent>((event) {
+          print('🔇 Track muted: ${event.publication.kind}');
+          _updateParticipantTracks();
+        })
+        ..on<TrackUnmutedEvent>((event) {
+          print('🔊 Track unmuted: ${event.publication.kind}');
+          _updateParticipantTracks();
+        })
+        ..on<ParticipantConnectedEvent>((event) {
+          print('👋 Participant joined: ${event.participant.name}');
+          _updateParticipantTracks();
+        })
+        ..on<ParticipantDisconnectedEvent>((event) {
+          print('👋 Participant left: ${event.participant.name}');
+          _updateParticipantTracks();
+        });
+      print('✅ Event listeners set up successfully');
+    }
+    
     Future.microtask(() {
       if (mounted) {
         _updateParticipantTracks();
@@ -372,6 +409,9 @@ class CallController extends StateNotifier<CallState> {
     try {
       if (_room != null) {
         _room!.removeListener(_onRoomUpdate);
+        _roomListener?.dispose();
+        _roomListener = null;
+        _eventListenersSetup = false;
         await _room!.disconnect();
         _room!.dispose();
         _room = null;

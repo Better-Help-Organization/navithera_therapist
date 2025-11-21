@@ -603,6 +603,7 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
           ],
         ),
         actions: [
+          // Individual call buttons
           if (widget.chat.isGroup != null && widget.chat.isGroup == false)
             IconButton(
               icon: const Icon(Icons.phone),
@@ -612,6 +613,24 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
             IconButton(
               icon: const Icon(Icons.videocam_outlined),
               onPressed: () => _startCall(isVideoCall: true),
+            ),
+          // Group call button - opens group profile to select participants
+          if (widget.chat.isGroup != null && widget.chat.isGroup == true)
+            IconButton(
+              icon: const Icon(Icons.video_call),
+              tooltip: 'Start group call',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => GroupProfileScreen(
+                      groupName: widget.chat.name ?? 'Group',
+                      groupMembers: widget.chat.groupList,
+                      chatId: widget.chat.id,
+                    ),
+                  ),
+                );
+              },
             ),
         ],
       ),

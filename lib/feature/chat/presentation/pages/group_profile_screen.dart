@@ -8,7 +8,7 @@ import 'package:navicare/core/util/avatar_util.dart';
 import 'package:navicare/feature/auth/data/models/auth_models.dart';
 import 'package:navicare/feature/chat/presentation/pages/user_profile_screen.dart';
 import 'package:navicare/feature/chat/presentation/widgets/gradient_avatar.dart';
-import 'package:navicare/feature/therapy/presentation/pages/call_screen.dart';
+import 'package:navicare/feature/therapy/presentation/pages/group_call_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GroupProfileScreen extends StatefulWidget {
@@ -44,7 +44,21 @@ class _GroupProfileScreenState extends State<GroupProfileScreen> {
     });
   }
 
-  void _startCallWithSelectedUsers() {
+  Future<void> _startCallWithSelectedUsers({required bool isVideoCall}) async {
+    // Validate selection
+    if (_selectedUserIds.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select at least one participant'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    print("Selected chatid: ${widget.chatId}");
+    print('Selected user IDs: ${_selectedUserIds.toList()}');
+
     String _generateRandomRoomName() {
       const chars =
           'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -57,84 +71,105 @@ class _GroupProfileScreenState extends State<GroupProfileScreen> {
       );
     }
 
-    Future<void> _startCall({bool isVideoCall = false}) async {
-      final sharedPreferences = await SharedPreferences.getInstance();
+    final sharedPreferences = await SharedPreferences.getInstance();
+    final accessToken = sharedPreferences.getString('access_token');
+    final roomName = _generateRandomRoomName();
 
-      final accessToken = sharedPreferences.getString('access_token');
-      final roomName = _generateRandomRoomName();
+    // Show loading indicator
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Starting ${isVideoCall ? "video" : "audio"} call with ${_selectedUserIds.length} user${_selectedUserIds.length > 1 ? 's' : ''}...',
+          style: const TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.blue,
+        duration: const Duration(seconds: 2),
+      ),
+    );
 
-      try {
-        final dio = Dio();
-        dio.options.headers['Authorization'] = 'Bearer $accessToken';
+    try {
+      final dio = Dio();
+      dio.options.headers['Authorization'] = 'Bearer $accessToken';
 
-        final response = await dio.post(
-          '${base_url_dev}/chat/call/${widget.chatId}',
-          data: {
-            'room': roomName,
-            'isVideoCall': isVideoCall,
-            "calleeIds": _selectedUserIds.toList(),
-          },
-        );
+      final response = await dio.post(
+        '${base_url_dev}/chat/call/${widget.chatId}',
+        data: {
+          'room': roomName,
+          'isVideoCall': isVideoCall,
+          "calleeIds": _selectedUserIds.toList(),
+        },
+      );
 
-        print("responsexoxo: ${response.data}");
+      print("Response from backend: ${response.data}");
+      print("Status code: ${response.statusCode}");
 
-        if (response.statusCode == 201) {
-          if (!mounted) return;
-          Navigator.push(
+      if (response.statusCode == 201) {
+        if (!mounted) return;
+        
+        print("✅ Backend call successful, navigating to GroupCallScreen...");
+        print("Room name: $roomName");
+        print("Chat ID: ${widget.chatId}");
+        print("Is video call: $isVideoCall");
+        
+        // Navigate to group call screen
+        try {
+          await Navigator.push(
             context,
             MaterialPageRoute(
               builder:
-                  (context) => CallScreen(
+                  (context) => GroupCallScreen(
                     roomName: roomName,
                     participantName: "Group Call",
                     isVideoCall: isVideoCall,
                     chatId: widget.chatId,
-                    //   isGroupCall: widget.chat.isGroup ?? false,
                   ),
             ),
           );
-        } else {
-          if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Failed to start call'),
-              backgroundColor: Colors.red,
-            ),
-          );
+          print("✅ Navigation completed successfully");
+        } catch (navError) {
+          print("❌ Navigation error: $navError");
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Navigation error: $navError'),
+                backgroundColor: Colors.red,
+                duration: const Duration(seconds: 5),
+              ),
+            );
+          }
         }
-      } on DioException catch (e) {
+      } else {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: ${e.response?.data['message'] ?? e.message}'),
+            content: Text('Failed to start call: ${response.statusMessage}'),
             backgroundColor: Colors.red,
-          ),
-        );
-      } catch (e) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('An unexpected error occurred'),
-            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
           ),
         );
       }
-    }
-
-    print("Selected chatid: ${widget.chatId}");
-    print('Selected user IDs: ${_selectedUserIds.toList()}');
-    _startCall(isVideoCall: false);
-    // Show confirmation dialog or snackbar
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Starting call with ${_selectedUserIds.length} user${_selectedUserIds.length > 1 ? 's' : ''}',
-          style: TextStyle(color: Colors.white),
+    } on DioException catch (e) {
+      print("DioException: ${e.toString()}");
+      print("Response data: ${e.response?.data}");
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: ${e.response?.data['message'] ?? e.message}'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
         ),
-        backgroundColor: Colors.green,
-        duration: Duration(seconds: 2),
-      ),
-    );
+      );
+    } catch (e) {
+      print("Unexpected error: ${e.toString()}");
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('An unexpected error occurred: $e'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
   }
 
   void _toggleSelectionMode() {
@@ -379,7 +414,7 @@ class _GroupProfileScreenState extends State<GroupProfileScreen> {
                   Container(
                     margin: EdgeInsets.only(bottom: 16),
                     child: FloatingActionButton.extended(
-                      onPressed: _startCallWithSelectedUsers,
+                      onPressed: () => _startCallWithSelectedUsers(isVideoCall: false),
                       backgroundColor: Colors.green,
                       foregroundColor: Colors.white,
                       elevation: 8,
@@ -398,7 +433,7 @@ class _GroupProfileScreenState extends State<GroupProfileScreen> {
                   ),
                   // Video call button
                   FloatingActionButton.extended(
-                    onPressed: _startCallWithSelectedUsers,
+                    onPressed: () => _startCallWithSelectedUsers(isVideoCall: true),
                     backgroundColor: Colors.blue.shade600,
                     foregroundColor: Colors.white,
                     elevation: 8,
