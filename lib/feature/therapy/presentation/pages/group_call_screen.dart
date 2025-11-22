@@ -375,11 +375,12 @@ class _GroupCallScreenState extends ConsumerState<GroupCallScreen> {
 
   Widget _buildParticipantTile(ParticipantTrack track) {
     final isLocal = track.participant is LocalParticipant;
-    final hasVideo =
-        track.videoTrack != null && track.participant.isCameraEnabled();
-    final isMuted = !track.participant.isMicrophoneEnabled();
 
-    // Show participant's actual name (or "You" for local)
+    // CHECK: If we have a valid video track, we should render it,
+    // regardless of what the metadata says.
+    final hasVideo = track.videoTrack != null && !track.videoTrack!.muted;
+
+    final isMuted = !track.participant.isMicrophoneEnabled();
     final displayName = isLocal ? 'You' : _getFirstName(track.participant.name);
 
     return Container(
@@ -424,7 +425,7 @@ class _GroupCallScreenState extends ConsumerState<GroupCallScreen> {
               ),
             ),
 
-          // Username overlay at bottom with status indicators
+          // ... rest of your UI (Username overlay, etc) remains exactly the same ...
           Positioned(
             bottom: 0,
             left: 0,
@@ -468,6 +469,7 @@ class _GroupCallScreenState extends ConsumerState<GroupCallScreen> {
                   ),
                   const SizedBox(width: 8),
                   Icon(
+                    // Use hasVideo check here for the icon too
                     hasVideo ? Icons.videocam : Icons.videocam_off,
                     color: hasVideo ? Colors.white : Colors.red,
                     size: 16,
@@ -477,7 +479,6 @@ class _GroupCallScreenState extends ConsumerState<GroupCallScreen> {
             ),
           ),
 
-          // "You" badge for local participant
           if (isLocal)
             Positioned(
               top: 8,

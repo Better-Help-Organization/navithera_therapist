@@ -583,62 +583,72 @@ class FCMService {
     final chatId = chatData['chat']['id'];
     String senderName = 'Group Chat';
 
-    final clientMap = chatData['chat']['client'];
-    final client = UserModel.fromJson(clientMap);
-    final senderProfile = chatData['chat']['client']['profile'] ?? '';
-    final senderAvatar = chatData['chat']['client']['avatar'] ?? '';
-
-    if (currentLocation == '/chat/$chatId') {
-      _updateChatData(chatId);
-      return;
-    }
-
     try {
-      senderName =
-          chatData['chat']['client']['firstName'] +
-          ' ' +
-          chatData['chat']['client']['lastName'];
-    } catch (_) {}
+      final clientMap = chatData['chat']['client'];
+      final client = UserModel.fromJson(clientMap);
+      final senderProfile = chatData['chat']['client']['profile'] ?? '';
+      final senderAvatar = chatData['chat']['client']['avatar'] ?? '';
 
-    showOverlayNotification(
-      (context) {
-        return NewMessageNotificationBanner(
-          title: senderName,
-          body: body,
-          onTap: () {
-            OverlaySupportEntry.of(context)?.dismiss(animate: false);
-            final chat = Chat(
-              id: chatId,
-              name: senderName,
-              lastMessage: 'I sent you the design files 📎',
-              avatarUrl:
-                  (senderAvatar == 7) &&
-                          senderProfile != null &&
-                          senderProfile.isNotEmpty
-                      ? '$base_url_for_image$senderProfile?v=${DateTime.now().millisecondsSinceEpoch}'
-                      : null,
-              unreadCount: 0,
-              timestamp: DateTime(2025, 4, 2, 14, 15),
-              isOutgoing: true,
-              isRead: true,
-              avatar: senderAvatar,
-              user: client,
-            );
-            final currentLocationTap =
-                GoRouter.of(
-                  context,
-                ).routerDelegate.currentConfiguration.last.matchedLocation;
-            if (currentLocationTap != '/chat/$chatId') {
-              GoRouter.of(context).push('/chat/$chatId', extra: chat);
-            }
-          },
-        );
-      },
-      duration: const Duration(seconds: 5),
-      position: NotificationPosition.top,
-    );
+      if (currentLocation == '/chat/$chatId') {
+        _updateChatData(chatId);
+        return;
+      }
 
-    _updateChatData(chatId);
+      try {
+        senderName =
+            chatData['chat']['client']['firstName'] +
+            ' ' +
+            chatData['chat']['client']['lastName'];
+      } catch (_) {}
+
+      showOverlayNotification(
+        (context) {
+          return NewMessageNotificationBanner(
+            title: senderName,
+            body: body,
+            onTap: () {
+              OverlaySupportEntry.of(context)?.dismiss(animate: false);
+              final chat = Chat(
+                id: chatId,
+                name: senderName,
+                lastMessage: 'I sent you the design files 📎',
+                avatarUrl:
+                    (senderAvatar == 7) &&
+                            senderProfile != null &&
+                            senderProfile.isNotEmpty
+                        ? '$base_url_for_image$senderProfile?v=${DateTime.now().millisecondsSinceEpoch}'
+                        : null,
+                unreadCount: 0,
+                timestamp: DateTime(2025, 4, 2, 14, 15),
+                isOutgoing: true,
+                isRead: true,
+                avatar: senderAvatar,
+                user: client,
+              );
+              final currentLocationTap =
+                  GoRouter.of(
+                    context,
+                  ).routerDelegate.currentConfiguration.last.matchedLocation;
+              if (currentLocationTap != '/chat/$chatId') {
+                GoRouter.of(context).push('/chat/$chatId', extra: chat);
+              }
+            },
+          );
+        },
+        duration: const Duration(seconds: 5),
+        position: NotificationPosition.top,
+      );
+
+      _updateChatData(chatId);
+    } catch (e) {
+      String title = notification?.title ?? 'New Message';
+      String body = data['message_preview'] ?? notification?.body ?? '';
+      final chatData = jsonDecode(data["id"]);
+      final chatId = chatData['chat']['id'];
+      print("chatId: ${chatId}");
+      _updateChatData(chatId);
+      print('Error showing notification banner: $e');
+    }
   }
 
   Map<String, dynamic>? extractMatchPayload(RemoteMessage message) {
