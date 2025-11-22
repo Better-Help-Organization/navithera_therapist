@@ -493,7 +493,7 @@ class _SessionTileState extends State<_SessionTile> {
   }
 
   String _formatDateTime(DateTime dateTime) {
-    final localTime = dateTime;
+    final localTime = dateTime.toLocal();
     return '${localTime.day}/${localTime.month}/${localTime.year} ${localTime.hour}:${localTime.minute.toString().padLeft(2, '0')}';
   }
 }

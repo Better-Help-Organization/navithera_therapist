@@ -439,10 +439,18 @@ class _SessionCalendarScreenState extends ConsumerState<SessionCalendarScreen>
 
     if (pickedDate == null) return;
 
-    // Select time
+    // Select time - using 24-hour format
     final TimeOfDay? pickedTime = await showTimePicker(
       context: context,
       initialTime: initialTime,
+      builder: (BuildContext context, Widget? child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            alwaysUse24HourFormat: true, // Force 24-hour format
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (pickedTime == null) return;
@@ -1082,14 +1090,14 @@ class _DayCalendarView extends StatelessWidget {
       final durationMinutes = session.duration % 60;
 
       // Calculate position and height based on time
-      final top = (startHour + 1 / 60) * (600 / 24);
+      final top = (startHour + 0.1 / 60) * (600 / 24);
       final height = (durationHours + durationMinutes / 60) * (600 / 24);
 
       return Positioned(
         left: 60, // Offset for time markers
         top: top,
         right: 16,
-        height: 20,
+        height: 24,
         child: _SessionTimeBlock(
           session: session,
           onTap: () => onSessionTap(session),
