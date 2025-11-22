@@ -105,12 +105,12 @@ class _GroupProfileScreenState extends State<GroupProfileScreen> {
 
       if (response.statusCode == 201) {
         if (!mounted) return;
-        
+
         print("✅ Backend call successful, navigating to GroupCallScreen...");
         print("Room name: $roomName");
         print("Chat ID: ${widget.chatId}");
         print("Is video call: $isVideoCall");
-        
+
         // Navigate to group call screen
         try {
           await Navigator.push(
@@ -182,6 +182,7 @@ class _GroupProfileScreenState extends State<GroupProfileScreen> {
   }
 
   void _navigateToUserProfile(UserModel user) {
+    print("userId: ${user.id}");
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -414,7 +415,8 @@ class _GroupProfileScreenState extends State<GroupProfileScreen> {
                   Container(
                     margin: EdgeInsets.only(bottom: 16),
                     child: FloatingActionButton.extended(
-                      onPressed: () => _startCallWithSelectedUsers(isVideoCall: false),
+                      onPressed:
+                          () => _startCallWithSelectedUsers(isVideoCall: false),
                       backgroundColor: Colors.green,
                       foregroundColor: Colors.white,
                       elevation: 8,
@@ -433,7 +435,8 @@ class _GroupProfileScreenState extends State<GroupProfileScreen> {
                   ),
                   // Video call button
                   FloatingActionButton.extended(
-                    onPressed: () => _startCallWithSelectedUsers(isVideoCall: true),
+                    onPressed:
+                        () => _startCallWithSelectedUsers(isVideoCall: true),
                     backgroundColor: Colors.blue.shade600,
                     foregroundColor: Colors.white,
                     elevation: 8,

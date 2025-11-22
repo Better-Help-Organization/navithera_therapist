@@ -62,17 +62,19 @@ class _GroupCallScreenState extends ConsumerState<GroupCallScreen> {
       print("GroupCallScreen: Participant name: $participantName");
       print("GroupCallScreen: Is video call: ${widget.isVideoCall}");
 
-      await ref.read(callControllerProvider.notifier).startCall(
+      await ref
+          .read(callControllerProvider.notifier)
+          .startCall(
             roomName: roomName,
             participantName: participantName,
             isVideoCall: widget.isVideoCall,
           );
-      
+
       print("GroupCallScreen: Call started successfully");
     } catch (e, stackTrace) {
       print("GroupCallScreen: Error starting call: $e");
       print("GroupCallScreen: Stack trace: $stackTrace");
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -160,7 +162,9 @@ class _GroupCallScreenState extends ConsumerState<GroupCallScreen> {
     final local = localTracks.isNotEmpty ? localTracks.first : null;
 
     final remoteParticipants =
-        participantTracks.where((t) => t.participant is! LocalParticipant).toList();
+        participantTracks
+            .where((t) => t.participant is! LocalParticipant)
+            .toList();
 
     // For group calls, we want to show all participants in a grid
     final allParticipantsForGrid = <ParticipantTrack>[
@@ -183,10 +187,7 @@ class _GroupCallScreenState extends ConsumerState<GroupCallScreen> {
                 children: [
                   _buildHeader(callState, remoteParticipants.length + 1),
                   Expanded(
-                    child: _buildMainContent(
-                      callState,
-                      allParticipantsForGrid,
-                    ),
+                    child: _buildMainContent(callState, allParticipantsForGrid),
                   ),
                   _buildControls(callState),
                 ],
@@ -227,14 +228,18 @@ class _GroupCallScreenState extends ConsumerState<GroupCallScreen> {
           // Room emoji signature
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: roomNameToEmojis(callState.roomName ?? 'default-room')
-                .map(
-                  (emoji) => Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: Text(emoji, style: const TextStyle(fontSize: 22)),
-                  ),
-                )
-                .toList(),
+            children:
+                roomNameToEmojis(callState.roomName ?? 'default-room')
+                    .map(
+                      (emoji) => Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: Text(
+                          emoji,
+                          style: const TextStyle(fontSize: 22),
+                        ),
+                      ),
+                    )
+                    .toList(),
           ),
 
           const SizedBox(width: 40, height: 40),
@@ -370,9 +375,10 @@ class _GroupCallScreenState extends ConsumerState<GroupCallScreen> {
 
   Widget _buildParticipantTile(ParticipantTrack track) {
     final isLocal = track.participant is LocalParticipant;
-    final hasVideo = track.videoTrack != null && track.participant.isCameraEnabled();
+    final hasVideo =
+        track.videoTrack != null && track.participant.isCameraEnabled();
     final isMuted = !track.participant.isMicrophoneEnabled();
-    
+
     // Show participant's actual name (or "You" for local)
     final displayName = isLocal ? 'You' : _getFirstName(track.participant.name);
 
@@ -403,7 +409,8 @@ class _GroupCallScreenState extends ConsumerState<GroupCallScreen> {
                 children: [
                   CircleAvatar(
                     radius: 40,
-                    backgroundColor: isLocal ? Colors.blue.shade600 : Colors.teal.shade600,
+                    backgroundColor:
+                        isLocal ? Colors.blue.shade600 : Colors.teal.shade600,
                     child: Text(
                       _getDisplayInitials(track.participant.name),
                       style: const TextStyle(
@@ -505,8 +512,11 @@ class _GroupCallScreenState extends ConsumerState<GroupCallScreen> {
           _buildControlButton(
             icon: callState.isMicMuted ? Icons.mic_off : Icons.mic,
             isActive: !callState.isMicMuted,
-            onPressed: () =>
-                ref.read(callControllerProvider.notifier).toggleMicrophone(),
+            onPressed:
+                () =>
+                    ref
+                        .read(callControllerProvider.notifier)
+                        .toggleMicrophone(),
             backgroundColor: callState.isMicMuted ? Colors.red : null,
             label: 'Mic',
           ),
@@ -514,16 +524,17 @@ class _GroupCallScreenState extends ConsumerState<GroupCallScreen> {
             _buildControlButton(
               icon: callState.isCameraOff ? Icons.videocam_off : Icons.videocam,
               isActive: !callState.isCameraOff,
-              onPressed: () =>
-                  ref.read(callControllerProvider.notifier).toggleCamera(),
+              onPressed:
+                  () =>
+                      ref.read(callControllerProvider.notifier).toggleCamera(),
               backgroundColor: callState.isCameraOff ? Colors.red : null,
               label: 'Camera',
             ),
           _buildControlButton(
             icon: callState.isSpeakerOn ? Icons.volume_up : Icons.volume_down,
             isActive: callState.isSpeakerOn,
-            onPressed: () =>
-                ref.read(callControllerProvider.notifier).toggleSpeaker(),
+            onPressed:
+                () => ref.read(callControllerProvider.notifier).toggleSpeaker(),
             backgroundColor: callState.isSpeakerOn ? Colors.white24 : null,
             label: 'Speaker',
           ),
@@ -559,16 +570,18 @@ class _GroupCallScreenState extends ConsumerState<GroupCallScreen> {
           width: 60,
           height: 60,
           decoration: BoxDecoration(
-            color: backgroundColor ?? (isActive ? Colors.white24 : Colors.white12),
+            color:
+                backgroundColor ?? (isActive ? Colors.white24 : Colors.white12),
             shape: BoxShape.circle,
           ),
           child: IconButton(
             onPressed: onPressed,
             icon: Icon(
               icon,
-              color: isDestructive
-                  ? Colors.white
-                  : (isActive ? Colors.white : Colors.grey),
+              color:
+                  isDestructive
+                      ? Colors.white
+                      : (isActive ? Colors.white : Colors.grey),
               size: 28,
             ),
             iconSize: 28,

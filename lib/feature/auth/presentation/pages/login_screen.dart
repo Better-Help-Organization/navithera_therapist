@@ -75,10 +75,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       final token = await ref.read(fcmServiceProvider).getToken();
       print("FCM Token: $token");
 
+      // ref.read(authProvider.notifier).login(phoneNumber, password, "token");
       if (token != null) {
         ref.read(authProvider.notifier).login(phoneNumber, password, token);
       } else {
-        ref.read(authProvider.notifier).login(phoneNumber, password, "token");
         // Handle case where token is null
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
