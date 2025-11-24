@@ -34,7 +34,7 @@ class ChartDataRepositoryImpl implements ChartDataRepository {
 
       final DateFormat formatter = DateFormat('yyyy-MM-dd');
       final String start = formatter.format(monday);
-      final String end = formatter.format(sunday);
+      final String end = now.toIso8601String();
 
       // Fetch stats data using the remote data source
       final response = await remote.getWeeklyStats(
