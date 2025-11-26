@@ -12,6 +12,7 @@ import 'package:navicare/core/providers/user_status_provider.dart';
 import 'package:navicare/core/theme/app_colors.dart';
 import 'package:navicare/core/util/avatar_util.dart';
 import 'package:navicare/feature/auth/data/models/auth_models.dart';
+import 'package:navicare/feature/call/pages/prejoin.dart';
 import 'package:navicare/feature/chat/data/models/chat_models.dart';
 import 'package:navicare/feature/chat/domain/repositories/chat_repository.dart';
 import 'package:navicare/feature/chat/presentation/pages/chat_list_screen.dart';
@@ -170,18 +171,76 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
         data: {'room': roomName, 'isVideoCall': isVideoCall},
       );
 
+      // if (response.statusCode == 201) {
+      //   if (!mounted) return;
+      //   Navigator.push(
+      //     context,
+      //     MaterialPageRoute(
+      //       builder:
+      //           (context) => CallScreen(
+      //             roomName: roomName,
+      //             participantName: widget.chat.name ?? "Unknown",
+      //             isVideoCall: isVideoCall,
+      //             chatId: widget.chat.id,
+      //             //   isGroupCall: widget.chat.isGroup ?? false,
+      //           ),
+      //     ),
+      //   );
+      // } else {
+      //   if (!mounted) return;
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //     SnackBar(
+      //       content: Text('Failed to start call'),
+      //       backgroundColor: Colors.red,
+      //     ),
+      //   );
+      // }
       if (response.statusCode == 201) {
+        final responseData = response.data['data'];
+        final String token = responseData['token'];
+
+        if (token == null || token.isEmpty) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Failed to start call'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+        // _joinRoomDirectly(context);
+        // return;
+        // Navigate to CallScreen with the generated room name
         if (!mounted) return;
+        print("token ${token}");
+        // _join(
+        //   "wss://navicare-dmw0dh3w.livekit.cloud",
+        //   token,
+        //   context,
+        // );
         Navigator.push(
           context,
           MaterialPageRoute(
             builder:
-                (context) => CallScreen(
-                  roomName: roomName,
-                  participantName: widget.chat.name ?? "Unknown",
-                  isVideoCall: isVideoCall,
-                  chatId: widget.chat.id,
-                  //   isGroupCall: widget.chat.isGroup ?? false,
+                (context) =>
+                // CallScreen(
+                //   roomName: roomName,
+                //   participantName: widget.chat.name ?? "Unknown",
+                //   isVideoCall: isVideoCall,
+                //   chatId: widget.chat.id,
+                // ),
+                PreJoinPage(
+                  args: JoinArgs(
+                    url: "wss://demo-eukecq5l.livekit.cloud", // Your known URL
+                    token: token, // Your known token
+                    adaptiveStream: true,
+                    dynacast: true,
+                    simulcast: false,
+                    e2ee: false,
+                    preferredCodec: 'VP8',
+                    enableBackupVideoCodec: true,
+                  ),
                 ),
           ),
         );
@@ -189,7 +248,9 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to start call'),
+            content: Text(
+              'Failed to start call: ${response.data['message'] ?? 'Unknown error'}',
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -623,11 +684,12 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => GroupProfileScreen(
-                      groupName: widget.chat.name ?? 'Group',
-                      groupMembers: widget.chat.groupList,
-                      chatId: widget.chat.id,
-                    ),
+                    builder:
+                        (context) => GroupProfileScreen(
+                          groupName: widget.chat.name ?? 'Group',
+                          groupMembers: widget.chat.groupList,
+                          chatId: widget.chat.id,
+                        ),
                   ),
                 );
               },

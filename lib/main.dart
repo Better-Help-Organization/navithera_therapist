@@ -166,6 +166,8 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
           'callerName': idMap['callerName'],
         if (!extra.containsKey('isVideoCall') && idMap['isVideoCall'] != null)
           'isVideoCall': idMap['isVideoCall'],
+        if (!extra.containsKey('token') && idMap['token'] != null)
+          'token': idMap['token'],
       });
 
       // --- Extract variables ---
@@ -173,6 +175,8 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
           (extra['chatId'] ?? idMap['chatId'] ?? body['chatId'])?.toString();
       final String? roomName =
           (extra['room'] ?? idMap['room'] ?? body['room'])?.toString();
+      final String? token =
+          (extra['token'] ?? idMap['token'] ?? body['token'])?.toString();
       final bool isVideoCall =
           (extra['isVideoCall'] ??
               idMap['isVideoCall'] ??
@@ -199,7 +203,10 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
         case 'ACTION_CALL_ACCEPT':
         case 'actionCallAccept':
           print("4x4x4x   context not null praying1");
-          if (roomName != null && chatId != null && isVideoCall != null) {
+          if (roomName != null &&
+              chatId != null &&
+              isVideoCall != null &&
+              token != null) {
             print("3x3x3x");
             if (context != null) {
               print("1x1x1x");
@@ -212,6 +219,7 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
                     participantName: callerName,
                     chatId: chatId,
                     isVideocall: isVideoCall,
+                    token: token,
                   );
             } else {
               print("2x2x2x");
