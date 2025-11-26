@@ -15,7 +15,11 @@ class RoomPage extends StatefulWidget {
   final Room room;
   final EventsListener<RoomEvent> listener;
 
-  const RoomPage(this.room, this.listener, {super.key});
+  const RoomPage(
+    this.room,
+    this.listener, {
+    super.key,
+  });
 
   @override
   State<StatefulWidget> createState() => _RoomPageState();
@@ -46,9 +50,7 @@ class _RoomPageState extends State<RoomPage> {
     if (lkPlatformIsDesktop()) {
       onWindowShouldClose = () async {
         unawaited(widget.room.disconnect());
-        await _listener.waitFor<RoomDisconnectedEvent>(
-          duration: const Duration(seconds: 5),
-        );
+        await _listener.waitFor<RoomDisconnectedEvent>(duration: const Duration(seconds: 5));
       };
     }
   }
@@ -68,72 +70,61 @@ class _RoomPageState extends State<RoomPage> {
   }
 
   /// for more information, see [event types](https://docs.livekit.io/client/events/#events)
-  void _setUpListeners() =>
-      _listener
-        ..on<RoomDisconnectedEvent>((event) async {
-          if (event.reason != null) {
-            print('Room disconnected: reason => ${event.reason}');
-          }
-          WidgetsBindingCompatible.instance?.addPostFrameCallback(
-            (timeStamp) =>
-                Navigator.popUntil(context, (route) => route.isFirst),
-          );
-        })
-        ..on<ParticipantEvent>((event) {
-          // sort participants on many track events as noted in documentation linked above
-          _sortParticipants();
-        })
-        ..on<RoomRecordingStatusChanged>((event) {
-          unawaited(
-            context.showRecordingStatusChangedDialog(event.activeRecording),
-          );
-        })
-        ..on<RoomAttemptReconnectEvent>((event) {
-          print(
-            'Attempting to reconnect ${event.attempt}/${event.maxAttemptsRetry}, '
-            '(${event.nextRetryDelaysInMs}ms delay until next attempt)',
-          );
-        })
-        ..on<LocalTrackSubscribedEvent>((event) {
-          print('Local track subscribed: ${event.trackSid}');
-        })
-        ..on<LocalTrackPublishedEvent>((_) => _sortParticipants())
-        ..on<LocalTrackUnpublishedEvent>((_) => _sortParticipants())
-        ..on<TrackSubscribedEvent>((_) => _sortParticipants())
-        ..on<TrackUnsubscribedEvent>((_) => _sortParticipants())
-        ..on<TrackE2EEStateEvent>(_onE2EEStateEvent)
-        ..on<ParticipantNameUpdatedEvent>((event) {
-          print(
-            'Participant name updated: ${event.participant.identity}, name => ${event.name}',
-          );
-          _sortParticipants();
-        })
-        ..on<ParticipantMetadataUpdatedEvent>((event) {
-          print(
-            'Participant metadata updated: ${event.participant.identity}, metadata => ${event.metadata}',
-          );
-        })
-        ..on<RoomMetadataChangedEvent>((event) {
-          print('Room metadata changed: ${event.metadata}');
-        })
-        ..on<DataReceivedEvent>((event) {
-          String decoded = 'Failed to decode';
-          try {
-            decoded = utf8.decode(event.data);
-          } catch (err) {
-            print('Failed to decode: $err');
-          }
-          unawaited(context.showDataReceivedDialog(decoded));
-        })
-        ..on<AudioPlaybackStatusChanged>((event) async {
-          if (!widget.room.canPlaybackAudio) {
-            print('Audio playback failed for iOS Safari ..........');
-            final yesno = await context.showPlayAudioManuallyDialog();
-            if (yesno == true) {
-              await widget.room.startAudio();
-            }
-          }
-        });
+  void _setUpListeners() => _listener
+    ..on<RoomDisconnectedEvent>((event) async {
+      if (event.reason != null) {
+        print('Room disconnected: reason => ${event.reason}');
+      }
+      WidgetsBindingCompatible.instance
+          ?.addPostFrameCallback((timeStamp) => Navigator.popUntil(context, (route) => route.isFirst));
+    })
+    ..on<ParticipantEvent>((event) {
+      // sort participants on many track events as noted in documentation linked above
+      _sortParticipants();
+    })
+    ..on<RoomRecordingStatusChanged>((event) {
+      unawaited(context.showRecordingStatusChangedDialog(event.activeRecording));
+    })
+    ..on<RoomAttemptReconnectEvent>((event) {
+      print('Attempting to reconnect ${event.attempt}/${event.maxAttemptsRetry}, '
+          '(${event.nextRetryDelaysInMs}ms delay until next attempt)');
+    })
+    ..on<LocalTrackSubscribedEvent>((event) {
+      print('Local track subscribed: ${event.trackSid}');
+    })
+    ..on<LocalTrackPublishedEvent>((_) => _sortParticipants())
+    ..on<LocalTrackUnpublishedEvent>((_) => _sortParticipants())
+    ..on<TrackSubscribedEvent>((_) => _sortParticipants())
+    ..on<TrackUnsubscribedEvent>((_) => _sortParticipants())
+    ..on<TrackE2EEStateEvent>(_onE2EEStateEvent)
+    ..on<ParticipantNameUpdatedEvent>((event) {
+      print('Participant name updated: ${event.participant.identity}, name => ${event.name}');
+      _sortParticipants();
+    })
+    ..on<ParticipantMetadataUpdatedEvent>((event) {
+      print('Participant metadata updated: ${event.participant.identity}, metadata => ${event.metadata}');
+    })
+    ..on<RoomMetadataChangedEvent>((event) {
+      print('Room metadata changed: ${event.metadata}');
+    })
+    ..on<DataReceivedEvent>((event) {
+      String decoded = 'Failed to decode';
+      try {
+        decoded = utf8.decode(event.data);
+      } catch (err) {
+        print('Failed to decode: $err');
+      }
+      unawaited(context.showDataReceivedDialog(decoded));
+    })
+    ..on<AudioPlaybackStatusChanged>((event) async {
+      if (!widget.room.canPlaybackAudio) {
+        print('Audio playback failed for iOS Safari ..........');
+        final yesno = await context.showPlayAudioManuallyDialog();
+        if (yesno == true) {
+          await widget.room.startAudio();
+        }
+      }
+    });
 
   void _askPublish() async {
     final result = await context.showPublishDialog();
@@ -170,12 +161,10 @@ class _RoomPageState extends State<RoomPage> {
     for (var participant in widget.room.remoteParticipants.values) {
       for (var t in participant.videoTrackPublications) {
         if (t.isScreenShare) {
-          screenTracks.add(
-            ParticipantTrack(
-              participant: participant,
-              type: ParticipantTrackType.kScreenShare,
-            ),
-          );
+          screenTracks.add(ParticipantTrack(
+            participant: participant,
+            type: ParticipantTrackType.kScreenShare,
+          ));
         } else {
           userMediaTracks.add(ParticipantTrack(participant: participant));
         }
@@ -206,25 +195,19 @@ class _RoomPageState extends State<RoomPage> {
       }
 
       // joinedAt
-      return a.participant.joinedAt.millisecondsSinceEpoch -
-          b.participant.joinedAt.millisecondsSinceEpoch;
+      return a.participant.joinedAt.millisecondsSinceEpoch - b.participant.joinedAt.millisecondsSinceEpoch;
     });
 
-    final localParticipantTracks =
-        widget.room.localParticipant?.videoTrackPublications;
+    final localParticipantTracks = widget.room.localParticipant?.videoTrackPublications;
     if (localParticipantTracks != null) {
       for (var t in localParticipantTracks) {
         if (t.isScreenShare) {
-          screenTracks.add(
-            ParticipantTrack(
-              participant: widget.room.localParticipant!,
-              type: ParticipantTrackType.kScreenShare,
-            ),
-          );
+          screenTracks.add(ParticipantTrack(
+            participant: widget.room.localParticipant!,
+            type: ParticipantTrackType.kScreenShare,
+          ));
         } else {
-          userMediaTracks.add(
-            ParticipantTrack(participant: widget.room.localParticipant!),
-          );
+          userMediaTracks.add(ParticipantTrack(participant: widget.room.localParticipant!));
         }
       }
     }
@@ -235,50 +218,38 @@ class _RoomPageState extends State<RoomPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    body: Stack(
-      children: [
-        Column(
+        body: Stack(
           children: [
-            Expanded(
-              child:
-                  participantTracks.isNotEmpty
-                      ? ParticipantWidget.widgetFor(
-                        participantTracks.first,
-                        showStatsLayer: true,
-                      )
-                      : Container(),
+            Column(
+              children: [
+                Expanded(
+                    child: participantTracks.isNotEmpty
+                        ? ParticipantWidget.widgetFor(participantTracks.first, showStatsLayer: true)
+                        : Container()),
+                if (widget.room.localParticipant != null)
+                  SafeArea(
+                    top: false,
+                    child: ControlsWidget(widget.room, widget.room.localParticipant!),
+                  )
+              ],
             ),
-            if (widget.room.localParticipant != null)
-              SafeArea(
-                top: false,
-                child: ControlsWidget(
-                  widget.room,
-                  widget.room.localParticipant!,
-                ),
-              ),
-          ],
-        ),
-        Positioned(
-          left: 0,
-          right: 0,
-          top: 0,
-          child: SizedBox(
-            height: 120,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: math.max(0, participantTracks.length - 1),
-              itemBuilder:
-                  (BuildContext context, int index) => SizedBox(
-                    width: 180,
-                    height: 120,
-                    child: ParticipantWidget.widgetFor(
-                      participantTracks[index + 1],
+            Positioned(
+                left: 0,
+                right: 0,
+                top: 0,
+                child: SizedBox(
+                  height: 120,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: math.max(0, participantTracks.length - 1),
+                    itemBuilder: (BuildContext context, int index) => SizedBox(
+                      width: 180,
+                      height: 120,
+                      child: ParticipantWidget.widgetFor(participantTracks[index + 1]),
                     ),
                   ),
-            ),
-          ),
+                )),
+          ],
         ),
-      ],
-    ),
-  );
+      );
 }

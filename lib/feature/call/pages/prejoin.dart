@@ -5,9 +5,9 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:livekit_client/livekit_client.dart';
 import 'package:navicare/feature/call/exts.dart';
-// import 'package:navithera_client/feature/call/utils.dart';
+// import 'package:livekit_example/exts.dart';
 
-// import '../theme.dart';
+import '../theme.dart';
 import 'room.dart';
 
 class JoinArgs {
@@ -51,6 +51,10 @@ class _PreJoinPageState extends State<PreJoinPage> {
   LocalAudioTrack? _audioTrack;
   LocalVideoTrack? _videoTrack;
 
+  MediaDevice? _selectedVideoDevice;
+  MediaDevice? _selectedAudioDevice;
+  VideoParameters _selectedVideoParameters = VideoParametersPresets.h720_169;
+
   @override
   void initState() {
     super.initState();
@@ -71,29 +75,25 @@ class _PreJoinPageState extends State<PreJoinPage> {
     _audioInputs = devices.where((d) => d.kind == 'audioinput').toList();
     _videoInputs = devices.where((d) => d.kind == 'videoinput').toList();
 
-    // Automatically use front camera if available, otherwise use first camera
-    MediaDevice? frontCamera;
-    MediaDevice? defaultAudio;
-
-    // Find front camera
-    for (var device in _videoInputs) {
-      if (device.label.toLowerCase().contains('front') ||
-          device.deviceId.toLowerCase().contains('front')) {
-        frontCamera = device;
-        break;
+    if (_audioInputs.isNotEmpty) {
+      if (_selectedAudioDevice == null) {
+        _selectedAudioDevice = _audioInputs.first;
+        Future.delayed(const Duration(milliseconds: 100), () async {
+          await _changeLocalAudioTrack();
+          setState(() {});
+        });
       }
     }
 
-    // Use front camera if found, otherwise use first available camera
     if (_videoInputs.isNotEmpty) {
-      await _changeLocalVideoTrack(device: frontCamera ?? _videoInputs.first);
+      if (_selectedVideoDevice == null) {
+        _selectedVideoDevice = _videoInputs.first;
+        Future.delayed(const Duration(milliseconds: 100), () async {
+          await _changeLocalVideoTrack();
+          setState(() {});
+        });
+      }
     }
-
-    // Use default audio device (first available)
-    if (_audioInputs.isNotEmpty) {
-      await _changeLocalAudioTrack(device: _audioInputs.first);
-    }
-
     setState(() {});
   }
 
@@ -103,16 +103,7 @@ class _PreJoinPageState extends State<PreJoinPage> {
       await _videoTrack?.stop();
       _videoTrack = null;
     } else {
-      // Automatically use front camera when enabling video
-      MediaDevice? frontCamera;
-      for (var device in _videoInputs) {
-        if (device.label.toLowerCase().contains('front') ||
-            device.deviceId.toLowerCase().contains('front')) {
-          frontCamera = device;
-          break;
-        }
-      }
-      await _changeLocalVideoTrack(device: frontCamera ?? _videoInputs.first);
+      await _changeLocalVideoTrack();
     }
     setState(() {});
   }
@@ -123,39 +114,36 @@ class _PreJoinPageState extends State<PreJoinPage> {
       await _audioTrack?.stop();
       _audioTrack = null;
     } else {
-      // Automatically use default audio device
-      await _changeLocalAudioTrack(
-        device: _audioInputs.isNotEmpty ? _audioInputs.first : null,
-      );
+      await _changeLocalAudioTrack();
     }
     setState(() {});
   }
 
-  Future<void> _changeLocalAudioTrack({MediaDevice? device}) async {
+  Future<void> _changeLocalAudioTrack() async {
     if (_audioTrack != null) {
       await _audioTrack!.stop();
       _audioTrack = null;
     }
 
-    if (device != null && _enableAudio) {
+    if (_selectedAudioDevice != null) {
       _audioTrack = await LocalAudioTrack.create(
-        AudioCaptureOptions(deviceId: device.deviceId),
+        AudioCaptureOptions(deviceId: _selectedAudioDevice!.deviceId),
       );
       await _audioTrack!.start();
     }
   }
 
-  Future<void> _changeLocalVideoTrack({MediaDevice? device}) async {
+  Future<void> _changeLocalVideoTrack() async {
     if (_videoTrack != null) {
       await _videoTrack!.stop();
       _videoTrack = null;
     }
 
-    if (device != null && _enableVideo) {
+    if (_selectedVideoDevice != null) {
       _videoTrack = await LocalVideoTrack.createCameraTrack(
         CameraCaptureOptions(
-          deviceId: device.deviceId,
-          params: VideoParametersPresets.h720_169,
+          deviceId: _selectedVideoDevice!.deviceId,
+          params: _selectedVideoParameters,
         ),
       );
       await _videoTrack!.start();
@@ -170,6 +158,7 @@ class _PreJoinPageState extends State<PreJoinPage> {
 
   _join(BuildContext context) async {
     _busy = true;
+
     setState(() {});
 
     final args = widget.args;
@@ -214,7 +203,10 @@ class _PreJoinPageState extends State<PreJoinPage> {
             simulcast: false,
             // simulcast: args.simulcast,
             videoCodec: args.preferredCodec,
-
+            // videoCodec: args.preferredCodec,
+            // backupVideoCodec: BackupVideoCodec(
+            //   enabled: args.enableBackupVideoCodec,
+            // ),
             videoEncoding: cameraEncoding,
             screenShareEncoding: screenEncoding,
           ),
@@ -265,14 +257,11 @@ class _PreJoinPageState extends State<PreJoinPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Join Call',
-          // style: TextStyle(color: Colors.white)
+          'Select Devices',
+          style: TextStyle(color: Colors.white),
         ),
         leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            // color: Colors.white
-          ),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => _actionBack(context),
         ),
       ),
@@ -306,7 +295,7 @@ class _PreJoinPageState extends State<PreJoinPage> {
                                   builder:
                                       (ctx, constraints) => Icon(
                                         Icons.videocam_off,
-                                        // color: LKColors.lkBlue,
+                                        color: LKColors.lkBlue,
                                         size:
                                             math.min(
                                               constraints.maxHeight,
@@ -320,11 +309,11 @@ class _PreJoinPageState extends State<PreJoinPage> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 25),
+                  padding: const EdgeInsets.only(bottom: 5),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Camera', style: TextStyle(fontSize: 16)),
+                      const Text('Camera:'),
                       Switch(
                         value: _enableVideo,
                         onChanged: (value) => _setEnableVideo(value),
@@ -334,15 +323,140 @@ class _PreJoinPageState extends State<PreJoinPage> {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 25),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton2<MediaDevice>(
+                      isExpanded: true,
+                      disabledHint: const Text('Disable Camera'),
+                      hint: const Text('Select Camera'),
+                      items:
+                          _enableVideo
+                              ? _videoInputs
+                                  .map(
+                                    (MediaDevice item) =>
+                                        DropdownMenuItem<MediaDevice>(
+                                          value: item,
+                                          child: Text(
+                                            item.label,
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        ),
+                                  )
+                                  .toList()
+                              : [],
+                      value: _selectedVideoDevice,
+                      onChanged: (MediaDevice? value) async {
+                        if (value != null) {
+                          _selectedVideoDevice = value;
+                          await _changeLocalVideoTrack();
+                          setState(() {});
+                        }
+                      },
+                      buttonStyleData: const ButtonStyleData(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        height: 40,
+                        width: 140,
+                      ),
+                      menuItemStyleData: const MenuItemStyleData(height: 40),
+                    ),
+                  ),
+                ),
+                if (_enableVideo)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 25),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton2<VideoParameters>(
+                        isExpanded: true,
+                        hint: const Text('Select Video Dimensions'),
+                        items:
+                            [
+                                  VideoParametersPresets.h480_43,
+                                  VideoParametersPresets.h540_169,
+                                  VideoParametersPresets.h720_169,
+                                  VideoParametersPresets.h1080_169,
+                                ]
+                                .map(
+                                  (
+                                    VideoParameters item,
+                                  ) => DropdownMenuItem<VideoParameters>(
+                                    value: item,
+                                    child: Text(
+                                      '${item.dimensions.width}x${item.dimensions.height}',
+                                      style: const TextStyle(fontSize: 14),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                        value: _selectedVideoParameters,
+                        onChanged: (VideoParameters? value) async {
+                          if (value != null) {
+                            _selectedVideoParameters = value;
+                            await _changeLocalVideoTrack();
+                            setState(() {});
+                          }
+                        },
+                        buttonStyleData: const ButtonStyleData(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          height: 40,
+                          width: 140,
+                        ),
+                        menuItemStyleData: const MenuItemStyleData(height: 40),
+                      ),
+                    ),
+                  ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 5),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Microphone', style: TextStyle(fontSize: 16)),
+                      const Text('Micriphone:'),
                       Switch(
                         value: _enableAudio,
                         onChanged: (value) => _setEnableAudio(value),
                       ),
                     ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 25),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton2<MediaDevice>(
+                      isExpanded: true,
+                      disabledHint: const Text('Disable Microphone'),
+                      hint: const Text('Select Micriphone'),
+                      items:
+                          _enableAudio
+                              ? _audioInputs
+                                  .map(
+                                    (MediaDevice item) =>
+                                        DropdownMenuItem<MediaDevice>(
+                                          value: item,
+                                          child: Text(
+                                            item.label,
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        ),
+                                  )
+                                  .toList()
+                              : [],
+                      value: _selectedAudioDevice,
+                      onChanged: (MediaDevice? value) async {
+                        if (value != null) {
+                          _selectedAudioDevice = value;
+                          await _changeLocalAudioTrack();
+                          setState(() {});
+                        }
+                      },
+                      buttonStyleData: const ButtonStyleData(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        height: 40,
+                        width: 140,
+                      ),
+                      menuItemStyleData: const MenuItemStyleData(height: 40),
+                    ),
                   ),
                 ),
                 ElevatedButton(

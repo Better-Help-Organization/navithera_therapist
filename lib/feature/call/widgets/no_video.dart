@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
-// import 'package:navithera_client/feature/call/theme.dart';
+import 'package:navicare/feature/call/theme.dart';
 
-// import 'package:livekit_example/theme.dart';
+// import 'package:..theme.dart';
 
 class NoVideoWidget extends StatelessWidget {
   //
@@ -16,7 +16,7 @@ class NoVideoWidget extends StatelessWidget {
       builder:
           (ctx, constraints) => Icon(
             Icons.videocam_off_outlined,
-            // color: LKColors.lkBlue,
+            color: LKColors.lkBlue,
             size: math.min(constraints.maxHeight, constraints.maxWidth) * 0.3,
           ),
     ),

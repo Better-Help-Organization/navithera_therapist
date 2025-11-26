@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:livekit_client/livekit_client.dart';
-// import 'package:navithera_client/feature/call/theme.dart';
+import 'package:navicare/feature/call/theme.dart';
 // import 'package:livekit_example/theme.dart';
 
 import 'dart:async';
@@ -130,7 +130,7 @@ abstract class _ParticipantWidgetState<T extends ParticipantWidget>
     foregroundDecoration: BoxDecoration(
       border:
           widget.participant.isSpeaking && !isScreenShare
-              ? Border.all(width: 5, color: Colors.blue)
+              ? Border.all(width: 5, color: LKColors.lkBlue)
               : null,
     ),
     decoration: BoxDecoration(color: Theme.of(ctx).cardColor),
