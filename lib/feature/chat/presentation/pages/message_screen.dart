@@ -219,6 +219,8 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
         //   token,
         //   context,
         // );
+        final token2 =
+            "eyJhbGciOiJIUzI1NiJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6InF1aWNrc3RhcnQtcm9vbSIsImNhblB1Ymxpc2giOnRydWUsImNhblN1YnNjcmliZSI6dHJ1ZX0sImlzcyI6IkFQSTNyUGFadUdxYjI4OCIsImV4cCI6MTc2NDIyNzU4NSwibmJmIjowLCJzdWIiOiJ4by1tZW1lLXVzZXJuYW1lIn0.f7TnQ7hQEYJumBNmZMaAbUKcxXZ_Ambz-irGRqSS9F0";
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -233,7 +235,7 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
                 PreJoinPage(
                   args: JoinArgs(
                     url: "wss://demo-eukecq5l.livekit.cloud", // Your known URL
-                    token: token, // Your known token
+                    token: token2, // Your known token
                     adaptiveStream: true,
                     dynacast: true,
                     simulcast: false,
