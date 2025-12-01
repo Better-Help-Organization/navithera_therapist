@@ -48,6 +48,8 @@ class SoundWaveformWidget extends StatefulWidget {
   final double minHeight;
   final double maxHeight;
   final int durationInMilliseconds;
+  final Color color;
+  
   const SoundWaveformWidget({
     super.key,
     required this.audioTrack,
@@ -56,6 +58,7 @@ class SoundWaveformWidget extends StatefulWidget {
     this.minHeight = 8,
     this.maxHeight = 100,
     this.durationInMilliseconds = 500,
+    this.color = Colors.white,
   });
   final AudioTrack audioTrack;
   @override
@@ -84,11 +87,15 @@ class _SoundWaveformWidgetState extends State<SoundWaveformWidget> with TickerPr
   }
 
   void _stopVisualizer(AudioTrack track) async {
-    await _visualizer?.stop();
-    await _visualizer?.dispose();
-    _visualizer = null;
-    await _listener?.dispose();
-    _listener = null;
+    try {
+      await _listener?.dispose();
+      _listener = null;
+      await _visualizer?.stop();
+      await _visualizer?.dispose();
+      _visualizer = null;
+    } catch (_) {
+      // Ignore errors during disposal, as the channel might already be closed
+    }
   }
 
   @override
@@ -122,9 +129,16 @@ class _SoundWaveformWidgetState extends State<SoundWaveformWidget> with TickerPr
       builder: (c, child) {
         return Row(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: List.generate(
             count,
-            (i) => AnimatedContainer(
+            (i) {
+              // Mirror effect attempt? Or just standard?
+              // Standard is fine if barCount is small.
+              // Let's stick to standard for now but ensure alignment.
+              
+              return AnimatedContainer(
               duration: Duration(milliseconds: widget.durationInMilliseconds ~/ count),
               margin: i == (samples.length - 1) ? EdgeInsets.zero : const EdgeInsets.only(right: 5),
               height: samples[i] < minHeight
@@ -134,10 +148,11 @@ class _SoundWaveformWidgetState extends State<SoundWaveformWidget> with TickerPr
                       : samples[i],
               width: widget.width,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: widget.color,
                 borderRadius: BorderRadius.circular(9999),
               ),
-            ),
+            );
+            }
           ),
         );
       },

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:livekit_client/livekit_client.dart';
 import '../widgets/pip_call_widget.dart';
 
 class PiPManager {
@@ -17,34 +18,37 @@ class PiPManager {
     required String? chatId,
     required VoidCallback onExpand,
     required VoidCallback onClose,
+    Room? room,
   }) {
     if (_isActive) {
       hidePiP();
     }
 
     _overlayEntry = OverlayEntry(
-      builder: (context) => Material(
-        type: MaterialType.transparency,
-        child: Stack(
-          children: [
-            PiPCallWidget(
-              roomName: roomName,
-              participantName: participantName,
-              isVideoCall: isVideoCall,
-              chatId: chatId,
-              onExpand: () {
-                hidePiP();
-                // Use a slight delay to ensure PiP is fully hidden before navigation
-                Future.microtask(() => onExpand());
-              },
-              onClose: () {
-                hidePiP();
-                onClose();
-              },
+      builder:
+          (context) => Material(
+            type: MaterialType.transparency,
+            child: Stack(
+              children: [
+                PiPCallWidget(
+                  roomName: roomName,
+                  participantName: participantName,
+                  isVideoCall: isVideoCall,
+                  chatId: chatId,
+                  room: room,
+                  onExpand: () {
+                    hidePiP();
+                    // Use a slight delay to ensure PiP is fully hidden before navigation
+                    Future.microtask(() => onExpand());
+                  },
+                  onClose: () {
+                    hidePiP();
+                    onClose();
+                  },
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
     );
 
     Overlay.of(context).insert(_overlayEntry!);
@@ -69,9 +73,10 @@ class PiPManager {
 }
 
 /// Provider for PiP state management
-final pipManagerProvider = StateNotifierProvider<PiPManagerNotifier, PiPManagerState>((ref) {
-  return PiPManagerNotifier();
-});
+final pipManagerProvider =
+    StateNotifierProvider<PiPManagerNotifier, PiPManagerState>((ref) {
+      return PiPManagerNotifier();
+    });
 
 class PiPManagerState {
   final bool isActive;
@@ -116,6 +121,7 @@ class PiPManagerNotifier extends StateNotifier<PiPManagerState> {
     required String? chatId,
     required VoidCallback onExpand,
     required VoidCallback onClose,
+    Room? room,
   }) {
     PiPManager.showPiP(
       context: context,
@@ -125,6 +131,7 @@ class PiPManagerNotifier extends StateNotifier<PiPManagerState> {
       chatId: chatId,
       onExpand: onExpand,
       onClose: onClose,
+      room: room,
     );
 
     state = state.copyWith(

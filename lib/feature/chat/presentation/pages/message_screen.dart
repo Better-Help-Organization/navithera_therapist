@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:livekit_client/livekit_client.dart';
 import 'package:navicare/core/constants/base_url.dart';
 import 'package:navicare/core/notification/notification_service.dart';
 import 'package:navicare/core/providers/socket_provider.dart';
@@ -12,7 +13,9 @@ import 'package:navicare/core/providers/user_status_provider.dart';
 import 'package:navicare/core/theme/app_colors.dart';
 import 'package:navicare/core/util/avatar_util.dart';
 import 'package:navicare/feature/auth/data/models/auth_models.dart';
+import 'package:navicare/feature/call/exts.dart';
 import 'package:navicare/feature/call/pages/prejoin.dart';
+import 'package:navicare/feature/call/pages/room.dart';
 import 'package:navicare/feature/chat/data/models/chat_models.dart';
 import 'package:navicare/feature/chat/domain/repositories/chat_repository.dart';
 import 'package:navicare/feature/chat/presentation/pages/chat_list_screen.dart';
@@ -21,6 +24,7 @@ import 'package:navicare/feature/chat/presentation/pages/user_profile_screen.dar
 import 'package:navicare/feature/chat/presentation/providers/chat_provider.dart'
     show chatProvider;
 import 'package:navicare/feature/chat/presentation/providers/message_provider.dart';
+import 'package:navicare/feature/therapy/presentation/pages/bottom_sheet_for_group.dart';
 import 'package:navicare/feature/therapy/presentation/pages/call_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -50,6 +54,9 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
   //bool _isSending = false;
   StreamSubscription? _messageReadSubscription;
   bool _initialStatusChecked = false;
+  bool _busy = false;
+  bool _isSelectionMode = false;
+  final Set<String> _selectedMessageIds = {};
 
   @override
   void initState() {
@@ -73,6 +80,65 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
       ref
           .read(messageProvider(widget.chat.id).notifier)
           .getMessages(silent: true);
+    }
+  }
+
+  void _toggleSelectionMode(String messageId) {
+    setState(() {
+      if (_isSelectionMode) {
+        if (_selectedMessageIds.contains(messageId)) {
+          _selectedMessageIds.remove(messageId);
+          if (_selectedMessageIds.isEmpty) {
+            _isSelectionMode = false;
+          }
+        } else {
+          _selectedMessageIds.add(messageId);
+        }
+      } else {
+        _isSelectionMode = true;
+        _selectedMessageIds.add(messageId);
+      }
+    });
+  }
+
+  void _exitSelectionMode() {
+    setState(() {
+      _isSelectionMode = false;
+      _selectedMessageIds.clear();
+    });
+  }
+
+  Future<void> _deleteSelectedMessages() async {
+    final idsToDelete = _selectedMessageIds.toList();
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Delete Messages'),
+            content: Text(
+              'Are you sure you want to delete ${idsToDelete.length} messages?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                child: const Text('Delete'),
+              ),
+            ],
+          ),
+    );
+
+    if (confirmed == true) {
+      final notifier = ref.read(messageProvider(widget.chat.id).notifier);
+      for (final id in idsToDelete) {
+        notifier.deleteMessage(id);
+      }
+      _exitSelectionMode();
     }
   }
 
@@ -156,6 +222,87 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
     );
   }
 
+  _join(
+    String url,
+    String token,
+    BuildContext context, {
+    required bool isVideoCall,
+  }) async {
+    _busy = true;
+    setState(() {});
+
+    // final args = widget.args;
+
+    try {
+      //create new room
+      const cameraEncoding = VideoEncoding(
+        maxBitrate: 5 * 1000 * 1000,
+        maxFramerate: 30,
+      );
+
+      const screenEncoding = VideoEncoding(
+        maxBitrate: 3 * 1000 * 1000,
+        maxFramerate: 15,
+      );
+
+      final room = Room(
+        roomOptions: RoomOptions(
+          // adaptiveStream: args.adaptiveStream,
+          adaptiveStream: true,
+          dynacast: true,
+          defaultAudioPublishOptions: const AudioPublishOptions(
+            name: 'custom_audio_track_name',
+          ),
+          defaultCameraCaptureOptions: const CameraCaptureOptions(
+            maxFrameRate: 30,
+            params: VideoParameters(dimensions: VideoDimensions(1280, 720)),
+          ),
+          defaultVideoPublishOptions: VideoPublishOptions(
+            simulcast: false,
+            // simulcast: args.simulcast,
+            videoCodec: "VP8",
+
+            videoEncoding: cameraEncoding,
+            screenShareEncoding: screenEncoding,
+          ),
+          // encryption: e2eeOptions,
+        ),
+      );
+      // Create a Listener before connecting
+      final listener = room.createListener();
+
+      await room.prepareConnection(url, token);
+
+      // Try to connect to the room
+      // This will throw an Exception if it fails for any reason.
+      await room.connect(
+        url,
+        token,
+        fastConnectOptions: FastConnectOptions(
+          microphone: TrackOption(enabled: true),
+          camera: TrackOption(enabled: isVideoCall),
+        ),
+      );
+
+      if (!context.mounted) return;
+      await Navigator.push<void>(
+        context,
+        MaterialPageRoute(
+          builder:
+              (_) => RoomPage(room, listener, showVideoControl: isVideoCall),
+        ),
+      );
+    } catch (error) {
+      print('Could not connect $error');
+      if (!context.mounted) return;
+      await context.showErrorDialog(error);
+    } finally {
+      setState(() {
+        _busy = false;
+      });
+    }
+  }
+
   Future<void> _startCall({bool isVideoCall = false}) async {
     final sharedPreferences = await SharedPreferences.getInstance();
 
@@ -220,32 +367,39 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
         //   context,
         // );
         final token2 =
-            "eyJhbGciOiJIUzI1NiJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6InF1aWNrc3RhcnQtcm9vbSIsImNhblB1Ymxpc2giOnRydWUsImNhblN1YnNjcmliZSI6dHJ1ZX0sImlzcyI6IkFQSTNyUGFadUdxYjI4OCIsImV4cCI6MTc2NDIyNzU4NSwibmJmIjowLCJzdWIiOiJ4by1tZW1lLXVzZXJuYW1lIn0.f7TnQ7hQEYJumBNmZMaAbUKcxXZ_Ambz-irGRqSS9F0";
-        Navigator.push(
+            "eyJhbGciOiJIUzI1NiJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6InF1aWNrc3RhcnQtcm9vbSJ9LCJpc3MiOiJBUEkzclBhWnVHcWIyODgiLCJleHAiOjE3NjQyMzU0MzYsIm5iZiI6MCwic3ViIjoibWVtZS11c2VybmFtZSJ9.MonNLbSa1SibeZh6M51kWCX5jmuesbg06psBD7ykSbE";
+
+        _join(
+          "wss://demo-eukecq5l.livekit.cloud",
+          token,
           context,
-          MaterialPageRoute(
-            builder:
-                (context) =>
-                // CallScreen(
-                //   roomName: roomName,
-                //   participantName: widget.chat.name ?? "Unknown",
-                //   isVideoCall: isVideoCall,
-                //   chatId: widget.chat.id,
-                // ),
-                PreJoinPage(
-                  args: JoinArgs(
-                    url: "wss://demo-eukecq5l.livekit.cloud", // Your known URL
-                    token: token2, // Your known token
-                    adaptiveStream: true,
-                    dynacast: true,
-                    simulcast: false,
-                    e2ee: false,
-                    preferredCodec: 'VP8',
-                    enableBackupVideoCodec: true,
-                  ),
-                ),
-          ),
+          isVideoCall: isVideoCall,
         );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder:
+        //         (context) =>
+        //         // CallScreen(
+        //         //   roomName: roomName,
+        //         //   participantName: widget.chat.name ?? "Unknown",
+        //         //   isVideoCall: isVideoCall,
+        //         //   chatId: widget.chat.id,
+        //         // ),
+        //         PreJoinPage(
+        //           args: JoinArgs(
+        //             url: "wss://demo-eukecq5l.livekit.cloud", // Your known URL
+        //             token: token, // Your known token
+        //             adaptiveStream: true,
+        //             dynacast: true,
+        //             simulcast: false,
+        //             e2ee: false,
+        //             preferredCodec: 'VP8',
+        //             enableBackupVideoCodec: true,
+        //           ),
+        //         ),
+        //   ),
+        // );
       } else {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
@@ -329,10 +483,160 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
     );
   }
 
+  // Widget _buildMessageBubble(ChatMessageDetail message) {
+  //   final isMe = message.client == null;
+
+  //   return Row(
+  //     crossAxisAlignment: CrossAxisAlignment.end,
+  //     mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+  //     children: [
+  //       if (!isMe)
+  //         Padding(
+  //           padding: const EdgeInsets.only(right: 8.0),
+  //           child: Container(
+  //             width: 40,
+  //             height: 40,
+  //             decoration: BoxDecoration(
+  //               shape: BoxShape.circle,
+  //               gradient: LinearGradient(
+  //                 colors: getRandomGradient(),
+  //                 begin: Alignment.topLeft,
+  //                 end: Alignment.bottomRight,
+  //               ),
+  //             ),
+  //             child: Center(
+  //               child: Text(
+  //                 initials(message.client?.firstName ?? 'G'),
+  //                 style: const TextStyle(
+  //                   color: Colors.white,
+  //                   fontSize: 18,
+  //                   fontWeight: FontWeight.bold,
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //       Flexible(
+  //         child: Align(
+  //           alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+  //           child: Row(
+  //             mainAxisSize: MainAxisSize.min,
+  //             crossAxisAlignment: CrossAxisAlignment.start,
+  //             children: [
+  //               // Three dots menu (only for user's own messages)
+  //               if (isMe)
+  //                 PopupMenuButton<String>(
+  //                   icon: Icon(
+  //                     Icons.more_vert,
+  //                     size: 16,
+  //                     color: Colors.grey[400],
+  //                   ),
+  //                   onSelected: (value) {
+  //                     if (value == 'delete') {
+  //                       _showDeleteDialog(message);
+  //                     }
+  //                   },
+  //                   itemBuilder:
+  //                       (BuildContext context) => [
+  //                         const PopupMenuItem<String>(
+  //                           value: 'delete',
+  //                           child: Row(
+  //                             children: [
+  //                               Icon(Icons.delete, color: Colors.red, size: 16),
+  //                               SizedBox(width: 8),
+  //                               Text(
+  //                                 'Delete',
+  //                                 style: TextStyle(color: Colors.red),
+  //                               ),
+  //                             ],
+  //                           ),
+  //                         ),
+  //                       ],
+  //                   padding: EdgeInsets.zero,
+  //                   offset: const Offset(-10, 20),
+  //                 ),
+
+  //               // Message bubble
+  //               Container(
+  //                 margin: const EdgeInsets.symmetric(vertical: 4),
+  //                 constraints: BoxConstraints(
+  //                   maxWidth: MediaQuery.of(context).size.width * 0.65,
+  //                 ),
+  //                 decoration: BoxDecoration(
+  //                   color: isMe ? AppColors.primary : Colors.grey[200],
+  //                   borderRadius: BorderRadius.circular(16),
+  //                 ),
+  //                 padding: const EdgeInsets.symmetric(
+  //                   horizontal: 16,
+  //                   vertical: 10,
+  //                 ),
+  //                 child: Column(
+  //                   crossAxisAlignment:
+  //                       isMe
+  //                           ? CrossAxisAlignment.end
+  //                           : CrossAxisAlignment.start,
+  //                   children: [
+  //                     Text(
+  //                       message.content,
+  //                       style: TextStyle(
+  //                         color: isMe ? Colors.white : AppColors.primary,
+  //                         fontSize: 16,
+  //                       ),
+  //                     ),
+  //                     const SizedBox(height: 4),
+  //                     Row(
+  //                       mainAxisSize: MainAxisSize.min,
+  //                       children: [
+  //                         Text(
+  //                           _formatMessageTime(message.createdAt),
+  //                           style: TextStyle(
+  //                             color: isMe ? Colors.white70 : Colors.grey[600],
+  //                             fontSize: 10,
+  //                           ),
+  //                         ),
+  //                         const SizedBox(width: 6),
+  //                         Icon(
+  //                           message.isRead == true && isMe
+  //                               ? Icons.done_all
+  //                               : message.isRead == false && isMe
+  //                               ? Icons.done
+  //                               : null,
+  //                           size: 12,
+  //                           color: isMe ? Colors.white70 : Colors.grey[600],
+  //                         ),
+  //                         if (message.isPending) ...[
+  //                           const SizedBox(width: 6),
+  //                           Icon(
+  //                             Icons.access_time,
+  //                             size: 12,
+  //                             color: isMe ? Colors.white70 : Colors.grey[600],
+  //                           ),
+  //                         ] else if (message.isFailed) ...[
+  //                           const SizedBox(width: 6),
+  //                           const Icon(
+  //                             Icons.error,
+  //                             size: 12,
+  //                             color: Colors.red,
+  //                           ),
+  //                         ],
+  //                       ],
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
+
   Widget _buildMessageBubble(ChatMessageDetail message) {
     final isMe = message.client == null;
+    final isSelected = _selectedMessageIds.contains(message.id);
 
-    return Row(
+    Widget bubbleContent = Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
@@ -369,40 +673,7 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Three dots menu (only for user's own messages)
-                if (isMe)
-                  PopupMenuButton<String>(
-                    icon: Icon(
-                      Icons.more_vert,
-                      size: 16,
-                      color: Colors.grey[400],
-                    ),
-                    onSelected: (value) {
-                      if (value == 'delete') {
-                        _showDeleteDialog(message);
-                      }
-                    },
-                    itemBuilder:
-                        (BuildContext context) => [
-                          const PopupMenuItem<String>(
-                            value: 'delete',
-                            child: Row(
-                              children: [
-                                Icon(Icons.delete, color: Colors.red, size: 16),
-                                SizedBox(width: 8),
-                                Text(
-                                  'Delete',
-                                  style: TextStyle(color: Colors.red),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                    padding: EdgeInsets.zero,
-                    offset: const Offset(-10, 20),
-                  ),
-
-                // Message bubble
+                // Remove the PopupMenuButton and replace with message bubble only
                 Container(
                   margin: const EdgeInsets.symmetric(vertical: 4),
                   constraints: BoxConstraints(
@@ -476,35 +747,82 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
         ),
       ],
     );
-  }
 
-  void _showDeleteDialog(ChatMessageDetail message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Delete Message'),
-          content: const Text('Are you sure you want to delete this message?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                ref
-                    .read(messageProvider(widget.chat.id).notifier)
-                    .deleteMessage(message.id);
-              },
-              style: TextButton.styleFrom(foregroundColor: Colors.red),
-              child: const Text('Delete'),
-            ),
-          ],
-        );
+    return GestureDetector(
+      onLongPress: () {
+        _toggleSelectionMode(message.id);
       },
+      onTap: () {
+        if (_isSelectionMode) {
+          _toggleSelectionMode(message.id);
+        }
+      },
+      child: Container(
+        color:
+            _isSelectionMode && isSelected
+                ? AppColors.primary.withOpacity(0.1)
+                : Colors.transparent,
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+        child: Row(
+          children: [
+            if (_isSelectionMode)
+              Padding(
+                padding: const EdgeInsets.only(right: 12.0),
+                child: Container(
+                  width: 22,
+                  height: 22,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: isSelected ? AppColors.primary : Colors.transparent,
+                    border: Border.all(
+                      color: isSelected ? AppColors.primary : Colors.grey[400]!,
+                      width: 2,
+                    ),
+                  ),
+                  child:
+                      isSelected
+                          ? const Icon(
+                            Icons.check,
+                            size: 16,
+                            color: Colors.white,
+                          )
+                          : null,
+                ),
+              ),
+            Expanded(child: bubbleContent),
+          ],
+        ),
+      ),
     );
   }
+
+  // void _showDeleteDialog(ChatMessageDetail message) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: const Text('Delete Message'),
+  //         content: const Text('Are you sure you want to delete this message?'),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () => Navigator.of(context).pop(),
+  //             child: const Text('Cancel'),
+  //           ),
+  //           TextButton(
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //               ref
+  //                   .read(messageProvider(widget.chat.id).notifier)
+  //                   .deleteMessage(message.id);
+  //             },
+  //             style: TextButton.styleFrom(foregroundColor: Colors.red),
+  //             child: const Text('Delete'),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -536,168 +854,220 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leadingWidth: 30,
-        title: Row(
-          children: [
-            GestureDetector(
-              onTap: () {
-                print("Tapped avatar ${widget.chat.groupList}");
-                if (widget.chat.isGroup != null &&
-                    widget.chat.isGroup == true) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) => GroupProfileScreen(
-                            groupName: widget.chat.name ?? 'Group Chat',
-                            groupMembers: widget.chat.groupList,
-                            chatId: widget.chat.id,
-                          ),
-                    ),
-                  );
-                } else {
-                  print("clientId: ${clientId}");
-                  // For non-group chat, fetch therapist info
-                  if (clientId != null) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) => ContactDetailPage(
-                              clientId: clientId,
-                              clientName: widget.chat.name!,
-                              avatarUrl: widget.chat.avatarUrl,
-                              avatar: widget.chat.avatar,
-                            ),
-                      ),
-                    );
-                  }
-                }
-              },
-              child:
-                  (widget.chat.isGroup != null && widget.chat.isGroup == false)
-                      ? ClipRRect(
-                        borderRadius: BorderRadius.circular(25),
-                        child:
-                            widget.chat.avatarUrl != null &&
-                                    widget.chat.avatarUrl!.isNotEmpty
-                                ? Image(
-                                  image: NetworkImage(
-                                    '${widget.chat.avatarUrl}',
-                                  ),
-                                  width: 50,
-                                  height: 50,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Image(
-                                      image: AssetImage(
-                                        getAvatarImage(widget.chat.avatar ?? 0),
-                                      ),
-                                      width: 50,
-                                      height: 50,
-                                    );
-                                  },
-                                )
-                                : Image.asset(
-                                  getAvatarImage(widget.chat.avatar ?? 0),
-                                  width: 40,
-                                  height: 40,
-                                  fit: BoxFit.cover,
-                                ),
-                      )
-                      : Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          shape:
-                              (widget.chat.isGroup != null &&
-                                      widget.chat.isGroup == true)
-                                  ? BoxShape.rectangle
-                                  : BoxShape.circle,
-                          borderRadius:
-                              (widget.chat.isGroup != null &&
-                                      widget.chat.isGroup == true)
-                                  ? BorderRadius.circular(12)
-                                  : null,
-                          gradient: LinearGradient(
-                            colors: getRandomGradient(),
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            initials(
-                              widget.chat.isGroup != null &&
-                                      widget.chat.isGroup == false
-                                  ? '${widget.chat.name}'
-                                  : 'Group',
-                            ),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-            ),
-            const SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.chat.name ?? 'Unknown',
-                  // widget.chat.user?.phoneNumber ?? "x",
-                  style: const TextStyle(fontSize: 16),
+      // appBar:
+      appBar:
+          _isSelectionMode
+              ? AppBar(
+                backgroundColor: Colors.white,
+                elevation: 1,
+                leading: IconButton(
+                  icon: const Icon(Icons.close, color: Colors.black),
+                  onPressed: _exitSelectionMode,
                 ),
-                if (widget.chat.isGroup == false)
-                  Text(
-                    isOnline ? 'Online' : 'Offline',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: isOnline ? Colors.green : Colors.grey,
+                title: Text(
+                  '${_selectedMessageIds.length}',
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.black),
+                    onPressed: _deleteSelectedMessages,
+                  ),
+                ],
+              )
+              : AppBar(
+                backgroundColor: Colors.white,
+                leadingWidth: 30,
+                title: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        print("Tapped avatar ${widget.chat.groupList}");
+                        if (widget.chat.isGroup != null &&
+                            widget.chat.isGroup == true) {
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder:
+                          //         (context) => GroupProfileScreen(
+                          //           groupName: widget.chat.name ?? 'Group Chat',
+                          //           groupMembers: widget.chat.groupList,
+                          //           chatId: widget.chat.id,
+                          //         ),
+                          //   ),
+                          // );
+                        } else {
+                          print("clientId: ${clientId}");
+                          // For non-group chat, fetch therapist info
+                          if (clientId != null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) => ContactDetailPage(
+                                      clientId: clientId,
+                                      clientName: widget.chat.name!,
+                                      avatarUrl: widget.chat.avatarUrl,
+                                      avatar: widget.chat.avatar,
+                                    ),
+                              ),
+                            );
+                          }
+                        }
+                      },
+                      child:
+                          (widget.chat.isGroup != null &&
+                                  widget.chat.isGroup == false)
+                              ? ClipRRect(
+                                borderRadius: BorderRadius.circular(25),
+                                child:
+                                    widget.chat.avatarUrl != null &&
+                                            widget.chat.avatarUrl!.isNotEmpty
+                                        ? Image(
+                                          image: NetworkImage(
+                                            '${widget.chat.avatarUrl}',
+                                          ),
+                                          width: 50,
+                                          height: 50,
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (
+                                            context,
+                                            error,
+                                            stackTrace,
+                                          ) {
+                                            return Image(
+                                              image: AssetImage(
+                                                getAvatarImage(
+                                                  widget.chat.avatar ?? 0,
+                                                ),
+                                              ),
+                                              width: 50,
+                                              height: 50,
+                                            );
+                                          },
+                                        )
+                                        : Image.asset(
+                                          getAvatarImage(
+                                            widget.chat.avatar ?? 0,
+                                          ),
+                                          width: 40,
+                                          height: 40,
+                                          fit: BoxFit.cover,
+                                        ),
+                              )
+                              : Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  shape:
+                                      (widget.chat.isGroup != null &&
+                                              widget.chat.isGroup == true)
+                                          ? BoxShape.rectangle
+                                          : BoxShape.circle,
+                                  borderRadius:
+                                      (widget.chat.isGroup != null &&
+                                              widget.chat.isGroup == true)
+                                          ? BorderRadius.circular(12)
+                                          : null,
+                                  gradient: LinearGradient(
+                                    colors: getRandomGradient(),
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    initials(
+                                      widget.chat.isGroup != null &&
+                                              widget.chat.isGroup == false
+                                          ? '${widget.chat.name}'
+                                          : 'Group',
+                                    ),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
                     ),
-                  ),
-              ],
-            ),
-          ],
-        ),
-        actions: [
-          // Individual call buttons
-          if (widget.chat.isGroup != null && widget.chat.isGroup == false)
-            IconButton(
-              icon: const Icon(Icons.phone),
-              onPressed: () => _startCall(isVideoCall: false),
-            ),
-          if (widget.chat.isGroup != null && widget.chat.isGroup == false)
-            IconButton(
-              icon: const Icon(Icons.videocam_outlined),
-              onPressed: () => _startCall(isVideoCall: true),
-            ),
-          // Group call button - opens group profile to select participants
-          if (widget.chat.isGroup != null && widget.chat.isGroup == true)
-            IconButton(
-              icon: const Icon(Icons.video_call),
-              tooltip: 'Start group call',
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder:
-                        (context) => GroupProfileScreen(
-                          groupName: widget.chat.name ?? 'Group',
-                          groupMembers: widget.chat.groupList,
-                          chatId: widget.chat.id,
+                    const SizedBox(width: 10),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.chat.name ?? 'Unknown',
+                          // widget.chat.user?.phoneNumber ?? "x",
+                          style: const TextStyle(fontSize: 16),
                         ),
-                  ),
-                );
-              },
-            ),
-        ],
-      ),
+                        if (widget.chat.isGroup == false)
+                          Text(
+                            isOnline ? 'Online' : 'Offline',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: isOnline ? Colors.green : Colors.grey,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+                actions: [
+                  // Individual call buttons
+                  if (widget.chat.isGroup != null &&
+                      widget.chat.isGroup == false)
+                    IconButton(
+                      icon: const Icon(Icons.phone),
+                      onPressed: () => _startCall(isVideoCall: false),
+                    ),
+                  if (widget.chat.isGroup != null &&
+                      widget.chat.isGroup == false)
+                    IconButton(
+                      icon: const Icon(Icons.videocam_outlined),
+                      onPressed: () => _startCall(isVideoCall: true),
+                    ),
+                  // Group call button - opens group profile to select participants
+                  if (widget.chat.isGroup != null &&
+                      widget.chat.isGroup == true)
+                    IconButton(
+                      icon: const Icon(Icons.video_call),
+                      tooltip: 'Start group call',
+                      onPressed: () {
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder:
+                        //         (context) => GroupProfileScreen(
+                        //           groupName: widget.chat.name ?? 'Group',
+                        //           groupMembers: widget.chat.groupList,
+                        //           chatId: widget.chat.id,
+                        //         ),
+                        //   ),
+                        // );
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.white,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(20),
+                            ),
+                          ),
+                          builder:
+                              (context) => GroupMemberSelectionBottomSheet(
+                                groupName: widget.chat.name ?? 'Group Chat',
+                                groupMembers: widget.chat.groupList,
+                                chatId: widget.chat.id,
+                              ),
+                        );
+                      },
+                    ),
+                ],
+              ),
       body: Column(
         children: [
           Expanded(

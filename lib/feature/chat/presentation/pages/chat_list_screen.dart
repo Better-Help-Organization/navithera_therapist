@@ -379,7 +379,7 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
                       client != null
                           ? '${client.firstName} ${client.lastName}'
                           : "${thread.groupName ?? "Group Chat"}",
-                  lastMessage: 'I sent you the design files 📎',
+                  lastMessage: thread.lastMessage?.content,
                   avatarUrl:
                       (client?.avatar == 7) &&
                               client?.profile != null &&
