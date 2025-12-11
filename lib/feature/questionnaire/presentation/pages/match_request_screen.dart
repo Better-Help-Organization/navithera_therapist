@@ -827,6 +827,7 @@ class _MatchRequestScreenState extends ConsumerState<MatchRequestScreen> {
 
   Widget _buildAnswersSection(AnswerResponse answerResponse) {
     final answers = answerResponse.data;
+    log("im here 3 ${answers}");
 
     if (answers.isEmpty) {
       return _SectionCard(
@@ -1345,9 +1346,13 @@ class _AnswerTile extends StatelessWidget {
     if (answer.singleOption == null) {
       return const Text('No answer selected');
     }
-    if (answer.singleOption == "other") {
-      return Text(answer.text ?? "No answer");
+
+    // Check if the selected option is "other"
+    if (answer.singleOption!.text.toLowerCase() == 'other') {
+      // Display the custom text if available, otherwise show "other"
+      return Text(answer.text?.isNotEmpty == true ? answer.text! : 'other');
     }
+
     return Text(answer.singleOption!.text);
   }
 
@@ -1359,6 +1364,18 @@ class _AnswerTile extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children:
           answer.multiOption.map((option) {
+            // Also handle "other" option in multiple selection
+            if (option.text.toLowerCase() == 'other' &&
+                answer.text?.isNotEmpty == true) {
+              return Row(
+                children: [
+                  const Icon(Icons.check_circle_outline, size: 16),
+                  const SizedBox(width: 8),
+                  Expanded(child: Text(answer.text!)),
+                ],
+              );
+            }
+
             return Row(
               children: [
                 const Icon(Icons.check_circle_outline, size: 16),
@@ -1370,7 +1387,6 @@ class _AnswerTile extends StatelessWidget {
     );
   }
 }
-
 // Date chips built from availability items
 // class _DateChips extends StatelessWidget {
 //   final List<Availability> availabilities;

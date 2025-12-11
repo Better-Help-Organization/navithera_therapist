@@ -19,6 +19,7 @@ import 'package:navicare/feature/questionnaire/presentation/pages/questionnaire_
 import 'package:navicare/feature/questionnaire/presentation/pages/category_selection_screen.dart';
 import 'package:navicare/feature/profile/presentation/pages/update_profile_screen.dart';
 import 'package:navicare/feature/therapy/presentation/pages/user_list_screen.dart';
+import 'package:navicare/feature/transaction/presentation/pages/transaction_screen.dart';
 import 'package:navicare/main.dart'; // Add this import to access navigatorKey
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -72,6 +73,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/forgot-password',
         builder: (context, state) => ForgotPasswordScreen(),
+      ),
+      GoRoute(
+        path: '/transactions',
+        builder: (context, state) => const TransactionScreen(),
       ),
       GoRoute(
         path: '/reset-password',

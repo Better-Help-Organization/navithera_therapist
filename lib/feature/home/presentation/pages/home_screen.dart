@@ -17,6 +17,7 @@ import 'package:navicare/feature/call/pages/room.dart';
 import 'package:navicare/feature/home/data/models/live_session_models.dart';
 import 'package:navicare/feature/home/presentation/providers/live_session_provider.dart';
 import 'package:navicare/feature/notification/presentation/pages/notification_screen.dart';
+import 'package:navicare/feature/transaction/presentation/pages/transaction_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:navicare/feature/home/presentation/providers/chart_data_provider.dart';
@@ -403,6 +404,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                       Row(
                         children: [
+                          const SizedBox(width: 8),
+                          // Transaction Icon - Added here
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) => const TransactionScreen(),
+                                ),
+                              );
+                            },
+                            child: const Icon(Icons.attach_money, size: 22),
+                          ),
+                          // const Sized
                           const SizedBox(width: 8),
                           _buildNotificationIcon(),
                         ],

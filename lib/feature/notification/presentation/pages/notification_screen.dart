@@ -326,8 +326,10 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
       );
 
       final payload = extractMatchPayload(remoteMessage);
+      log("im here Extracted payload: ${jsonEncode(payload)}");
       if (payload != null) {
         final request = MatchRequest.fromMap(payload);
+        // log(`jsonEncode(request.toMap())");
         _openNewMatchRequestPage(request);
       } else {
         print('New match request payload not found or invalid');

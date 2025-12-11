@@ -1,4 +1,6 @@
 // answers_provider.dart
+import 'dart:developer';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
 import 'package:navicare/core/constants/base_url.dart';
@@ -23,6 +25,7 @@ final answersProvider = FutureProvider.family<AnswerResponse, List<String>>((
       'ids': idsParam,
     },
   );
+  log('im here2 : ${response.data}');
 
   return AnswerResponse.fromJson(response.data);
 });
