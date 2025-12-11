@@ -166,6 +166,8 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
           'callerName': idMap['callerName'],
         if (!extra.containsKey('isVideoCall') && idMap['isVideoCall'] != null)
           'isVideoCall': idMap['isVideoCall'],
+        if (!extra.containsKey('isGroupCall') && idMap['isGroupCall'] != null)
+          'isGroupCall': idMap['isGroupCall'],
         if (!extra.containsKey('token') && idMap['token'] != null)
           'token': idMap['token'],
       });
@@ -181,6 +183,12 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
           (extra['isVideoCall'] ??
               idMap['isVideoCall'] ??
               body['isVideoCall'] ??
+              false) ==
+          true;
+      final bool isGroupCall =
+          (extra['isGroupCall'] ??
+              idMap['isGroupCall'] ??
+              body['isGroupCall'] ??
               false) ==
           true;
 
@@ -206,6 +214,7 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
           if (roomName != null &&
               chatId != null &&
               isVideoCall != null &&
+              isGroupCall != null &&
               token != null) {
             print("3x3x3x");
             if (context != null) {
@@ -219,6 +228,7 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
                     participantName: callerName,
                     chatId: chatId,
                     isVideocall: isVideoCall,
+                    isGroupCall: isGroupCall,
                     token: token,
                   );
             } else {

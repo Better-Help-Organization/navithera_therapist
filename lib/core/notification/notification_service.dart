@@ -1,13 +1,14 @@
 import 'dart:convert';
 import 'dart:developer';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_callkit_incoming/entities/android_params.dart';
 import 'package:flutter_callkit_incoming/entities/call_kit_params.dart';
 import 'package:flutter_callkit_incoming/entities/ios_params.dart';
+import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:livekit_client/livekit_client.dart';
@@ -17,7 +18,6 @@ import 'package:navicare/feature/auth/data/models/auth_models.dart';
 import 'package:navicare/feature/auth/presentation/providers/auth_provider.dart';
 import 'package:navicare/feature/calendar/presentation/pages/pages/events_example.dart';
 import 'package:navicare/feature/call/exts.dart';
-import 'package:navicare/feature/call/pages/prejoin.dart';
 import 'package:navicare/feature/call/pages/room.dart';
 import 'package:navicare/feature/chat/presentation/pages/chat_list_screen.dart';
 import 'package:navicare/feature/chat/presentation/providers/chat_provider.dart';
@@ -25,11 +25,9 @@ import 'package:navicare/feature/chat/presentation/providers/message_provider.da
 import 'package:navicare/feature/home/presentation/pages/home_screen.dart';
 import 'package:navicare/feature/home/presentation/providers/chart_data_provider.dart';
 import 'package:navicare/feature/questionnaire/presentation/pages/match_request_screen.dart';
-import 'package:navicare/feature/therapy/presentation/pages/call_screen.dart';
 import 'package:navicare/main.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:uuid/uuid.dart';
 
 class PendingRoute {
@@ -96,6 +94,8 @@ class FCMService {
     String token,
     BuildContext context, {
     required bool isVideoCall,
+    required bool isGroupCall,
+    required String chatId,
   }) async {
     // _busy = true;
     // setState(() {});
@@ -162,7 +162,13 @@ class FCMService {
       Navigator.of(navigatorKey.currentContext!, rootNavigator: true).push(
         MaterialPageRoute(
           builder:
-              (_) => RoomPage(room, listener, showVideoControl: isVideoCall),
+              (_) => RoomPage(
+                room,
+                listener,
+                showVideoControl: isVideoCall,
+                isGroup: isGroupCall,
+                chatId: chatId,
+              ),
         ),
       );
     } catch (error) {
@@ -348,6 +354,7 @@ class FCMService {
             call.chatId,
             call.isVideoCall,
             call.token,
+            call.isGroupCall,
           );
         }
         return;
@@ -820,6 +827,7 @@ class FCMService {
     String chatId,
     bool isVideocall,
     String token,
+    bool isGroupCall,
   ) async {
     final context = navigatorKey.currentContext;
     if (context == null) {
@@ -937,6 +945,8 @@ class FCMService {
                             ).pop();
                             _activeCallChatId = null;
                             _ringtonePlayer = null;
+                            print("xoxoch; ${chatId}");
+                            print("xoxo: ${isGroupCall}");
                             _joinCallRoom(
                               roomName,
                               participant,
@@ -944,6 +954,7 @@ class FCMService {
                               chatId,
                               isVideocall,
                               token,
+                              isGroupCall,
                             );
                           },
                         ),
@@ -1029,6 +1040,7 @@ class FCMService {
       final room = idMap['room'] as String?;
       final token = idMap['token'] as String?;
       final isVideoCall = idMap['isVideoCall'] as bool? ?? false;
+      final isGroupCall = idMap['isGroupCall'] as bool? ?? false;
       print("isVideoCall4: ${isVideoCall}");
       final callerData = idMap['callerData'] as Map<String, dynamic>?;
       final firstName = callerData?['firstName'] as String? ?? '';
@@ -1046,6 +1058,7 @@ class FCMService {
         callerName: fullName,
         isVideoCall: isVideoCall,
         token: token!,
+        isGroupCall: isGroupCall,
       );
     } catch (e) {
       log('parse incoming call error: $e');
@@ -1079,6 +1092,7 @@ class FCMService {
     required String chatId,
     required bool isVideocall,
     required String token,
+    required bool isGroupCall,
   }) {
     print("context not null praying");
     final context = navigatorKey.currentContext;
@@ -1094,6 +1108,7 @@ class FCMService {
           'chatId': chatId,
           'isVideoCall': isVideocall,
           'token': token,
+          'isGroupCall': isGroupCall,
         },
       );
       return;
@@ -1104,6 +1119,8 @@ class FCMService {
       token,
       context,
       isVideoCall: isVideocall,
+      isGroupCall: isGroupCall,
+      chatId: chatId,
     );
 
     // Navigator.of(context).push(
@@ -1138,6 +1155,7 @@ class FCMService {
     String chatId,
     bool isVideoCall,
     String token,
+    bool isGroupCall,
   ) {
     print("isVideoCall1: ${isVideoCall}");
     final token2 =
@@ -1147,6 +1165,8 @@ class FCMService {
       token,
       context,
       isVideoCall: isVideoCall,
+      isGroupCall: isGroupCall,
+      chatId: chatId,
     );
 
     // Navigator.push(
@@ -1186,6 +1206,7 @@ class _IncomingCall {
   final String callerName;
   final bool isVideoCall;
   final String token; // Add this
+  final bool isGroupCall;
 
   _IncomingCall({
     required this.chatId,
@@ -1193,6 +1214,7 @@ class _IncomingCall {
     required this.callerName,
     required this.isVideoCall,
     required this.token, // Add this
+    required this.isGroupCall,
   });
 }
 
@@ -1249,6 +1271,7 @@ class FCMBackgroundBridge {
       final token = idMap['token'] as String?;
       final callerData = idMap['callerData'] as Map<String, dynamic>?;
       final isVideoCall = idMap['isVideoCall'] as bool? ?? false;
+      final isGroupCall = idMap['isGroupCall'] as bool? ?? false;
       print("isVideoCall5: ${isVideoCall}");
       final firstName = callerData?['firstName'] as String? ?? '';
       final lastName = callerData?['lastName'] as String? ?? '';
@@ -1265,6 +1288,7 @@ class FCMBackgroundBridge {
         callerName: fullName,
         isVideoCall: isVideoCall,
         token: token,
+        isGroupCall: isGroupCall,
       );
     } catch (e) {
       log('parse incoming call error (bg): $e');

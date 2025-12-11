@@ -3,11 +3,15 @@ import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:collection/collection.dart';
+import 'package:dio/dio.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:livekit_client/livekit_client.dart';
+import 'package:navicare/core/constants/base_url.dart';
 import 'package:navicare/core/theme/app_colors.dart';
 import 'package:navicare/feature/therapy/presentation/services/pip_manager.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../exts.dart';
 import '../utils.dart';
@@ -20,11 +24,15 @@ class RoomPage extends ConsumerStatefulWidget {
   final Room room;
   final EventsListener<RoomEvent> listener;
   final bool showVideoControl;
+  final String chatId;
+  final bool isGroup;
 
   const RoomPage(
     this.room,
     this.listener, {
     this.showVideoControl = true,
+    this.chatId = "",
+    this.isGroup = false,
     super.key,
   });
 
@@ -65,10 +73,13 @@ class _RoomPageState extends ConsumerState<RoomPage> {
   int _callDurationSeconds = 0;
   bool _isEnteringPiP = false;
 
+  StreamSubscription<RemoteMessage>? _fcmSubscription;
+
   @override
   void initState() {
     super.initState();
     _startTimer();
+    _setupFCMListener();
 
     // Generate unique emojis based on room name
     final seed =
@@ -191,6 +202,11 @@ class _RoomPageState extends ConsumerState<RoomPage> {
             (timeStamp) =>
                 Navigator.popUntil(context, (route) => route.isFirst),
           );
+          print("xoxochatId: ${widget.chatId}");
+          print("xoxochatId: ${widget.isGroup}");
+          if (widget.chatId != "") {
+            EndCall(widget.chatId);
+          }
         })
         ..on<ParticipantEvent>((event) {
           _sortParticipants();
@@ -343,6 +359,61 @@ class _RoomPageState extends ConsumerState<RoomPage> {
     setState(() {
       participantTracks = [...screenTracks, ...userMediaTracks];
     });
+  }
+
+  Future<void> EndCall(String chatId) async {
+    final Dio dio = Dio();
+    try {
+      final sharedPreferences = await SharedPreferences.getInstance();
+      final accessToken = sharedPreferences.getString('access_token');
+
+      dio.options.headers['Authorization'] = 'Bearer $accessToken';
+
+      final response = await dio.post('${base_url_dev}/chat/call/end/$chatId');
+
+      if (response.statusCode == 201) {
+        print("xoxo: Called");
+        // Call ended successfully
+      }
+    } catch (e) {
+      // Optional: log error
+    }
+  }
+
+  void _setupFCMListener() {
+    // Listen for FCM messages when app is in foreground
+    _fcmSubscription = FirebaseMessaging.onMessage.listen((
+      RemoteMessage message,
+    ) {
+      _handleFCMNotification(message);
+    });
+
+    // Also handle when app is in background/terminated (if needed)
+    // This would typically be handled in your main.dart or a service
+  }
+
+  void _handleFCMNotification(RemoteMessage message) async {
+    final data = message.data;
+    final title = message.notification?.title ?? data['title'];
+    final body = message.notification?.body ?? data['body'];
+    final notificationType = data['type']; // Assuming you have a 'type' field
+
+    print('Received FCM notification: $title - $body');
+    print('Notification data: $data');
+
+    // Check if this is a "Call Ended" notification
+    if (widget.isGroup == true) return;
+
+    if (title?.toLowerCase().contains('call ended') == true ||
+        body?.toLowerCase().contains('call ended') == true ||
+        notificationType == 'call_ended') {
+      print('Call Ended notification received, ending call...');
+
+      // End the call
+      // _endCallFromNotification();
+      // final result = await context.showDisconnectDialog();
+      (widget.room.disconnect());
+    }
   }
 
   @override

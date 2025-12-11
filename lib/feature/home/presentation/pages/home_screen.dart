@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:livekit_client/livekit_client.dart';
 import 'package:navicare/core/constants/base_url.dart';
 import 'package:navicare/core/theme/app_colors.dart';
 import 'package:navicare/core/theme/app_typography.dart';
@@ -11,6 +12,10 @@ import 'package:navicare/core/util/greeting.dart';
 import 'package:navicare/feature/auth/presentation/providers/user_provider.dart';
 //import "package:flutter_gen/gen_l10n/app_localizations.dart";
 import 'package:flutter_gen/gen_l10n/app_localization.dart';
+import 'package:navicare/feature/call/exts.dart';
+import 'package:navicare/feature/call/pages/room.dart';
+import 'package:navicare/feature/home/data/models/live_session_models.dart';
+import 'package:navicare/feature/home/presentation/providers/live_session_provider.dart';
 import 'package:navicare/feature/notification/presentation/pages/notification_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -74,6 +79,164 @@ class NotificationService {
   }
 }
 
+_join(
+  String url,
+  String token,
+  BuildContext context, {
+  required bool isVideoCall,
+  required String chatId,
+  VoidCallback? onBeforeNavigate,
+}) async {
+  // _busy = true;
+  // setState(() {});
+
+  // final args = widget.args;
+
+  try {
+    //create new room
+    const cameraEncoding = VideoEncoding(
+      maxBitrate: 5 * 1000 * 1000,
+      maxFramerate: 30,
+    );
+
+    const screenEncoding = VideoEncoding(
+      maxBitrate: 3 * 1000 * 1000,
+      maxFramerate: 15,
+    );
+
+    final room = Room(
+      roomOptions: RoomOptions(
+        // adaptiveStream: args.adaptiveStream,
+        adaptiveStream: true,
+        dynacast: true,
+        defaultAudioPublishOptions: const AudioPublishOptions(
+          name: 'custom_audio_track_name',
+        ),
+        defaultCameraCaptureOptions: const CameraCaptureOptions(
+          maxFrameRate: 30,
+          params: VideoParameters(dimensions: VideoDimensions(1280, 720)),
+        ),
+        defaultVideoPublishOptions: VideoPublishOptions(
+          simulcast: false,
+          // simulcast: args.simulcast,
+          videoCodec: "VP8",
+
+          videoEncoding: cameraEncoding,
+          screenShareEncoding: screenEncoding,
+        ),
+        // encryption: e2eeOptions,
+      ),
+    );
+    // Create a Listener before connecting
+    final listener = room.createListener();
+
+    await room.prepareConnection(url, token);
+
+    // Try to connect to the room
+    // This will throw an Exception if it fails for any reason.
+    await room.connect(
+      url,
+      token,
+      fastConnectOptions: FastConnectOptions(
+        microphone: TrackOption(enabled: true),
+        camera: TrackOption(enabled: isVideoCall),
+      ),
+    );
+
+    if (!context.mounted) return;
+
+    onBeforeNavigate?.call();
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        builder:
+            (_) => RoomPage(
+              room,
+              listener,
+              showVideoControl: isVideoCall,
+              chatId: chatId,
+              // isGroup: true,
+            ),
+      ),
+    );
+  } catch (error) {
+    print('Could not connect $error');
+    if (!context.mounted) return;
+    await context.showErrorDialog(error);
+  } finally {
+    // setState(() {
+    //   _busy = false;
+    // });
+  }
+}
+
+// Add to your existing service providers in home_screen.dart
+final liveSessionServiceProvider = Provider<LiveSessionService>((ref) {
+  return LiveSessionService();
+});
+
+class LiveSessionService {
+  final Dio _dio = Dio();
+
+  LiveSessionService() {
+    _dio.options.connectTimeout = const Duration(seconds: 20);
+    _dio.options.receiveTimeout = const Duration(seconds: 20);
+  }
+
+  Future<void> _attachAuthHeader() async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    final accessToken = sharedPreferences.getString('access_token');
+    if (accessToken != null && accessToken.isNotEmpty) {
+      _dio.options.headers['Authorization'] = 'Bearer $accessToken';
+    } else {
+      _dio.options.headers.remove('Authorization');
+    }
+  }
+
+  Future<List<ChatItem>?> fetchActiveCalls() async {
+    try {
+      await _attachAuthHeader();
+
+      final response = await _dio.get(
+        '${base_url_dev}/therapist/me/chats?filters=activeCallRoom!==null&sort=updatedAt=desc&take=10&page=1',
+      );
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+        if (data is Map && data.containsKey('data')) {
+          final chats = data['data'] as List;
+          return chats.map((chat) => ChatItem.fromJson(chat)).toList();
+        }
+      }
+      return [];
+    } catch (e) {
+      log("Error fetching active calls: $e");
+      return [];
+    }
+  }
+
+  Future<JoinCallData?> joinCall(String chatId) async {
+    try {
+      await _attachAuthHeader();
+
+      final response = await _dio.post(
+        '${base_url_dev}/chat/call/$chatId/join',
+      );
+
+      if (response.statusCode == 201) {
+        final data = response.data;
+        if (data is Map && data.containsKey('data')) {
+          return JoinCallData.fromJson(data['data']);
+        }
+      }
+      return null;
+    } catch (e) {
+      log("Error joining call: $e");
+      return null;
+    }
+  }
+}
+
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
@@ -95,6 +258,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     // Load chart data using provider
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(chartDataProvider.notifier).load();
+      ref.read(liveSessionProvider.notifier).loadActiveCalls();
     });
   }
 
@@ -111,6 +275,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     await _loadUnreadCount();
     // Refresh chart data using provider
     ref.read(chartDataProvider.notifier).load();
+    ref.read(liveSessionProvider.notifier).loadActiveCalls();
   }
 
   Widget _buildNotificationIcon() {
@@ -247,6 +412,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
                   const SizedBox(height: 16),
 
+                  _buildLiveSessionSection(),
+
+                  const SizedBox(height: 16),
+
+                  // Live Session Section
+
                   // Stats Section using provider
                   _buildStatsSection(chartState),
 
@@ -259,6 +430,236 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildLiveSessionSection() {
+    final liveSessionState = ref.watch(liveSessionProvider);
+
+    return switch (liveSessionState) {
+      LiveSessionInitial() => const SizedBox.shrink(),
+      LiveSessionLoading() => const _LiveSessionSkeleton(),
+      LiveSessionError(:final failure) => _InfoBanner(
+        icon: Icons.error_outline,
+        text: failure.message,
+        color: Colors.red,
+      ),
+      LiveSessionLoaded(:final activeCalls) =>
+        activeCalls.isEmpty
+            ? const SizedBox.shrink()
+            : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // No title needed, just show the card directly
+                ...activeCalls.map(
+                  (call) => _buildLiveSessionCard(call, context),
+                ),
+              ],
+            ),
+      LiveSessionJoining() => Container(
+        padding: const EdgeInsets.all(16),
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          color: AppColors.primary.withOpacity(0.15),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey.shade200),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.videocam, color: AppColors.primary, size: 20),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Joining session...',
+                style: AppTypography.bodySmall.copyWith(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: AppColors.primary,
+              ),
+            ),
+          ],
+        ),
+      ),
+      LiveSessionJoinSuccess(:final joinData) =>
+        const SizedBox.shrink(), // Remove card completely
+      LiveSessionJoinError(:final failure) => Container(
+        padding: const EdgeInsets.all(16),
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          color: Colors.red.shade50,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.red.shade200),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.error_outline, color: Colors.red, size: 20),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                failure.message,
+                style: AppTypography.bodySmall.copyWith(
+                  color: Colors.red.shade800,
+                ),
+                maxLines: 2,
+              ),
+            ),
+            const SizedBox(width: 12),
+            IconButton(
+              onPressed: () {
+                ref.read(liveSessionProvider.notifier).reset();
+                ref.read(liveSessionProvider.notifier).loadActiveCalls();
+              },
+              icon: Icon(Icons.close, color: Colors.red.shade600, size: 18),
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(minWidth: 30, minHeight: 30),
+            ),
+          ],
+        ),
+      ),
+      // TODO: Handle this case.
+      LiveSessionState() => throw UnimplementedError(),
+    };
+  }
+
+  Future<void> _joinLiveSession(String chatId, BuildContext context) async {
+    final liveSessionState = ref.read(liveSessionProvider.notifier);
+
+    try {
+      await liveSessionState.joinCall(chatId);
+
+      // Check the state after joining
+      final currentState = ref.read(liveSessionProvider);
+
+      if (currentState is LiveSessionJoinSuccess) {
+        // Print the token to console as requested
+        // print('JWT Token: ${currentState.joinData.token}');
+        // print('Room: ${currentState.joinData.room}');
+        await _join(
+          "wss://demo-eukecq5l.livekit.cloud",
+          currentState.joinData.token,
+          context,
+          isVideoCall: true,
+          chatId: chatId,
+          // onBeforeNavigate: () {
+          //   removeOverlay();
+          // },
+        );
+
+        // The card will be automatically removed since LiveSessionJoinSuccess returns SizedBox.shrink()
+        // Optionally show a toast/snackbar
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Joining live session...'),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+
+        // Here you would typically navigate to the video call screen
+        // For now, we just print the token as requested
+      } else if (currentState is LiveSessionJoinError) {
+        // Error banner will be shown automatically by _buildLiveSessionSection
+        // Optionally show a snackbar too
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(currentState.failure.message),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Failed to join session'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
+  Widget _buildLiveSessionCard(ChatItem activeCall, BuildContext context) {
+    final participants = activeCall.group?.length ?? 0;
+    final groupName = activeCall.groupName ?? 'Group Session';
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: AppColors.primary.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade200),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          Icon(Icons.videocam, color: AppColors.primary, size: 20),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Live Session: $groupName',
+                  style: AppTypography.bodySmall.copyWith(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (participants > 0) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    '$participants participant${participants > 1 ? 's' : ''}',
+                    style: AppTypography.bodySmall.copyWith(
+                      color: Colors.grey.shade600,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          ElevatedButton(
+            onPressed: () => _joinLiveSession(activeCall.id, context),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              minimumSize: const Size(0, 0),
+              elevation: 0,
+            ),
+            child: Text(
+              'Join',
+              style: AppTypography.bodySmall.copyWith(
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -886,6 +1287,100 @@ class _InfoBanner extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(child: Text(text)),
         ],
+      ),
+    );
+  }
+}
+
+class _LiveSessionSkeleton extends StatelessWidget {
+  const _LiveSessionSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          _ShimmerBlock(width: 20, height: 20, radius: 10),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _ShimmerBlock(width: 150, height: 12, radius: 6),
+                const SizedBox(height: 4),
+                _ShimmerBlock(width: 80, height: 10, radius: 6),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          _ShimmerBlock(width: 60, height: 30, radius: 10),
+        ],
+      ),
+    );
+  }
+}
+
+class _ShimmerBlock extends StatefulWidget {
+  final double width;
+  final double height;
+  final double radius;
+  final Color? colorOverride;
+
+  const _ShimmerBlock({
+    super.key,
+    required this.width,
+    required this.height,
+    required this.radius,
+    this.colorOverride,
+  });
+
+  @override
+  State<_ShimmerBlock> createState() => _ShimmerBlockState();
+}
+
+class _ShimmerBlockState extends State<_ShimmerBlock>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _anim;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1100),
+    )..repeat(reverse: true);
+    _anim = Tween<double>(
+      begin: 0.6,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final baseColor =
+        widget.colorOverride ?? Colors.grey.shade300; // adjustable for contexts
+    return FadeTransition(
+      opacity: _anim,
+      child: Container(
+        width: widget.width,
+        height: widget.height,
+        decoration: BoxDecoration(
+          color: baseColor,
+          borderRadius: BorderRadius.circular(widget.radius),
+        ),
       ),
     );
   }
