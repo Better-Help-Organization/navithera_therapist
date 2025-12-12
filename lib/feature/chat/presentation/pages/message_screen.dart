@@ -2235,17 +2235,17 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
                         print("Tapped avatar ${widget.chat.groupList}");
                         if (widget.chat.isGroup != null &&
                             widget.chat.isGroup == true) {
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //     builder:
-                          //         (context) => GroupProfileScreen(
-                          //           groupName: widget.chat.name ?? 'Group Chat',
-                          //           groupMembers: widget.chat.groupList,
-                          //           chatId: widget.chat.id,
-                          //         ),
-                          //   ),
-                          // );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => GroupProfileScreen(
+                                    groupName: widget.chat.name ?? 'Group Chat',
+                                    groupMembers: widget.chat.groupList,
+                                    chatId: widget.chat.id,
+                                  ),
+                            ),
+                          );
                         } else {
                           print("clientId: ${clientId}");
                           // For non-group chat, fetch therapist info

@@ -16,8 +16,6 @@ import 'package:overlay_support/overlay_support.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import "package:flutter_gen/gen_l10n/app_localization.dart";
 import "package:navicare/core/localization/fallback_localization.dart";
-import 'package:audioplayers/audioplayers.dart';
-
 // CallKit incoming
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 

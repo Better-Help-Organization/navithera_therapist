@@ -192,6 +192,7 @@ class _GroupProfileScreenState extends State<GroupProfileScreen> {
               clientName: '${user.firstName} ${user.lastName}',
               avatarUrl: user.profile,
               avatar: user.avatar,
+              isInGroup: true,
             ),
       ),
     );

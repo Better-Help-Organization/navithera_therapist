@@ -5,23 +5,23 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:navicare/core/theme/app_colors.dart';
 import 'package:navicare/core/util/avatar_util.dart';
 import 'package:navicare/core/util/photo_viewer.dart';
-import 'package:navicare/feature/auth/data/models/auth_models.dart';
 import 'package:navicare/feature/auth/presentation/providers/user_provider.dart';
-import 'package:navicare/feature/chat/domain/repositories/chat_repository.dart';
 import 'package:navicare/feature/chat/data/models/chat_models.dart';
+import 'package:navicare/feature/chat/domain/repositories/chat_repository.dart';
 import 'package:navicare/feature/chat/presentation/pages/client_mood_screeen.dart';
-import 'package:navicare/feature/questionnaire/presentation/providers/questions_provider.dart';
 
 class ContactDetailPage extends ConsumerStatefulWidget {
   final String clientId;
   final String clientName;
   final String? avatarUrl;
   final int? avatar;
+  final bool isInGroup;
 
   const ContactDetailPage({
     super.key,
     required this.clientId,
     required this.clientName,
+    this.isInGroup = false,
     this.avatarUrl,
     this.avatar,
   });
@@ -51,9 +51,16 @@ class _ContactDetailPageState extends ConsumerState<ContactDetailPage> {
 
   Future<void> _fetchClientSessions() async {
     try {
-      final response = await ref
-          .read(chatRepositoryProvider)
-          .getClientSessions(clientId: widget.clientId);
+      final response;
+      if (widget.isInGroup) {
+        response = await ref
+            .read(chatRepositoryProvider)
+            .getClientSessionsFromGroup(clientId: widget.clientId);
+      } else {
+        response = await ref
+            .read(chatRepositoryProvider)
+            .getClientSessions(clientId: widget.clientId);
+      }
 
       log("Fetch sessions response: $response");
       response.fold(

@@ -58,6 +58,13 @@ abstract class ChatRepository {
     String? sort,
   });
 
+  Future<Either<Failure, SessionListResponse>> getClientSessionsFromGroup({
+    required String clientId,
+    int? page,
+    int? limit,
+    String? sort,
+  });
+
   Future<Either<Failure, Session>> updateSessionNote({
     required String sessionId,
     required String note,
@@ -280,6 +287,36 @@ class ChatRepositoryImpl implements ChatRepository {
     try {
       final response = await remoteDataSource.getClientSessions(
         filters: 'client.id:=$clientId,approvalStatus=confirmed',
+        page: page,
+        take: 0,
+        sort: 'schedule=Asc',
+      );
+      log("here: ${response}");
+      return Right(response);
+    } on DioException catch (e) {
+      String errorMessage =
+          "We're having trouble loading your sessions. Please check your connection and try again.";
+      if (e.response?.statusCode == 401) {
+        errorMessage = 'Unauthorized';
+      } else if (e.response?.data is Map<String, dynamic>) {
+        errorMessage = e.response?.data['message'] ?? errorMessage;
+      }
+      return Left(Failure.serverFailure(errorMessage));
+    } catch (e) {
+      return Left(Failure.unknownFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, SessionListResponse>> getClientSessionsFromGroup({
+    required String clientId,
+    int? page,
+    int? limit,
+    String? sort,
+  }) async {
+    try {
+      final response = await remoteDataSource.getClientSessions(
+        filters: 'group.id:=$clientId,approvalStatus=confirmed',
         page: page,
         take: 0,
         sort: 'schedule=Asc',
