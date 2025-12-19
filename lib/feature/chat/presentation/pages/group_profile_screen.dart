@@ -237,20 +237,20 @@ class _GroupProfileScreenState extends State<GroupProfileScreen> {
                   ),
                 )
                 : null,
-        actions: [
-          if (widget.groupMembers != null && widget.groupMembers!.isNotEmpty)
-            IconButton(
-              icon: Icon(
-                _isSelectionMode ? Icons.close : Icons.group_add,
-                color: Colors.white,
-              ),
-              onPressed: _toggleSelectionMode,
-              tooltip:
-                  _isSelectionMode
-                      ? 'Cancel selection'
-                      : 'Select users for call',
-            ),
-        ],
+        // actions: [
+        //   if (widget.groupMembers != null && widget.groupMembers!.isNotEmpty)
+        //     IconButton(
+        //       icon: Icon(
+        //         _isSelectionMode ? Icons.close : Icons.group_add,
+        //         color: Colors.white,
+        //       ),
+        //       onPressed: _toggleSelectionMode,
+        //       tooltip:
+        //           _isSelectionMode
+        //               ? 'Cancel selection'
+        //               : 'Select users for call',
+        //     ),
+        // ],
       ),
       body: CustomScrollView(
         slivers: [

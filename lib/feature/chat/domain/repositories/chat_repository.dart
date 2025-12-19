@@ -70,6 +70,17 @@ abstract class ChatRepository {
     required String note,
     required String therapistId,
   });
+
+  Future<Either<Failure, GroupSessionNoteResponse>> getGroupSessionNote({
+    required String sessionId,
+    required String clientId,
+  });
+
+  Future<Either<Failure, void>> updateGroupSessionNote({
+    required String sessionId,
+    required String clientId,
+    required String note,
+  });
 }
 
 class ChatRepositoryImpl implements ChatRepository {
@@ -371,6 +382,69 @@ class ChatRepositoryImpl implements ChatRepository {
       );
       print("responsexoxo: ${response}");
       return Right(response.data);
+    } on DioException catch (e) {
+      String errorMessage = 'Failed to update session note';
+      if (e.response?.statusCode == 401) {
+        errorMessage = 'Unauthorized';
+      } else if (e.response?.data is Map<String, dynamic>) {
+        errorMessage = e.response?.data['message'] ?? errorMessage;
+      }
+      return Left(Failure.serverFailure(errorMessage));
+    } catch (e) {
+      return Left(Failure.unknownFailure(e.toString()));
+    }
+  }
+
+  // Add these implementations to ChatRepositoryImpl
+
+  @override
+  Future<Either<Failure, GroupSessionNoteResponse>> getGroupSessionNote({
+    required String sessionId,
+    required String clientId,
+  }) async {
+    try {
+      // Build the filter string
+      final filters = 'clientNotes.client.id:=$clientId,id:=$sessionId';
+
+      final response = await remoteDataSource.getGroupSessionNote(
+        fields: 'clientNotes.*',
+        filters: filters,
+      );
+
+      return Right(response);
+    } on DioException catch (e) {
+      String errorMessage = "Failed to load session note";
+      if (e.response?.statusCode == 401) {
+        errorMessage = 'Unauthorized';
+      } else if (e.response?.data is Map<String, dynamic>) {
+        errorMessage = e.response?.data['message'] ?? errorMessage;
+      }
+      return Left(Failure.serverFailure(errorMessage));
+    } catch (e) {
+      return Left(Failure.unknownFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> updateGroupSessionNote({
+    required String sessionId,
+    required String clientId,
+    required String note,
+  }) async {
+    try {
+      final response = await remoteDataSource.updateGroupSessionNote(
+        sessionId,
+        {
+          'notes': [
+            {'clientId': clientId, 'note': note},
+          ],
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return const Right(null);
+      }
+      return Left(Failure.serverFailure(response.message));
     } on DioException catch (e) {
       String errorMessage = 'Failed to update session note';
       if (e.response?.statusCode == 401) {

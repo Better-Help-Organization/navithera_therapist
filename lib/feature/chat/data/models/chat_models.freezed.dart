@@ -4333,3 +4333,1364 @@ abstract class _SessionUpdateResponse implements SessionUpdateResponse {
   _$$SessionUpdateResponseImplCopyWith<_$SessionUpdateResponseImpl>
   get copyWith => throw _privateConstructorUsedError;
 }
+
+GroupSessionNoteResponse _$GroupSessionNoteResponseFromJson(
+  Map<String, dynamic> json,
+) {
+  return _GroupSessionNoteResponse.fromJson(json);
+}
+
+/// @nodoc
+mixin _$GroupSessionNoteResponse {
+  List<GroupSessionData> get data => throw _privateConstructorUsedError;
+  Pagination get pagination => throw _privateConstructorUsedError;
+  String get message => throw _privateConstructorUsedError;
+  int get statusCode => throw _privateConstructorUsedError;
+  String get method => throw _privateConstructorUsedError;
+  String get path => throw _privateConstructorUsedError;
+  DateTime get timestamp => throw _privateConstructorUsedError;
+
+  /// Serializes this GroupSessionNoteResponse to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of GroupSessionNoteResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $GroupSessionNoteResponseCopyWith<GroupSessionNoteResponse> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $GroupSessionNoteResponseCopyWith<$Res> {
+  factory $GroupSessionNoteResponseCopyWith(
+    GroupSessionNoteResponse value,
+    $Res Function(GroupSessionNoteResponse) then,
+  ) = _$GroupSessionNoteResponseCopyWithImpl<$Res, GroupSessionNoteResponse>;
+  @useResult
+  $Res call({
+    List<GroupSessionData> data,
+    Pagination pagination,
+    String message,
+    int statusCode,
+    String method,
+    String path,
+    DateTime timestamp,
+  });
+
+  $PaginationCopyWith<$Res> get pagination;
+}
+
+/// @nodoc
+class _$GroupSessionNoteResponseCopyWithImpl<
+  $Res,
+  $Val extends GroupSessionNoteResponse
+>
+    implements $GroupSessionNoteResponseCopyWith<$Res> {
+  _$GroupSessionNoteResponseCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of GroupSessionNoteResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? data = null,
+    Object? pagination = null,
+    Object? message = null,
+    Object? statusCode = null,
+    Object? method = null,
+    Object? path = null,
+    Object? timestamp = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            data:
+                null == data
+                    ? _value.data
+                    : data // ignore: cast_nullable_to_non_nullable
+                        as List<GroupSessionData>,
+            pagination:
+                null == pagination
+                    ? _value.pagination
+                    : pagination // ignore: cast_nullable_to_non_nullable
+                        as Pagination,
+            message:
+                null == message
+                    ? _value.message
+                    : message // ignore: cast_nullable_to_non_nullable
+                        as String,
+            statusCode:
+                null == statusCode
+                    ? _value.statusCode
+                    : statusCode // ignore: cast_nullable_to_non_nullable
+                        as int,
+            method:
+                null == method
+                    ? _value.method
+                    : method // ignore: cast_nullable_to_non_nullable
+                        as String,
+            path:
+                null == path
+                    ? _value.path
+                    : path // ignore: cast_nullable_to_non_nullable
+                        as String,
+            timestamp:
+                null == timestamp
+                    ? _value.timestamp
+                    : timestamp // ignore: cast_nullable_to_non_nullable
+                        as DateTime,
+          )
+          as $Val,
+    );
+  }
+
+  /// Create a copy of GroupSessionNoteResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $PaginationCopyWith<$Res> get pagination {
+    return $PaginationCopyWith<$Res>(_value.pagination, (value) {
+      return _then(_value.copyWith(pagination: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$GroupSessionNoteResponseImplCopyWith<$Res>
+    implements $GroupSessionNoteResponseCopyWith<$Res> {
+  factory _$$GroupSessionNoteResponseImplCopyWith(
+    _$GroupSessionNoteResponseImpl value,
+    $Res Function(_$GroupSessionNoteResponseImpl) then,
+  ) = __$$GroupSessionNoteResponseImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    List<GroupSessionData> data,
+    Pagination pagination,
+    String message,
+    int statusCode,
+    String method,
+    String path,
+    DateTime timestamp,
+  });
+
+  @override
+  $PaginationCopyWith<$Res> get pagination;
+}
+
+/// @nodoc
+class __$$GroupSessionNoteResponseImplCopyWithImpl<$Res>
+    extends
+        _$GroupSessionNoteResponseCopyWithImpl<
+          $Res,
+          _$GroupSessionNoteResponseImpl
+        >
+    implements _$$GroupSessionNoteResponseImplCopyWith<$Res> {
+  __$$GroupSessionNoteResponseImplCopyWithImpl(
+    _$GroupSessionNoteResponseImpl _value,
+    $Res Function(_$GroupSessionNoteResponseImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of GroupSessionNoteResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? data = null,
+    Object? pagination = null,
+    Object? message = null,
+    Object? statusCode = null,
+    Object? method = null,
+    Object? path = null,
+    Object? timestamp = null,
+  }) {
+    return _then(
+      _$GroupSessionNoteResponseImpl(
+        data:
+            null == data
+                ? _value._data
+                : data // ignore: cast_nullable_to_non_nullable
+                    as List<GroupSessionData>,
+        pagination:
+            null == pagination
+                ? _value.pagination
+                : pagination // ignore: cast_nullable_to_non_nullable
+                    as Pagination,
+        message:
+            null == message
+                ? _value.message
+                : message // ignore: cast_nullable_to_non_nullable
+                    as String,
+        statusCode:
+            null == statusCode
+                ? _value.statusCode
+                : statusCode // ignore: cast_nullable_to_non_nullable
+                    as int,
+        method:
+            null == method
+                ? _value.method
+                : method // ignore: cast_nullable_to_non_nullable
+                    as String,
+        path:
+            null == path
+                ? _value.path
+                : path // ignore: cast_nullable_to_non_nullable
+                    as String,
+        timestamp:
+            null == timestamp
+                ? _value.timestamp
+                : timestamp // ignore: cast_nullable_to_non_nullable
+                    as DateTime,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$GroupSessionNoteResponseImpl implements _GroupSessionNoteResponse {
+  const _$GroupSessionNoteResponseImpl({
+    required final List<GroupSessionData> data,
+    required this.pagination,
+    required this.message,
+    required this.statusCode,
+    required this.method,
+    required this.path,
+    required this.timestamp,
+  }) : _data = data;
+
+  factory _$GroupSessionNoteResponseImpl.fromJson(Map<String, dynamic> json) =>
+      _$$GroupSessionNoteResponseImplFromJson(json);
+
+  final List<GroupSessionData> _data;
+  @override
+  List<GroupSessionData> get data {
+    if (_data is EqualUnmodifiableListView) return _data;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_data);
+  }
+
+  @override
+  final Pagination pagination;
+  @override
+  final String message;
+  @override
+  final int statusCode;
+  @override
+  final String method;
+  @override
+  final String path;
+  @override
+  final DateTime timestamp;
+
+  @override
+  String toString() {
+    return 'GroupSessionNoteResponse(data: $data, pagination: $pagination, message: $message, statusCode: $statusCode, method: $method, path: $path, timestamp: $timestamp)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$GroupSessionNoteResponseImpl &&
+            const DeepCollectionEquality().equals(other._data, _data) &&
+            (identical(other.pagination, pagination) ||
+                other.pagination == pagination) &&
+            (identical(other.message, message) || other.message == message) &&
+            (identical(other.statusCode, statusCode) ||
+                other.statusCode == statusCode) &&
+            (identical(other.method, method) || other.method == method) &&
+            (identical(other.path, path) || other.path == path) &&
+            (identical(other.timestamp, timestamp) ||
+                other.timestamp == timestamp));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    const DeepCollectionEquality().hash(_data),
+    pagination,
+    message,
+    statusCode,
+    method,
+    path,
+    timestamp,
+  );
+
+  /// Create a copy of GroupSessionNoteResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$GroupSessionNoteResponseImplCopyWith<_$GroupSessionNoteResponseImpl>
+  get copyWith => __$$GroupSessionNoteResponseImplCopyWithImpl<
+    _$GroupSessionNoteResponseImpl
+  >(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$GroupSessionNoteResponseImplToJson(this);
+  }
+}
+
+abstract class _GroupSessionNoteResponse implements GroupSessionNoteResponse {
+  const factory _GroupSessionNoteResponse({
+    required final List<GroupSessionData> data,
+    required final Pagination pagination,
+    required final String message,
+    required final int statusCode,
+    required final String method,
+    required final String path,
+    required final DateTime timestamp,
+  }) = _$GroupSessionNoteResponseImpl;
+
+  factory _GroupSessionNoteResponse.fromJson(Map<String, dynamic> json) =
+      _$GroupSessionNoteResponseImpl.fromJson;
+
+  @override
+  List<GroupSessionData> get data;
+  @override
+  Pagination get pagination;
+  @override
+  String get message;
+  @override
+  int get statusCode;
+  @override
+  String get method;
+  @override
+  String get path;
+  @override
+  DateTime get timestamp;
+
+  /// Create a copy of GroupSessionNoteResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$GroupSessionNoteResponseImplCopyWith<_$GroupSessionNoteResponseImpl>
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+GroupSessionData _$GroupSessionDataFromJson(Map<String, dynamic> json) {
+  return _GroupSessionData.fromJson(json);
+}
+
+/// @nodoc
+mixin _$GroupSessionData {
+  String get id => throw _privateConstructorUsedError;
+  List<ClientNote>? get clientNotes => throw _privateConstructorUsedError;
+  UserModel get therapist => throw _privateConstructorUsedError;
+  dynamic get paymentPeriod => throw _privateConstructorUsedError;
+
+  /// Serializes this GroupSessionData to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of GroupSessionData
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $GroupSessionDataCopyWith<GroupSessionData> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $GroupSessionDataCopyWith<$Res> {
+  factory $GroupSessionDataCopyWith(
+    GroupSessionData value,
+    $Res Function(GroupSessionData) then,
+  ) = _$GroupSessionDataCopyWithImpl<$Res, GroupSessionData>;
+  @useResult
+  $Res call({
+    String id,
+    List<ClientNote>? clientNotes,
+    UserModel therapist,
+    dynamic paymentPeriod,
+  });
+
+  $UserModelCopyWith<$Res> get therapist;
+}
+
+/// @nodoc
+class _$GroupSessionDataCopyWithImpl<$Res, $Val extends GroupSessionData>
+    implements $GroupSessionDataCopyWith<$Res> {
+  _$GroupSessionDataCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of GroupSessionData
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? clientNotes = freezed,
+    Object? therapist = null,
+    Object? paymentPeriod = freezed,
+  }) {
+    return _then(
+      _value.copyWith(
+            id:
+                null == id
+                    ? _value.id
+                    : id // ignore: cast_nullable_to_non_nullable
+                        as String,
+            clientNotes:
+                freezed == clientNotes
+                    ? _value.clientNotes
+                    : clientNotes // ignore: cast_nullable_to_non_nullable
+                        as List<ClientNote>?,
+            therapist:
+                null == therapist
+                    ? _value.therapist
+                    : therapist // ignore: cast_nullable_to_non_nullable
+                        as UserModel,
+            paymentPeriod:
+                freezed == paymentPeriod
+                    ? _value.paymentPeriod
+                    : paymentPeriod // ignore: cast_nullable_to_non_nullable
+                        as dynamic,
+          )
+          as $Val,
+    );
+  }
+
+  /// Create a copy of GroupSessionData
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $UserModelCopyWith<$Res> get therapist {
+    return $UserModelCopyWith<$Res>(_value.therapist, (value) {
+      return _then(_value.copyWith(therapist: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$GroupSessionDataImplCopyWith<$Res>
+    implements $GroupSessionDataCopyWith<$Res> {
+  factory _$$GroupSessionDataImplCopyWith(
+    _$GroupSessionDataImpl value,
+    $Res Function(_$GroupSessionDataImpl) then,
+  ) = __$$GroupSessionDataImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    String id,
+    List<ClientNote>? clientNotes,
+    UserModel therapist,
+    dynamic paymentPeriod,
+  });
+
+  @override
+  $UserModelCopyWith<$Res> get therapist;
+}
+
+/// @nodoc
+class __$$GroupSessionDataImplCopyWithImpl<$Res>
+    extends _$GroupSessionDataCopyWithImpl<$Res, _$GroupSessionDataImpl>
+    implements _$$GroupSessionDataImplCopyWith<$Res> {
+  __$$GroupSessionDataImplCopyWithImpl(
+    _$GroupSessionDataImpl _value,
+    $Res Function(_$GroupSessionDataImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of GroupSessionData
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? clientNotes = freezed,
+    Object? therapist = null,
+    Object? paymentPeriod = freezed,
+  }) {
+    return _then(
+      _$GroupSessionDataImpl(
+        id:
+            null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                    as String,
+        clientNotes:
+            freezed == clientNotes
+                ? _value._clientNotes
+                : clientNotes // ignore: cast_nullable_to_non_nullable
+                    as List<ClientNote>?,
+        therapist:
+            null == therapist
+                ? _value.therapist
+                : therapist // ignore: cast_nullable_to_non_nullable
+                    as UserModel,
+        paymentPeriod:
+            freezed == paymentPeriod
+                ? _value.paymentPeriod
+                : paymentPeriod // ignore: cast_nullable_to_non_nullable
+                    as dynamic,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$GroupSessionDataImpl implements _GroupSessionData {
+  const _$GroupSessionDataImpl({
+    required this.id,
+    required final List<ClientNote>? clientNotes,
+    required this.therapist,
+    required this.paymentPeriod,
+  }) : _clientNotes = clientNotes;
+
+  factory _$GroupSessionDataImpl.fromJson(Map<String, dynamic> json) =>
+      _$$GroupSessionDataImplFromJson(json);
+
+  @override
+  final String id;
+  final List<ClientNote>? _clientNotes;
+  @override
+  List<ClientNote>? get clientNotes {
+    final value = _clientNotes;
+    if (value == null) return null;
+    if (_clientNotes is EqualUnmodifiableListView) return _clientNotes;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
+  @override
+  final UserModel therapist;
+  @override
+  final dynamic paymentPeriod;
+
+  @override
+  String toString() {
+    return 'GroupSessionData(id: $id, clientNotes: $clientNotes, therapist: $therapist, paymentPeriod: $paymentPeriod)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$GroupSessionDataImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            const DeepCollectionEquality().equals(
+              other._clientNotes,
+              _clientNotes,
+            ) &&
+            (identical(other.therapist, therapist) ||
+                other.therapist == therapist) &&
+            const DeepCollectionEquality().equals(
+              other.paymentPeriod,
+              paymentPeriod,
+            ));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    const DeepCollectionEquality().hash(_clientNotes),
+    therapist,
+    const DeepCollectionEquality().hash(paymentPeriod),
+  );
+
+  /// Create a copy of GroupSessionData
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$GroupSessionDataImplCopyWith<_$GroupSessionDataImpl> get copyWith =>
+      __$$GroupSessionDataImplCopyWithImpl<_$GroupSessionDataImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$GroupSessionDataImplToJson(this);
+  }
+}
+
+abstract class _GroupSessionData implements GroupSessionData {
+  const factory _GroupSessionData({
+    required final String id,
+    required final List<ClientNote>? clientNotes,
+    required final UserModel therapist,
+    required final dynamic paymentPeriod,
+  }) = _$GroupSessionDataImpl;
+
+  factory _GroupSessionData.fromJson(Map<String, dynamic> json) =
+      _$GroupSessionDataImpl.fromJson;
+
+  @override
+  String get id;
+  @override
+  List<ClientNote>? get clientNotes;
+  @override
+  UserModel get therapist;
+  @override
+  dynamic get paymentPeriod;
+
+  /// Create a copy of GroupSessionData
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$GroupSessionDataImplCopyWith<_$GroupSessionDataImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+ClientNote _$ClientNoteFromJson(Map<String, dynamic> json) {
+  return _ClientNote.fromJson(json);
+}
+
+/// @nodoc
+mixin _$ClientNote {
+  String get id => throw _privateConstructorUsedError;
+  DateTime? get updatedAt => throw _privateConstructorUsedError;
+  DateTime? get createdAt => throw _privateConstructorUsedError;
+  String get note => throw _privateConstructorUsedError;
+  UserModel get client => throw _privateConstructorUsedError;
+
+  /// Serializes this ClientNote to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of ClientNote
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $ClientNoteCopyWith<ClientNote> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $ClientNoteCopyWith<$Res> {
+  factory $ClientNoteCopyWith(
+    ClientNote value,
+    $Res Function(ClientNote) then,
+  ) = _$ClientNoteCopyWithImpl<$Res, ClientNote>;
+  @useResult
+  $Res call({
+    String id,
+    DateTime? updatedAt,
+    DateTime? createdAt,
+    String note,
+    UserModel client,
+  });
+
+  $UserModelCopyWith<$Res> get client;
+}
+
+/// @nodoc
+class _$ClientNoteCopyWithImpl<$Res, $Val extends ClientNote>
+    implements $ClientNoteCopyWith<$Res> {
+  _$ClientNoteCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of ClientNote
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? updatedAt = freezed,
+    Object? createdAt = freezed,
+    Object? note = null,
+    Object? client = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            id:
+                null == id
+                    ? _value.id
+                    : id // ignore: cast_nullable_to_non_nullable
+                        as String,
+            updatedAt:
+                freezed == updatedAt
+                    ? _value.updatedAt
+                    : updatedAt // ignore: cast_nullable_to_non_nullable
+                        as DateTime?,
+            createdAt:
+                freezed == createdAt
+                    ? _value.createdAt
+                    : createdAt // ignore: cast_nullable_to_non_nullable
+                        as DateTime?,
+            note:
+                null == note
+                    ? _value.note
+                    : note // ignore: cast_nullable_to_non_nullable
+                        as String,
+            client:
+                null == client
+                    ? _value.client
+                    : client // ignore: cast_nullable_to_non_nullable
+                        as UserModel,
+          )
+          as $Val,
+    );
+  }
+
+  /// Create a copy of ClientNote
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $UserModelCopyWith<$Res> get client {
+    return $UserModelCopyWith<$Res>(_value.client, (value) {
+      return _then(_value.copyWith(client: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$ClientNoteImplCopyWith<$Res>
+    implements $ClientNoteCopyWith<$Res> {
+  factory _$$ClientNoteImplCopyWith(
+    _$ClientNoteImpl value,
+    $Res Function(_$ClientNoteImpl) then,
+  ) = __$$ClientNoteImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    String id,
+    DateTime? updatedAt,
+    DateTime? createdAt,
+    String note,
+    UserModel client,
+  });
+
+  @override
+  $UserModelCopyWith<$Res> get client;
+}
+
+/// @nodoc
+class __$$ClientNoteImplCopyWithImpl<$Res>
+    extends _$ClientNoteCopyWithImpl<$Res, _$ClientNoteImpl>
+    implements _$$ClientNoteImplCopyWith<$Res> {
+  __$$ClientNoteImplCopyWithImpl(
+    _$ClientNoteImpl _value,
+    $Res Function(_$ClientNoteImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of ClientNote
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? updatedAt = freezed,
+    Object? createdAt = freezed,
+    Object? note = null,
+    Object? client = null,
+  }) {
+    return _then(
+      _$ClientNoteImpl(
+        id:
+            null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                    as String,
+        updatedAt:
+            freezed == updatedAt
+                ? _value.updatedAt
+                : updatedAt // ignore: cast_nullable_to_non_nullable
+                    as DateTime?,
+        createdAt:
+            freezed == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                    as DateTime?,
+        note:
+            null == note
+                ? _value.note
+                : note // ignore: cast_nullable_to_non_nullable
+                    as String,
+        client:
+            null == client
+                ? _value.client
+                : client // ignore: cast_nullable_to_non_nullable
+                    as UserModel,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$ClientNoteImpl implements _ClientNote {
+  const _$ClientNoteImpl({
+    required this.id,
+    required this.updatedAt,
+    required this.createdAt,
+    required this.note,
+    required this.client,
+  });
+
+  factory _$ClientNoteImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ClientNoteImplFromJson(json);
+
+  @override
+  final String id;
+  @override
+  final DateTime? updatedAt;
+  @override
+  final DateTime? createdAt;
+  @override
+  final String note;
+  @override
+  final UserModel client;
+
+  @override
+  String toString() {
+    return 'ClientNote(id: $id, updatedAt: $updatedAt, createdAt: $createdAt, note: $note, client: $client)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ClientNoteImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.note, note) || other.note == note) &&
+            (identical(other.client, client) || other.client == client));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, id, updatedAt, createdAt, note, client);
+
+  /// Create a copy of ClientNote
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ClientNoteImplCopyWith<_$ClientNoteImpl> get copyWith =>
+      __$$ClientNoteImplCopyWithImpl<_$ClientNoteImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$ClientNoteImplToJson(this);
+  }
+}
+
+abstract class _ClientNote implements ClientNote {
+  const factory _ClientNote({
+    required final String id,
+    required final DateTime? updatedAt,
+    required final DateTime? createdAt,
+    required final String note,
+    required final UserModel client,
+  }) = _$ClientNoteImpl;
+
+  factory _ClientNote.fromJson(Map<String, dynamic> json) =
+      _$ClientNoteImpl.fromJson;
+
+  @override
+  String get id;
+  @override
+  DateTime? get updatedAt;
+  @override
+  DateTime? get createdAt;
+  @override
+  String get note;
+  @override
+  UserModel get client;
+
+  /// Create a copy of ClientNote
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$ClientNoteImplCopyWith<_$ClientNoteImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+SessionGroupNoteUpdateResponse _$SessionGroupNoteUpdateResponseFromJson(
+  Map<String, dynamic> json,
+) {
+  return _SessionGroupNoteUpdateResponse.fromJson(json);
+}
+
+/// @nodoc
+mixin _$SessionGroupNoteUpdateResponse {
+  GroupNoteUpdateData get data => throw _privateConstructorUsedError;
+  String get message => throw _privateConstructorUsedError;
+  int get statusCode => throw _privateConstructorUsedError;
+  String get method => throw _privateConstructorUsedError;
+  String get path => throw _privateConstructorUsedError;
+  DateTime get timestamp => throw _privateConstructorUsedError;
+
+  /// Serializes this SessionGroupNoteUpdateResponse to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of SessionGroupNoteUpdateResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $SessionGroupNoteUpdateResponseCopyWith<SessionGroupNoteUpdateResponse>
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $SessionGroupNoteUpdateResponseCopyWith<$Res> {
+  factory $SessionGroupNoteUpdateResponseCopyWith(
+    SessionGroupNoteUpdateResponse value,
+    $Res Function(SessionGroupNoteUpdateResponse) then,
+  ) =
+      _$SessionGroupNoteUpdateResponseCopyWithImpl<
+        $Res,
+        SessionGroupNoteUpdateResponse
+      >;
+  @useResult
+  $Res call({
+    GroupNoteUpdateData data,
+    String message,
+    int statusCode,
+    String method,
+    String path,
+    DateTime timestamp,
+  });
+
+  $GroupNoteUpdateDataCopyWith<$Res> get data;
+}
+
+/// @nodoc
+class _$SessionGroupNoteUpdateResponseCopyWithImpl<
+  $Res,
+  $Val extends SessionGroupNoteUpdateResponse
+>
+    implements $SessionGroupNoteUpdateResponseCopyWith<$Res> {
+  _$SessionGroupNoteUpdateResponseCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of SessionGroupNoteUpdateResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? data = null,
+    Object? message = null,
+    Object? statusCode = null,
+    Object? method = null,
+    Object? path = null,
+    Object? timestamp = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            data:
+                null == data
+                    ? _value.data
+                    : data // ignore: cast_nullable_to_non_nullable
+                        as GroupNoteUpdateData,
+            message:
+                null == message
+                    ? _value.message
+                    : message // ignore: cast_nullable_to_non_nullable
+                        as String,
+            statusCode:
+                null == statusCode
+                    ? _value.statusCode
+                    : statusCode // ignore: cast_nullable_to_non_nullable
+                        as int,
+            method:
+                null == method
+                    ? _value.method
+                    : method // ignore: cast_nullable_to_non_nullable
+                        as String,
+            path:
+                null == path
+                    ? _value.path
+                    : path // ignore: cast_nullable_to_non_nullable
+                        as String,
+            timestamp:
+                null == timestamp
+                    ? _value.timestamp
+                    : timestamp // ignore: cast_nullable_to_non_nullable
+                        as DateTime,
+          )
+          as $Val,
+    );
+  }
+
+  /// Create a copy of SessionGroupNoteUpdateResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $GroupNoteUpdateDataCopyWith<$Res> get data {
+    return $GroupNoteUpdateDataCopyWith<$Res>(_value.data, (value) {
+      return _then(_value.copyWith(data: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$SessionGroupNoteUpdateResponseImplCopyWith<$Res>
+    implements $SessionGroupNoteUpdateResponseCopyWith<$Res> {
+  factory _$$SessionGroupNoteUpdateResponseImplCopyWith(
+    _$SessionGroupNoteUpdateResponseImpl value,
+    $Res Function(_$SessionGroupNoteUpdateResponseImpl) then,
+  ) = __$$SessionGroupNoteUpdateResponseImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    GroupNoteUpdateData data,
+    String message,
+    int statusCode,
+    String method,
+    String path,
+    DateTime timestamp,
+  });
+
+  @override
+  $GroupNoteUpdateDataCopyWith<$Res> get data;
+}
+
+/// @nodoc
+class __$$SessionGroupNoteUpdateResponseImplCopyWithImpl<$Res>
+    extends
+        _$SessionGroupNoteUpdateResponseCopyWithImpl<
+          $Res,
+          _$SessionGroupNoteUpdateResponseImpl
+        >
+    implements _$$SessionGroupNoteUpdateResponseImplCopyWith<$Res> {
+  __$$SessionGroupNoteUpdateResponseImplCopyWithImpl(
+    _$SessionGroupNoteUpdateResponseImpl _value,
+    $Res Function(_$SessionGroupNoteUpdateResponseImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of SessionGroupNoteUpdateResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? data = null,
+    Object? message = null,
+    Object? statusCode = null,
+    Object? method = null,
+    Object? path = null,
+    Object? timestamp = null,
+  }) {
+    return _then(
+      _$SessionGroupNoteUpdateResponseImpl(
+        data:
+            null == data
+                ? _value.data
+                : data // ignore: cast_nullable_to_non_nullable
+                    as GroupNoteUpdateData,
+        message:
+            null == message
+                ? _value.message
+                : message // ignore: cast_nullable_to_non_nullable
+                    as String,
+        statusCode:
+            null == statusCode
+                ? _value.statusCode
+                : statusCode // ignore: cast_nullable_to_non_nullable
+                    as int,
+        method:
+            null == method
+                ? _value.method
+                : method // ignore: cast_nullable_to_non_nullable
+                    as String,
+        path:
+            null == path
+                ? _value.path
+                : path // ignore: cast_nullable_to_non_nullable
+                    as String,
+        timestamp:
+            null == timestamp
+                ? _value.timestamp
+                : timestamp // ignore: cast_nullable_to_non_nullable
+                    as DateTime,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$SessionGroupNoteUpdateResponseImpl
+    implements _SessionGroupNoteUpdateResponse {
+  const _$SessionGroupNoteUpdateResponseImpl({
+    required this.data,
+    required this.message,
+    required this.statusCode,
+    required this.method,
+    required this.path,
+    required this.timestamp,
+  });
+
+  factory _$SessionGroupNoteUpdateResponseImpl.fromJson(
+    Map<String, dynamic> json,
+  ) => _$$SessionGroupNoteUpdateResponseImplFromJson(json);
+
+  @override
+  final GroupNoteUpdateData data;
+  @override
+  final String message;
+  @override
+  final int statusCode;
+  @override
+  final String method;
+  @override
+  final String path;
+  @override
+  final DateTime timestamp;
+
+  @override
+  String toString() {
+    return 'SessionGroupNoteUpdateResponse(data: $data, message: $message, statusCode: $statusCode, method: $method, path: $path, timestamp: $timestamp)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$SessionGroupNoteUpdateResponseImpl &&
+            (identical(other.data, data) || other.data == data) &&
+            (identical(other.message, message) || other.message == message) &&
+            (identical(other.statusCode, statusCode) ||
+                other.statusCode == statusCode) &&
+            (identical(other.method, method) || other.method == method) &&
+            (identical(other.path, path) || other.path == path) &&
+            (identical(other.timestamp, timestamp) ||
+                other.timestamp == timestamp));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    data,
+    message,
+    statusCode,
+    method,
+    path,
+    timestamp,
+  );
+
+  /// Create a copy of SessionGroupNoteUpdateResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$SessionGroupNoteUpdateResponseImplCopyWith<
+    _$SessionGroupNoteUpdateResponseImpl
+  >
+  get copyWith => __$$SessionGroupNoteUpdateResponseImplCopyWithImpl<
+    _$SessionGroupNoteUpdateResponseImpl
+  >(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$SessionGroupNoteUpdateResponseImplToJson(this);
+  }
+}
+
+abstract class _SessionGroupNoteUpdateResponse
+    implements SessionGroupNoteUpdateResponse {
+  const factory _SessionGroupNoteUpdateResponse({
+    required final GroupNoteUpdateData data,
+    required final String message,
+    required final int statusCode,
+    required final String method,
+    required final String path,
+    required final DateTime timestamp,
+  }) = _$SessionGroupNoteUpdateResponseImpl;
+
+  factory _SessionGroupNoteUpdateResponse.fromJson(Map<String, dynamic> json) =
+      _$SessionGroupNoteUpdateResponseImpl.fromJson;
+
+  @override
+  GroupNoteUpdateData get data;
+  @override
+  String get message;
+  @override
+  int get statusCode;
+  @override
+  String get method;
+  @override
+  String get path;
+  @override
+  DateTime get timestamp;
+
+  /// Create a copy of SessionGroupNoteUpdateResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$SessionGroupNoteUpdateResponseImplCopyWith<
+    _$SessionGroupNoteUpdateResponseImpl
+  >
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+GroupNoteUpdateData _$GroupNoteUpdateDataFromJson(Map<String, dynamic> json) {
+  return _GroupNoteUpdateData.fromJson(json);
+}
+
+/// @nodoc
+mixin _$GroupNoteUpdateData {
+  String get message => throw _privateConstructorUsedError;
+
+  /// Serializes this GroupNoteUpdateData to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of GroupNoteUpdateData
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $GroupNoteUpdateDataCopyWith<GroupNoteUpdateData> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $GroupNoteUpdateDataCopyWith<$Res> {
+  factory $GroupNoteUpdateDataCopyWith(
+    GroupNoteUpdateData value,
+    $Res Function(GroupNoteUpdateData) then,
+  ) = _$GroupNoteUpdateDataCopyWithImpl<$Res, GroupNoteUpdateData>;
+  @useResult
+  $Res call({String message});
+}
+
+/// @nodoc
+class _$GroupNoteUpdateDataCopyWithImpl<$Res, $Val extends GroupNoteUpdateData>
+    implements $GroupNoteUpdateDataCopyWith<$Res> {
+  _$GroupNoteUpdateDataCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of GroupNoteUpdateData
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? message = null}) {
+    return _then(
+      _value.copyWith(
+            message:
+                null == message
+                    ? _value.message
+                    : message // ignore: cast_nullable_to_non_nullable
+                        as String,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$GroupNoteUpdateDataImplCopyWith<$Res>
+    implements $GroupNoteUpdateDataCopyWith<$Res> {
+  factory _$$GroupNoteUpdateDataImplCopyWith(
+    _$GroupNoteUpdateDataImpl value,
+    $Res Function(_$GroupNoteUpdateDataImpl) then,
+  ) = __$$GroupNoteUpdateDataImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String message});
+}
+
+/// @nodoc
+class __$$GroupNoteUpdateDataImplCopyWithImpl<$Res>
+    extends _$GroupNoteUpdateDataCopyWithImpl<$Res, _$GroupNoteUpdateDataImpl>
+    implements _$$GroupNoteUpdateDataImplCopyWith<$Res> {
+  __$$GroupNoteUpdateDataImplCopyWithImpl(
+    _$GroupNoteUpdateDataImpl _value,
+    $Res Function(_$GroupNoteUpdateDataImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of GroupNoteUpdateData
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? message = null}) {
+    return _then(
+      _$GroupNoteUpdateDataImpl(
+        message:
+            null == message
+                ? _value.message
+                : message // ignore: cast_nullable_to_non_nullable
+                    as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$GroupNoteUpdateDataImpl implements _GroupNoteUpdateData {
+  const _$GroupNoteUpdateDataImpl({required this.message});
+
+  factory _$GroupNoteUpdateDataImpl.fromJson(Map<String, dynamic> json) =>
+      _$$GroupNoteUpdateDataImplFromJson(json);
+
+  @override
+  final String message;
+
+  @override
+  String toString() {
+    return 'GroupNoteUpdateData(message: $message)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$GroupNoteUpdateDataImpl &&
+            (identical(other.message, message) || other.message == message));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, message);
+
+  /// Create a copy of GroupNoteUpdateData
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$GroupNoteUpdateDataImplCopyWith<_$GroupNoteUpdateDataImpl> get copyWith =>
+      __$$GroupNoteUpdateDataImplCopyWithImpl<_$GroupNoteUpdateDataImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$GroupNoteUpdateDataImplToJson(this);
+  }
+}
+
+abstract class _GroupNoteUpdateData implements GroupNoteUpdateData {
+  const factory _GroupNoteUpdateData({required final String message}) =
+      _$GroupNoteUpdateDataImpl;
+
+  factory _GroupNoteUpdateData.fromJson(Map<String, dynamic> json) =
+      _$GroupNoteUpdateDataImpl.fromJson;
+
+  @override
+  String get message;
+
+  /// Create a copy of GroupNoteUpdateData
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$GroupNoteUpdateDataImplCopyWith<_$GroupNoteUpdateDataImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}

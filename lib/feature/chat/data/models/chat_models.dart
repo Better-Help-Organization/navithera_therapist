@@ -221,3 +221,72 @@ class SessionUpdateResponse with _$SessionUpdateResponse {
   factory SessionUpdateResponse.fromJson(Map<String, dynamic> json) =>
       _$SessionUpdateResponseFromJson(json);
 }
+
+// Add these models to chat_models.dart
+
+@freezed
+class GroupSessionNoteResponse with _$GroupSessionNoteResponse {
+  const factory GroupSessionNoteResponse({
+    required List<GroupSessionData> data,
+    required Pagination pagination,
+    required String message,
+    required int statusCode,
+    required String method,
+    required String path,
+    required DateTime timestamp,
+  }) = _GroupSessionNoteResponse;
+
+  factory GroupSessionNoteResponse.fromJson(Map<String, dynamic> json) =>
+      _$GroupSessionNoteResponseFromJson(json);
+}
+
+@freezed
+class GroupSessionData with _$GroupSessionData {
+  const factory GroupSessionData({
+    required String id,
+    required List<ClientNote>? clientNotes,
+    required UserModel therapist,
+    required dynamic paymentPeriod,
+  }) = _GroupSessionData;
+
+  factory GroupSessionData.fromJson(Map<String, dynamic> json) =>
+      _$GroupSessionDataFromJson(json);
+}
+
+@freezed
+class ClientNote with _$ClientNote {
+  const factory ClientNote({
+    required String id,
+    required DateTime? updatedAt,
+    required DateTime? createdAt,
+    required String note,
+    required UserModel client,
+  }) = _ClientNote;
+
+  factory ClientNote.fromJson(Map<String, dynamic> json) =>
+      _$ClientNoteFromJson(json);
+}
+
+@freezed
+class SessionGroupNoteUpdateResponse with _$SessionGroupNoteUpdateResponse {
+  const factory SessionGroupNoteUpdateResponse({
+    required GroupNoteUpdateData data,
+    required String message,
+    required int statusCode,
+    required String method,
+    required String path,
+    required DateTime timestamp,
+  }) = _SessionGroupNoteUpdateResponse;
+
+  factory SessionGroupNoteUpdateResponse.fromJson(Map<String, dynamic> json) =>
+      _$SessionGroupNoteUpdateResponseFromJson(json);
+}
+
+@freezed
+class GroupNoteUpdateData with _$GroupNoteUpdateData {
+  const factory GroupNoteUpdateData({required String message}) =
+      _GroupNoteUpdateData;
+
+  factory GroupNoteUpdateData.fromJson(Map<String, dynamic> json) =>
+      _$GroupNoteUpdateDataFromJson(json);
+}

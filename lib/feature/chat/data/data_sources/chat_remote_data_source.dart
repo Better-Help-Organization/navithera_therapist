@@ -65,6 +65,20 @@ abstract class ChatRemoteDataSource {
 
   @DELETE('/messages/{id}')
   Future<dynamic> deleteMessage(@Path('id') String messageId);
+
+  // Add these methods to the ChatRemoteDataSource interface in chat_remote_data_source.dart
+
+  @GET('/therapist/me/sessions')
+  Future<GroupSessionNoteResponse> getGroupSessionNote({
+    @Query('fields') String? fields,
+    @Query('filters') String? filters,
+  });
+
+  @PATCH('/session/group-notes/{id}')
+  Future<SessionGroupNoteUpdateResponse> updateGroupSessionNote(
+    @Path('id') String sessionId,
+    @Body() Map<String, dynamic> updateData,
+  );
 }
 
 final chatRemoteDataSourceProvider = Provider<ChatRemoteDataSource>((ref) {

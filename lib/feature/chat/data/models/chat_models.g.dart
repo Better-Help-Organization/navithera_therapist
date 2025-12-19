@@ -362,3 +362,105 @@ Map<String, dynamic> _$$SessionUpdateResponseImplToJson(
   'path': instance.path,
   'timestamp': instance.timestamp.toIso8601String(),
 };
+
+_$GroupSessionNoteResponseImpl _$$GroupSessionNoteResponseImplFromJson(
+  Map<String, dynamic> json,
+) => _$GroupSessionNoteResponseImpl(
+  data:
+      (json['data'] as List<dynamic>)
+          .map((e) => GroupSessionData.fromJson(e as Map<String, dynamic>))
+          .toList(),
+  pagination: Pagination.fromJson(json['pagination'] as Map<String, dynamic>),
+  message: json['message'] as String,
+  statusCode: (json['statusCode'] as num).toInt(),
+  method: json['method'] as String,
+  path: json['path'] as String,
+  timestamp: DateTime.parse(json['timestamp'] as String),
+);
+
+Map<String, dynamic> _$$GroupSessionNoteResponseImplToJson(
+  _$GroupSessionNoteResponseImpl instance,
+) => <String, dynamic>{
+  'data': instance.data,
+  'pagination': instance.pagination,
+  'message': instance.message,
+  'statusCode': instance.statusCode,
+  'method': instance.method,
+  'path': instance.path,
+  'timestamp': instance.timestamp.toIso8601String(),
+};
+
+_$GroupSessionDataImpl _$$GroupSessionDataImplFromJson(
+  Map<String, dynamic> json,
+) => _$GroupSessionDataImpl(
+  id: json['id'] as String,
+  clientNotes:
+      (json['clientNotes'] as List<dynamic>?)
+          ?.map((e) => ClientNote.fromJson(e as Map<String, dynamic>))
+          .toList(),
+  therapist: UserModel.fromJson(json['therapist'] as Map<String, dynamic>),
+  paymentPeriod: json['paymentPeriod'],
+);
+
+Map<String, dynamic> _$$GroupSessionDataImplToJson(
+  _$GroupSessionDataImpl instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'clientNotes': instance.clientNotes,
+  'therapist': instance.therapist,
+  'paymentPeriod': instance.paymentPeriod,
+};
+
+_$ClientNoteImpl _$$ClientNoteImplFromJson(Map<String, dynamic> json) =>
+    _$ClientNoteImpl(
+      id: json['id'] as String,
+      updatedAt:
+          json['updatedAt'] == null
+              ? null
+              : DateTime.parse(json['updatedAt'] as String),
+      createdAt:
+          json['createdAt'] == null
+              ? null
+              : DateTime.parse(json['createdAt'] as String),
+      note: json['note'] as String,
+      client: UserModel.fromJson(json['client'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$$ClientNoteImplToJson(_$ClientNoteImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'updatedAt': instance.updatedAt?.toIso8601String(),
+      'createdAt': instance.createdAt?.toIso8601String(),
+      'note': instance.note,
+      'client': instance.client,
+    };
+
+_$SessionGroupNoteUpdateResponseImpl
+_$$SessionGroupNoteUpdateResponseImplFromJson(Map<String, dynamic> json) =>
+    _$SessionGroupNoteUpdateResponseImpl(
+      data: GroupNoteUpdateData.fromJson(json['data'] as Map<String, dynamic>),
+      message: json['message'] as String,
+      statusCode: (json['statusCode'] as num).toInt(),
+      method: json['method'] as String,
+      path: json['path'] as String,
+      timestamp: DateTime.parse(json['timestamp'] as String),
+    );
+
+Map<String, dynamic> _$$SessionGroupNoteUpdateResponseImplToJson(
+  _$SessionGroupNoteUpdateResponseImpl instance,
+) => <String, dynamic>{
+  'data': instance.data,
+  'message': instance.message,
+  'statusCode': instance.statusCode,
+  'method': instance.method,
+  'path': instance.path,
+  'timestamp': instance.timestamp.toIso8601String(),
+};
+
+_$GroupNoteUpdateDataImpl _$$GroupNoteUpdateDataImplFromJson(
+  Map<String, dynamic> json,
+) => _$GroupNoteUpdateDataImpl(message: json['message'] as String);
+
+Map<String, dynamic> _$$GroupNoteUpdateDataImplToJson(
+  _$GroupNoteUpdateDataImpl instance,
+) => <String, dynamic>{'message': instance.message};

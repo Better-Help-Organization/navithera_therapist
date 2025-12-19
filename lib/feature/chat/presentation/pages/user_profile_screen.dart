@@ -9,6 +9,7 @@ import 'package:navicare/feature/auth/presentation/providers/user_provider.dart'
 import 'package:navicare/feature/chat/data/models/chat_models.dart';
 import 'package:navicare/feature/chat/domain/repositories/chat_repository.dart';
 import 'package:navicare/feature/chat/presentation/pages/client_mood_screeen.dart';
+import 'package:navicare/feature/chat/presentation/pages/group_session_note_editor.dart';
 
 class ContactDetailPage extends ConsumerStatefulWidget {
   final String clientId;
@@ -362,22 +363,40 @@ class _ContactDetailPageState extends ConsumerState<ContactDetailPage> {
                   ),
                 )
               else
+                // In the build method of ContactDetailPage, update the SliverList section:
                 SliverList(
                   delegate: SliverChildBuilderDelegate((context, index) {
                     final session = sessions[index];
-                    final controller = noteControllers[session.id]!;
-                    final user = ref.read(currentUserProvider);
 
-                    return _SessionTile(
-                      session: session,
-                      controller: controller,
-                      onSaveNote:
-                          () => _updateSessionNote(
-                            session.id,
-                            user?.id ?? "",
-                            controller.text,
-                          ),
-                    );
+                    if (widget.isInGroup) {
+                      // For group sessions, use the new _SessionTile with isGroupSession = true
+                      return _SessionTile(
+                        session: session,
+                        isGroupSession: true,
+                        clientId: widget.clientId,
+                        clientName: widget.clientName,
+                        ref: ref,
+                      );
+                    } else {
+                      // For individual sessions, use the existing logic
+                      final controller = noteControllers[session.id]!;
+                      final user = ref.read(currentUserProvider);
+
+                      return _SessionTile(
+                        session: session,
+                        isGroupSession: false,
+                        clientId: widget.clientId,
+                        clientName: widget.clientName,
+                        controller: controller,
+                        onSaveNote:
+                            () => _updateSessionNote(
+                              session.id,
+                              user?.id ?? "",
+                              controller.text,
+                            ),
+                        ref: ref,
+                      );
+                    }
                   }, childCount: sessions.length),
                 ),
             ],
@@ -388,15 +407,27 @@ class _ContactDetailPageState extends ConsumerState<ContactDetailPage> {
   }
 }
 
+// Update the _SessionTile widget to handle both cases
+
 class _SessionTile extends StatefulWidget {
   final Session session;
-  final TextEditingController controller;
-  final VoidCallback onSaveNote;
+  final bool isGroupSession;
+  final String clientId;
+  final String clientName;
+
+  // Only used for individual sessions
+  final TextEditingController? controller;
+  final VoidCallback? onSaveNote;
+  final WidgetRef ref;
 
   const _SessionTile({
     required this.session,
-    required this.controller,
-    required this.onSaveNote,
+    required this.isGroupSession,
+    required this.clientId,
+    required this.clientName,
+    required this.ref,
+    this.controller,
+    this.onSaveNote,
   });
 
   @override
@@ -406,97 +437,153 @@ class _SessionTile extends StatefulWidget {
 class _SessionTileState extends State<_SessionTile> {
   bool isEditing = false;
 
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              _formatDateTime(widget.session.schedule!),
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+  Future<void> _openGroupSessionNoteEditor(BuildContext context) async {
+    // Load the existing note if any
+    final response = await widget.ref
+        .read(chatRepositoryProvider)
+        .getGroupSessionNote(
+          sessionId: widget.session.id,
+          clientId: widget.clientId,
+        );
+
+    String? existingNote;
+
+    response.fold(
+      (failure) {
+        // If it's a 404 or empty response, we'll start with empty note
+        existingNote = null;
+      },
+      (groupSessionResponse) {
+        if (groupSessionResponse.data.isNotEmpty &&
+            groupSessionResponse.data[0].clientNotes != null &&
+            groupSessionResponse.data[0].clientNotes!.isNotEmpty) {
+          existingNote = groupSessionResponse.data[0].clientNotes![0].note;
+        }
+      },
+    );
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => GroupSessionNoteEditor(
+              sessionId: widget.session.id,
+              clientId: widget.clientId,
+              clientName: widget.clientName,
+              sessionDate: widget.session.schedule!,
+              initialNote: existingNote,
+              onNoteUpdated: () {
+                // Trigger a refresh of the sessions list if needed
+              },
             ),
-            const SizedBox(height: 16),
-            const Text(
-              'Session Notes:',
-              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-            ),
-            const SizedBox(height: 8),
-            if (isEditing)
-              TextField(
-                controller: widget.controller,
-                maxLines: 3,
-                decoration: InputDecoration(
-                  hintText: 'Enter session notes...',
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.grey.shade300,
-                    ), // default border
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.grey.shade300,
-                    ), // unfocused border
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.grey.shade500,
-                    ), // focused border
-                  ),
-                ),
-              )
-            else
-              Text(
-                (widget.session.note ?? '').isEmpty
-                    ? 'No notes available'
-                    : (widget.session.note ?? ''),
-                style: TextStyle(
-                  color:
-                      (widget.session.note?.isEmpty ?? true)
-                          ? Colors.grey
-                          : null,
-                ),
-              ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                if (isEditing)
-                  TextButton(
-                    onPressed: () {
-                      setState(() => isEditing = false);
-                      // Reset controller to the current session note
-                      widget.controller.text = widget.session.note ?? '';
-                    },
-                    child: const Text('Cancel'),
-                  ),
-                if (isEditing) const SizedBox(width: 8),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                  ),
-                  onPressed:
-                      isEditing
-                          ? () {
-                            // Call the update function with the new note
-                            widget.onSaveNote();
-                            setState(() => isEditing = false);
-                          }
-                          : () => setState(() => isEditing = true),
-                  child: Text(
-                    isEditing ? 'Save' : 'Edit Notes',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
       ),
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.isGroupSession) {
+      // Group session - show date only, click to open editor
+      return Card(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: ListTile(
+          title: Text(
+            _formatDateTime(widget.session.schedule!),
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          subtitle: const Text('Tap to view/edit notes'),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => _openGroupSessionNoteEditor(context),
+        ),
+      );
+    } else {
+      // Individual session - existing inline editing
+      final controller = widget.controller!;
+      return Card(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                _formatDateTime(widget.session.schedule!),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Session Notes:',
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+              ),
+              const SizedBox(height: 8),
+              if (isEditing)
+                TextField(
+                  controller: controller,
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    hintText: 'Enter session notes...',
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey.shade500),
+                    ),
+                  ),
+                )
+              else
+                Text(
+                  (widget.session.note ?? '').isEmpty
+                      ? 'No notes available'
+                      : (widget.session.note ?? ''),
+                  style: TextStyle(
+                    color:
+                        (widget.session.note?.isEmpty ?? true)
+                            ? Colors.grey
+                            : null,
+                  ),
+                ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  if (isEditing)
+                    TextButton(
+                      onPressed: () {
+                        setState(() => isEditing = false);
+                        controller.text = widget.session.note ?? '';
+                      },
+                      child: const Text('Cancel'),
+                    ),
+                  if (isEditing) const SizedBox(width: 8),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                    ),
+                    onPressed:
+                        isEditing
+                            ? () {
+                              widget.onSaveNote!();
+                              setState(() => isEditing = false);
+                            }
+                            : () => setState(() => isEditing = true),
+                    child: Text(
+                      isEditing ? 'Save' : 'Edit Notes',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    }
   }
 
   String _formatDateTime(DateTime dateTime) {

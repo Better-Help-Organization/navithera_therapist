@@ -30,7 +30,7 @@ class SessionNotifier extends StateNotifier<List<Session>> {
     try {
       await _attachAuthHeader();
       final response = await _dio.get(
-        '${base_url_dev}/therapist/me/sessions?fields=client.*,schedule,duration,hasTherapistAttended,approvalStatus,groupName&take=100',
+        '${base_url_dev}/therapist/me/sessions?fields=client.*,schedule,duration,hasTherapistAttended,approvalStatus,groupName&take=0',
       );
 
       log("response data: ${response.data}");
