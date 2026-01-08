@@ -141,10 +141,7 @@ class FCMService {
       // Create a Listener before connecting
       final listener = room.createListener();
 
-      await room.prepareConnection(url, token);
-
-      // Try to connect to the room
-      // This will throw an Exception if it fails for any reason.
+      // Connect to the room directly (prepareConnection is called internally)
       await room.connect(
         url,
         token,
@@ -235,11 +232,6 @@ class FCMService {
           print('CallKit: Call accepted');
           final extra = event.body['extra'] as Map<dynamic, dynamic>?;
           if (extra != null) {
-            // End the CallKit call to release the audio session for LiveKit
-            final callId = event.body['id']?.toString();
-            if (callId != null) {
-              FlutterCallkitIncoming.endCall(callId);
-            }
             _handleCallAccepted(extra);
           }
           break;
@@ -269,72 +261,35 @@ class FCMService {
 
   /// Handles the call acceptance from CallKit VoIP push.
   void _handleCallAccepted(Map<dynamic, dynamic> extra) {
-    print('CallKit: _handleCallAccepted called with extra: $extra');
-
     final context = navigatorKey.currentContext;
-
-    // Extract values with proper type handling
-    final room = extra['room']?.toString();
-    final chatId = extra['chatId']?.toString();
-    final token = extra['token']?.toString();
-    final callerName = extra['callerName']?.toString() ?? 'Caller';
-
-    // Handle isVideoCall - can be bool, int (0/1), or string
-    bool isVideoCall = false;
-    final videoCallValue = extra['isVideoCall'];
-    if (videoCallValue is bool) {
-      isVideoCall = videoCallValue;
-    } else if (videoCallValue is int) {
-      isVideoCall = videoCallValue == 1;
-    } else if (videoCallValue is String) {
-      isVideoCall = videoCallValue == 'true' || videoCallValue == '1';
-    }
-
-    // Handle isGroupCall - same logic
-    bool isGroupCall = false;
-    final groupCallValue = extra['isGroupCall'];
-    if (groupCallValue is bool) {
-      isGroupCall = groupCallValue;
-    } else if (groupCallValue is int) {
-      isGroupCall = groupCallValue == 1;
-    } else if (groupCallValue is String) {
-      isGroupCall = groupCallValue == 'true' || groupCallValue == '1';
-    }
-
-    print(
-      'CallKit: Parsed data - room: $room, chatId: $chatId, token: ${token?.substring(0, 20)}..., isVideo: $isVideoCall, isGroup: $isGroupCall',
-    );
-
     if (context == null) {
-      print('CallKit: Context is null, storing as pending route');
       // Context not ready yet, store as pending route
       _ref.read(pendingRouteProvider.notifier).state = PendingRoute(
         path: '/call-screen',
         callData: {
-          'roomName': room ?? '',
-          'participantName': callerName,
-          'chatId': chatId ?? '',
-          'isVideoCall': isVideoCall,
-          'token': token ?? '',
-          'isGroupCall': isGroupCall,
+          'roomName': extra['room']?.toString() ?? '',
+          'participantName': extra['callerName']?.toString() ?? 'Caller',
+          'chatId': extra['chatId']?.toString() ?? '',
+          'isVideoCall': extra['isVideoCall'] == true,
+          'token': extra['token']?.toString() ?? '',
+          'isGroupCall': extra['isGroupCall'] == true,
         },
       );
       return;
     }
 
-    if (room == null ||
-        room.isEmpty ||
-        chatId == null ||
-        chatId.isEmpty ||
-        token == null ||
-        token.isEmpty) {
-      print(
-        'CallKit: Missing required call data - room: $room, chatId: $chatId, token: ${token != null}',
-      );
+    final room = extra['room']?.toString();
+    final chatId = extra['chatId']?.toString();
+    final isVideoCall = extra['isVideoCall'] == true;
+    final token = extra['token']?.toString();
+    final isGroupCall = extra['isGroupCall'] == true;
+    final callerName = extra['callerName']?.toString() ?? 'Caller';
+
+    if (room == null || chatId == null || token == null) {
+      print('CallKit: Missing required call data');
       return;
     }
 
-    print('CallKit: Joining call room...');
     _joinCallRoom(
       room,
       callerName,
