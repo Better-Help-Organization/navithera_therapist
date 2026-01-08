@@ -6,6 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_callkit_incoming/entities/android_params.dart';
+import 'package:flutter_callkit_incoming/entities/call_event.dart';
 import 'package:flutter_callkit_incoming/entities/call_kit_params.dart';
 import 'package:flutter_callkit_incoming/entities/ios_params.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
@@ -187,6 +188,18 @@ class FCMService {
     }
   }
 
+  /// Gets the VoIP push token for iOS. Returns null on non-iOS platforms.
+  Future<String?> getVoIPToken() async {
+    try {
+      final deviceToken = await FlutterCallkitIncoming.getDevicePushTokenVoIP();
+      print('VoIP Token from notificaiton service: $deviceToken');
+      return deviceToken;
+    } catch (e) {
+      print('Error getting VoIP token: $e');
+      return null;
+    }
+  }
+
   Future<void> initialize() async {
     await _fcm.requestPermission(alert: true, badge: true, sound: true);
 
@@ -199,9 +212,138 @@ class FCMService {
       _handleInitialBackgroundMessage(initialMessage);
     }
 
-    // Listen CallKit actions also here if needed (handled in main with a single listener)
+    // Setup CallKit listeners to handle VoIP push call actions
+    _setupCallKitListeners();
 
     print('FCM initialized. Token: ${await getToken()}');
+  }
+
+  /// Sets up listeners for CallKit events triggered by VoIP pushes.
+  /// This bridges native PushKit/CallKit with Flutter for call handling.
+  void _setupCallKitListeners() {
+    FlutterCallkitIncoming.onEvent.listen((CallEvent? event) {
+      if (event == null) return;
+
+      switch (event.event) {
+        case Event.actionCallIncoming:
+          // Call received - VoIP push triggered native CallKit UI
+          print('CallKit: Incoming call received');
+          break;
+
+        case Event.actionCallAccept:
+          // User accepted the call from CallKit UI
+          print('CallKit: Call accepted');
+          final extra = event.body['extra'] as Map<dynamic, dynamic>?;
+          if (extra != null) {
+            // End the CallKit call to release the audio session for LiveKit
+            final callId = event.body['id']?.toString();
+            if (callId != null) {
+              FlutterCallkitIncoming.endCall(callId);
+            }
+            _handleCallAccepted(extra);
+          }
+          break;
+
+        case Event.actionCallDecline:
+          // User declined the call
+          print('CallKit: Call declined');
+          final extra = event.body['extra'] as Map<dynamic, dynamic>?;
+          if (extra != null) {
+            final chatId = extra['chatId']?.toString();
+            if (chatId != null) {
+              rejectCall(chatId);
+            }
+          }
+          break;
+
+        case Event.actionCallEnded:
+          // Call ended
+          print('CallKit: Call ended');
+          break;
+
+        default:
+          break;
+      }
+    });
+  }
+
+  /// Handles the call acceptance from CallKit VoIP push.
+  void _handleCallAccepted(Map<dynamic, dynamic> extra) {
+    print('CallKit: _handleCallAccepted called with extra: $extra');
+
+    final context = navigatorKey.currentContext;
+
+    // Extract values with proper type handling
+    final room = extra['room']?.toString();
+    final chatId = extra['chatId']?.toString();
+    final token = extra['token']?.toString();
+    final callerName = extra['callerName']?.toString() ?? 'Caller';
+
+    // Handle isVideoCall - can be bool, int (0/1), or string
+    bool isVideoCall = false;
+    final videoCallValue = extra['isVideoCall'];
+    if (videoCallValue is bool) {
+      isVideoCall = videoCallValue;
+    } else if (videoCallValue is int) {
+      isVideoCall = videoCallValue == 1;
+    } else if (videoCallValue is String) {
+      isVideoCall = videoCallValue == 'true' || videoCallValue == '1';
+    }
+
+    // Handle isGroupCall - same logic
+    bool isGroupCall = false;
+    final groupCallValue = extra['isGroupCall'];
+    if (groupCallValue is bool) {
+      isGroupCall = groupCallValue;
+    } else if (groupCallValue is int) {
+      isGroupCall = groupCallValue == 1;
+    } else if (groupCallValue is String) {
+      isGroupCall = groupCallValue == 'true' || groupCallValue == '1';
+    }
+
+    print(
+      'CallKit: Parsed data - room: $room, chatId: $chatId, token: ${token?.substring(0, 20)}..., isVideo: $isVideoCall, isGroup: $isGroupCall',
+    );
+
+    if (context == null) {
+      print('CallKit: Context is null, storing as pending route');
+      // Context not ready yet, store as pending route
+      _ref.read(pendingRouteProvider.notifier).state = PendingRoute(
+        path: '/call-screen',
+        callData: {
+          'roomName': room ?? '',
+          'participantName': callerName,
+          'chatId': chatId ?? '',
+          'isVideoCall': isVideoCall,
+          'token': token ?? '',
+          'isGroupCall': isGroupCall,
+        },
+      );
+      return;
+    }
+
+    if (room == null ||
+        room.isEmpty ||
+        chatId == null ||
+        chatId.isEmpty ||
+        token == null ||
+        token.isEmpty) {
+      print(
+        'CallKit: Missing required call data - room: $room, chatId: $chatId, token: ${token != null}',
+      );
+      return;
+    }
+
+    print('CallKit: Joining call room...');
+    _joinCallRoom(
+      room,
+      callerName,
+      context,
+      chatId,
+      isVideoCall,
+      token,
+      isGroupCall,
+    );
   }
 
   Future<void> initFCMWeb() async {

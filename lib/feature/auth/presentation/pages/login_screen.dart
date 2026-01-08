@@ -72,12 +72,17 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
     try {
       // Await the token retrieval
-      final token = await ref.read(fcmServiceProvider).getToken();
+      final fcmService = ref.read(fcmServiceProvider);
+      final token = await fcmService.getToken();
+      final voIpToken = await fcmService.getVoIPToken();
       print("FCM Token: $token");
+      print("VoIP Token from login screen: $voIpToken");
 
       //ref.read(authProvider.notifier).login(phoneNumber, password, "token");
       if (token != null) {
-        ref.read(authProvider.notifier).login(phoneNumber, password, token);
+        ref
+            .read(authProvider.notifier)
+            .login(phoneNumber, password, token, voIpToken: voIpToken);
       } else {
         // Handle case where token is null
         ScaffoldMessenger.of(context).showSnackBar(

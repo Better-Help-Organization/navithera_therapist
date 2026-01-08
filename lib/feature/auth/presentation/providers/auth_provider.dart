@@ -86,10 +86,20 @@ class AuthNotifier extends StateNotifier<AuthState> {
     );
   }
 
-  Future<void> login(String phoneNumber, String password, String fcm) async {
+  Future<void> login(
+    String phoneNumber,
+    String password,
+    String fcm, {
+    String? voIpToken,
+  }) async {
     state = const AuthState.loading();
 
-    final result = await _authRepository.login(phoneNumber, password, fcm);
+    final result = await _authRepository.login(
+      phoneNumber,
+      password,
+      fcm,
+      voIpToken: voIpToken,
+    );
     result.fold(
       (failure) => state = AuthState.error(_getErrorMessage(failure)),
       (user) => state = AuthState.authenticated(user),

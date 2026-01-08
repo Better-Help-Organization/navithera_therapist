@@ -33,6 +33,7 @@ class LoginRequest with _$LoginRequest {
     required String phoneNumber,
     required String password,
     required String firebaseToken,
+    String? voIpToken,
   }) = _LoginRequest;
 
   factory LoginRequest.fromJson(Map<String, dynamic> json) =>
