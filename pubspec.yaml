@@ -44,7 +44,7 @@ dependencies:
   googleapis_auth: ^2.0.0
   flutter_dotenv: ^5.2.1
   overlay_support: ^2.1.0
-  intl: ^0.19.0
+  intl: ^0.20.2
   connectivity_plus: ^6.0.3
   lottie: ^3.1.2
   table_calendar: ^3.1.3

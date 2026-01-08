@@ -6,7 +6,7 @@ import 'package:navicare/core/notification/file_upload_service.dart';
 //import 'package:navicare/core/network/file_upload_service.dart';
 import 'package:navicare/core/theme/app_colors.dart';
 //import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import "package:flutter_gen/gen_l10n/app_localization.dart";
+import "package:navicare/l10n/app_localization.dart";
 import 'package:navicare/core/util/avatar_util.dart';
 import 'package:navicare/feature/auth/data/models/auth_models.dart';
 import 'package:navicare/feature/auth/presentation/providers/auth_provider.dart';

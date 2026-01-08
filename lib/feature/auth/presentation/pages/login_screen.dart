@@ -6,7 +6,7 @@ import 'package:navicare/core/providers/socket_provider.dart';
 import 'package:navicare/core/theme/app_colors.dart';
 import '../../../../core/routes/app_router.dart';
 import '../providers/auth_provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localization.dart';
+import 'package:navicare/l10n/app_localization.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   @override

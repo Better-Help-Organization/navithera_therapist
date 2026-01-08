@@ -11,7 +11,7 @@ import 'package:navicare/feature/auth/presentation/providers/user_provider.dart'
 import 'package:navicare/feature/auth/presentation/providers/auth_provider.dart';
 import 'package:navicare/feature/therapy/presentation/pages/call_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import "package:flutter_gen/gen_l10n/app_localization.dart";
+import "package:navicare/l10n/app_localization.dart";
 import 'package:url_launcher/url_launcher.dart';
 //import 'package:flutter_gen/gen_l10n/app_localization.dart'
 

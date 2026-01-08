@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:flutter_gen/gen_l10n/app_localization.dart';
+import 'package:navicare/l10n/app_localization.dart';
 
 class Step2 extends StatelessWidget {
   const Step2({super.key});

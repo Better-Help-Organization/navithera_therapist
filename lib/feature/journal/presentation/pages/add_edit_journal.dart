@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:navicare/core/theme/app_colors.dart';
 import 'package:navicare/feature/journal/presentation/pages/my_journal.dart';
-import 'package:flutter_gen/gen_l10n/app_localization.dart';
+import 'package:navicare/l10n/app_localization.dart';
 
 class AddEditJournalScreen extends StatefulWidget {
   final JournalEntry? entry;

@@ -232,8 +232,9 @@ class FCMService {
   // ========= INCOMING PROCESSING =========
 
   void _handleForegroundMessage(RemoteMessage message) async {
-    log("Full message: ${message.data}");
-    print("Message Info: ${message.notification?.body}");
+    log("Message body: ${message.data}");
+    log("Message notification title: ${message.notification?.title}");
+    log("Message notification body: ${message.notification?.body}");
 
     _loadUnreadCount();
 
@@ -1115,7 +1116,7 @@ class FCMService {
     }
 
     _join(
-      "wss://demo-eukecq5l.livekit.cloud",
+      "wss://livekit.navigo.et",
       token,
       context,
       isVideoCall: isVideocall,
@@ -1128,7 +1129,7 @@ class FCMService {
     //     builder:
     //         (context) => PreJoinPage(
     //           args: JoinArgs(
-    //             url: "wss://demo-eukecq5l.livekit.cloud", // Your known URL
+    //             url: "wss://livekit.navigo.et", // Your known URL
     //             token: token, // Your known token
     //             adaptiveStream: true,
     //             dynacast: true,
@@ -1161,7 +1162,7 @@ class FCMService {
     final token2 =
         "eyJhbGciOiJIUzI1NiJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6InF1aWNrc3RhcnQtcm9vbSJ9LCJpc3MiOiJBUEkzclBhWnVHcWIyODgiLCJleHAiOjE3NjQyMzU0MzYsIm5iZiI6MCwic3ViIjoibWVtZS11c2VybmFtZSJ9.MonNLbSa1SibeZh6M51kWCX5jmuesbg06psBD7ykSbE";
     _join(
-      "wss://demo-eukecq5l.livekit.cloud",
+      "wss://livekit.navigo.et",
       token,
       context,
       isVideoCall: isVideoCall,
@@ -1182,7 +1183,7 @@ class FCMService {
     //         // ),
     //         PreJoinPage(
     //           args: JoinArgs(
-    //             url: "wss://demo-eukecq5l.livekit.cloud",
+    //             url: "wss://livekit.navigo.et",
     //             token: token, // Your known URL
     //             // token:
     //             //     "eyJhbGciOiJIUzI1NiJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6InF1aWNrc3RhcnQtcm9vbSIsImNhblB1Ymxpc2giOnRydWUsImNhblN1YnNjcmliZSI6dHJ1ZX0sImlzcyI6IkFQSTNyUGFadUdxYjI4OCIsImV4cCI6MTc2NDE5NDM3OSwibmJmIjowLCJzdWIiOiJ4by1tZW1lLXVzZXJuYW1lIn0._1FxCuD1OlcMJ_mQusKOhfEzD_RZObzHIHYb2y2Z_70", // Your known token

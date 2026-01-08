@@ -5,7 +5,7 @@ import 'package:navicare/feature/auth/data/models/auth_models.dart';
 import 'package:navicare/feature/auth/presentation/providers/auth_provider.dart';
 import 'package:navicare/feature/auth/presentation/providers/user_provider.dart';
 //import "package:flutter_gen/gen_l10n/app_localization.dart";
-import "package:flutter_gen/gen_l10n/app_localization.dart";
+import "package:navicare/l10n/app_localization.dart";
 
 class UpdatePersonalDetails extends ConsumerStatefulWidget {
   const UpdatePersonalDetails({super.key});

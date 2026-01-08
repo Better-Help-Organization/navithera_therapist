@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:navicare/core/theme/app_colors.dart';
 import 'package:navicare/feature/journal/presentation/pages/add_edit_journal.dart';
-import 'package:flutter_gen/gen_l10n/app_localization.dart';
+import 'package:navicare/l10n/app_localization.dart';
 
 class JournalEntry {
   String id;
