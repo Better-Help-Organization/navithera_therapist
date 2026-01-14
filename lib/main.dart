@@ -230,9 +230,7 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
                     token: token,
                   );
             } else {
-              print("2x2x2x");
               // App was terminated - set pending route
-              print("App was terminated, setting pending call route");
               ref.read(pendingRouteProvider.notifier).state = PendingRoute(
                 path: '/call-screen',
                 callData: {

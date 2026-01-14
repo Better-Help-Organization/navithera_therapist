@@ -24,6 +24,9 @@ import flutter_callkit_incoming
     func pushRegistry(_ registry: PKPushRegistry, didUpdate credentials: PKPushCredentials, for type: PKPushType) {
         let token = credentials.token.map { String(format: "%02.2hhx", $0) }.joined()
         print("VoIP Token: \(token)")
+        
+        // Pass the VoIP token to Flutter so it can be retrieved during login
+        SwiftFlutterCallkitIncomingPlugin.sharedInstance?.setDevicePushTokenVoIP(token)
     }
 
     // Handle the Incoming VoIP Notification
