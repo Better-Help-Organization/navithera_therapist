@@ -122,7 +122,7 @@
 //       // Save URL and Token for convenience
 //       await _writePrefs();
 
-//       final url = "wss://demo-eukecq5l.livekit.cloud";
+//       final url = "wss://livekit.navigo.et";
 //       final token = _tokenCtrl.text;
 //       // final e2eeKey = _sharedKeyCtrl.text;
 //       if (!ctx.mounted) return;

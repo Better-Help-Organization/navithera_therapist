@@ -9,7 +9,8 @@ import 'package:navicare/core/theme/app_colors.dart';
 import 'package:navicare/core/util/avatar_util.dart';
 import 'package:navicare/feature/auth/presentation/providers/user_provider.dart';
 import 'package:navicare/feature/auth/presentation/providers/auth_provider.dart';
-import 'package:navicare/feature/therapy/presentation/pages/call_screen.dart';
+
+import 'package:navicare/feature/transaction/presentation/pages/transaction_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import "package:flutter_gen/gen_l10n/app_localization.dart";
 import 'package:url_launcher/url_launcher.dart';
@@ -226,6 +227,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   icon: Icons.language,
                   title: AppLocalizations.of(context)!.language,
                   onTap: () => showLanguageDialog(context),
+                ),
+                _buildListTile(
+                  icon: Icons.receipt_long,
+                  title:
+                      'Your payment history', // Localize if possible, or use hardcoded string as requested
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const TransactionScreen(),
+                      ),
+                    );
+                  },
                 ),
 
                 const SizedBox(height: 20),

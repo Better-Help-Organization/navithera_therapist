@@ -205,7 +205,7 @@ class _GroupMemberSelectionBottomSheetState
           //   ),
           // );
           _join(
-            "wss://demo-eukecq5l.livekit.cloud",
+            "wss://livekit.navigo.et",
             token,
             context,
             isVideoCall: isVideoCall,

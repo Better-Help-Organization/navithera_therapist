@@ -362,7 +362,7 @@
 //         if (!mounted) return;
 //         print("token ${token}");
 //         // _join(
-//         //   "wss://navicare-dmw0dh3w.livekit.cloud",
+//         //   "wss://livekit.navigo.et"",
 //         //   token,
 //         //   context,
 //         // );
@@ -370,7 +370,7 @@
 //             "eyJhbGciOiJIUzI1NiJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6InF1aWNrc3RhcnQtcm9vbSJ9LCJpc3MiOiJBUEkzclBhWnVHcWIyODgiLCJleHAiOjE3NjQyMzU0MzYsIm5iZiI6MCwic3ViIjoibWVtZS11c2VybmFtZSJ9.MonNLbSa1SibeZh6M51kWCX5jmuesbg06psBD7ykSbE";
 
 //         _join(
-//           "wss://demo-eukecq5l.livekit.cloud",
+//           "wss://livekit.navigo.et",
 //           token,
 //           context,
 //           isVideoCall: isVideoCall,
@@ -388,7 +388,7 @@
 //         //         // ),
 //         //         PreJoinPage(
 //         //           args: JoinArgs(
-//         //             url: "wss://demo-eukecq5l.livekit.cloud", // Your known URL
+//         //             url: "wss://livekit.navigo.et", // Your known URL
 //         //             token: token, // Your known token
 //         //             adaptiveStream: true,
 //         //             dynacast: true,
@@ -1529,7 +1529,7 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
   //       if (!mounted) return;
   //       print("token ${token}");
   //       // _join(
-  //       //   "wss://navicare-dmw0dh3w.livekit.cloud",
+  //       //   "wss://livekit.navigo.et"",
   //       //   token,
   //       //   context,
   //       // );
@@ -1537,7 +1537,7 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
   //           "eyJhbGciOiJIUzI1NiJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6InF1aWNrc3RhcnQtcm9vbSJ9LCJpc3MiOiJBUEkzclBhWnVHcWIyODgiLCJleHAiOjE3NjQyMzU0MzYsIm5iZiI6MCwic3ViIjoibWVtZS11c2VybmFtZSJ9.MonNLbSa1SibeZh6M51kWCX5jmuesbg06psBD7ykSbE";
 
   //       _join(
-  //         "wss://demo-eukecq5l.livekit.cloud",
+  //         "wss://livekit.navigo.et",
   //         token,
   //         context,
   //         isVideoCall: isVideoCall,
@@ -1555,7 +1555,7 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
   //       //         // ),
   //       //         PreJoinPage(
   //       //           args: JoinArgs(
-  //       //             url: "wss://demo-eukecq5l.livekit.cloud", // Your known URL
+  //       //             url: "wss://livekit.navigo.et", // Your known URL
   //       //             token: token, // Your known token
   //       //             adaptiveStream: true,
   //       //             dynacast: true,
@@ -1703,7 +1703,7 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
         if (!mounted) return;
 
         await _join(
-          "wss://demo-eukecq5l.livekit.cloud",
+          "wss://livekit.navigo.et",
           token,
           context,
           isVideoCall: isVideoCall,
@@ -2679,14 +2679,14 @@ class _CallingOverlayState extends State<CallingOverlay>
             //           ],
             //         ),
             // ),
-            if (widget.isCancelling != true) ...[
-              const SizedBox(height: 30),
-              // Spinning indicator
-              CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-                strokeWidth: 3,
-              ),
-            ],
+            // if (widget.isCancelling != true) ...[
+            //   const SizedBox(height: 30),
+            //   // Spinning indicator
+            //   CircularProgressIndicator(
+            //     valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+            //     strokeWidth: 3,
+            //   ),
+            // ],
           ],
         ),
       ),

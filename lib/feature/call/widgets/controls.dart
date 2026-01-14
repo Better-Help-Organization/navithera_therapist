@@ -193,7 +193,13 @@ class _ControlsWidgetState extends State<ControlsWidget> {
 
   void _onTapDisconnect() async {
     final result = await context.showDisconnectDialog();
-    if (result == true) await widget.room.disconnect();
+    if (result == true) {
+      try {
+        await widget.room.disconnect();
+      } catch (error) {
+        debugPrint('Error disconnecting room: $error');
+      }
+    }
   }
 
   void _onTapUpdateSubscribePermission() async {
@@ -332,6 +338,24 @@ class _ControlsWidgetState extends State<ControlsWidget> {
                     : _enableAudio,
             isActive: participant.isMicrophoneEnabled(),
           ),
+
+          // Screen Share
+          // if (!lkPlatformIsWebMobile())
+          //   _buildControlButton(
+          //     icon:
+          //         participant.isScreenShareEnabled()
+          //             ? Icons.stop_screen_share
+          //             : Icons.screen_share,
+          //     label:
+          //         participant.isScreenShareEnabled()
+          //             ? 'Stop Sharing'
+          //             : 'Screen Share',
+          //     onPressed:
+          //         participant.isScreenShareEnabled()
+          //             ? _disableScreenShare
+          //             : _enableScreenShare,
+          //     isActive: participant.isScreenShareEnabled(),
+          //   ),
 
           // End Call
           _buildControlButton(

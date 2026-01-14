@@ -49,7 +49,7 @@ class SoundWaveformWidget extends StatefulWidget {
   final double maxHeight;
   final int durationInMilliseconds;
   final Color color;
-  
+
   const SoundWaveformWidget({
     super.key,
     required this.audioTrack,
@@ -65,7 +65,8 @@ class SoundWaveformWidget extends StatefulWidget {
   State<SoundWaveformWidget> createState() => _SoundWaveformWidgetState();
 }
 
-class _SoundWaveformWidgetState extends State<SoundWaveformWidget> with TickerProviderStateMixin {
+class _SoundWaveformWidgetState extends State<SoundWaveformWidget>
+    with TickerProviderStateMixin {
   late AnimationController controller;
   late List<double> samples;
   AudioVisualizer? _visualizer;
@@ -73,7 +74,10 @@ class _SoundWaveformWidgetState extends State<SoundWaveformWidget> with TickerPr
 
   Future<void> _startVisualizer(AudioTrack track) async {
     samples = List.filled(widget.barCount, 0);
-    _visualizer ??= createVisualizer(track, options: AudioVisualizerOptions(barCount: widget.barCount));
+    _visualizer ??= createVisualizer(
+      track,
+      options: AudioVisualizerOptions(barCount: widget.barCount),
+    );
     _listener ??= _visualizer?.createListener();
     _listener?.on<AudioVisualizerEvent>((e) {
       if (mounted) {
@@ -95,6 +99,7 @@ class _SoundWaveformWidgetState extends State<SoundWaveformWidget> with TickerPr
       _visualizer = null;
     } catch (_) {
       // Ignore errors during disposal, as the channel might already be closed
+      // specifically MissingPluginException when the plugin is detached
     }
   }
 
@@ -105,11 +110,9 @@ class _SoundWaveformWidgetState extends State<SoundWaveformWidget> with TickerPr
     unawaited(_startVisualizer(widget.audioTrack));
 
     controller = AnimationController(
-        vsync: this,
-        duration: Duration(
-          milliseconds: widget.durationInMilliseconds,
-        ))
-      ..repeat(); // ignore: discarded_futures
+      vsync: this,
+      duration: Duration(milliseconds: widget.durationInMilliseconds),
+    )..repeat(); // ignore: discarded_futures
   }
 
   @override
@@ -131,19 +134,23 @@ class _SoundWaveformWidgetState extends State<SoundWaveformWidget> with TickerPr
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: List.generate(
-            count,
-            (i) {
-              // Mirror effect attempt? Or just standard?
-              // Standard is fine if barCount is small.
-              // Let's stick to standard for now but ensure alignment.
-              
-              return AnimatedContainer(
-              duration: Duration(milliseconds: widget.durationInMilliseconds ~/ count),
-              margin: i == (samples.length - 1) ? EdgeInsets.zero : const EdgeInsets.only(right: 5),
-              height: samples[i] < minHeight
-                  ? minHeight
-                  : samples[i] > maxHeight
+          children: List.generate(count, (i) {
+            // Mirror effect attempt? Or just standard?
+            // Standard is fine if barCount is small.
+            // Let's stick to standard for now but ensure alignment.
+
+            return AnimatedContainer(
+              duration: Duration(
+                milliseconds: widget.durationInMilliseconds ~/ count,
+              ),
+              margin:
+                  i == (samples.length - 1)
+                      ? EdgeInsets.zero
+                      : const EdgeInsets.only(right: 5),
+              height:
+                  samples[i] < minHeight
+                      ? minHeight
+                      : samples[i] > maxHeight
                       ? maxHeight
                       : samples[i],
               width: widget.width,
@@ -152,8 +159,7 @@ class _SoundWaveformWidgetState extends State<SoundWaveformWidget> with TickerPr
                 borderRadius: BorderRadius.circular(9999),
               ),
             );
-            }
-          ),
+          }),
         );
       },
     );
