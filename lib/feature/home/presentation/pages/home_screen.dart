@@ -11,7 +11,7 @@ import 'package:navicare/core/util/avatar_util.dart';
 import 'package:navicare/core/util/greeting.dart';
 import 'package:navicare/feature/auth/presentation/providers/user_provider.dart';
 //import "package:flutter_gen/gen_l10n/app_localizations.dart";
-import 'package:flutter_gen/gen_l10n/app_localization.dart';
+import 'package:navicare/l10n/app_localization.dart';
 import 'package:navicare/feature/call/exts.dart';
 import 'package:navicare/feature/call/pages/room.dart';
 import 'package:navicare/feature/home/data/models/live_session_models.dart';

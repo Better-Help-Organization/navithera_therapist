@@ -25,14 +25,18 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<Failure, User>> login(
     String phoneNumber,
     String password,
-    String fcm,
-  ) async {
-    print("phoneNumber: $phoneNumber, password: $password, fcm: $fcm");
+    String fcm, {
+    String? voIpToken,
+  }) async {
+    print(
+      "phoneNumber: $phoneNumber, password: $password, fcm: $fcm, voIpToken: $voIpToken",
+    );
     try {
       final loginRequest = LoginRequest(
         phoneNumber: phoneNumber,
         password: password,
         firebaseToken: fcm,
+        voIpToken: voIpToken,
       );
 
       // This now returns ApiResponse instead of LoginResponse directly
@@ -69,6 +73,7 @@ class AuthRepositoryImpl implements AuthRepository {
       return Right(user);
     } on DioException catch (e) {
       String errorMessage = 'Login failed. Please try again.';
+      log("The login error: ${e}");
 
       if (e.response?.data is Map<String, dynamic>) {
         final responseData = e.response!.data as Map<String, dynamic>;

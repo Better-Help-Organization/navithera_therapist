@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:navicare/core/theme/app_colors.dart';
-import 'package:flutter_gen/gen_l10n/app_localization.dart';
+import 'package:navicare/l10n/app_localization.dart';
 
 class StudentIdPage extends StatelessWidget {
   const StudentIdPage({super.key});

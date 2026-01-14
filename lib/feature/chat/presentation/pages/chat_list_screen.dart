@@ -16,7 +16,7 @@ import 'package:navicare/feature/chat/presentation/pages/message_screen.dart';
 import 'package:navicare/feature/therapy/presentation/pages/user_list_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/chat_provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localization.dart';
+import 'package:navicare/l10n/app_localization.dart';
 
 class Chat {
   final String id;

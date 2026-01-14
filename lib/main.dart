@@ -14,7 +14,7 @@ import 'package:navicare/firebase_options.dart';
 import 'package:navicare/l10n/l10n.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import "package:flutter_gen/gen_l10n/app_localization.dart";
+import "package:navicare/l10n/app_localization.dart";
 import "package:navicare/core/localization/fallback_localization.dart";
 // CallKit incoming
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
@@ -230,9 +230,7 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
                     token: token,
                   );
             } else {
-              print("2x2x2x");
               // App was terminated - set pending route
-              print("App was terminated, setting pending call route");
               ref.read(pendingRouteProvider.notifier).state = PendingRoute(
                 path: '/call-screen',
                 callData: {

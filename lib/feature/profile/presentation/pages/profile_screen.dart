@@ -12,7 +12,7 @@ import 'package:navicare/feature/auth/presentation/providers/auth_provider.dart'
 
 import 'package:navicare/feature/transaction/presentation/pages/transaction_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import "package:flutter_gen/gen_l10n/app_localization.dart";
+import "package:navicare/l10n/app_localization.dart";
 import 'package:url_launcher/url_launcher.dart';
 //import 'package:flutter_gen/gen_l10n/app_localization.dart'
 

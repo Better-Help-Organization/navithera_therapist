@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import "package:flutter_gen/gen_l10n/app_localization.dart";
+import "package:navicare/l10n/app_localization.dart";
 
 String getTimeBasedGreeting(BuildContext context) {
   final hour = DateTime.now().hour;

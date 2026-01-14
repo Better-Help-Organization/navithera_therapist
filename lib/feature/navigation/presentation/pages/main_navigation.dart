@@ -9,7 +9,7 @@ import 'package:navicare/feature/home/presentation/pages/home_screen.dart';
 //import 'package:navicare/feature/therapy/presentation/pages/user_list_screen.dart';
 import 'package:navicare/feature/tools/presentation/pages/tools_screen.dart';
 import 'package:navicare/feature/profile/presentation/pages/profile_screen.dart';
-import 'package:flutter_gen/gen_l10n/app_localization.dart';
+import 'package:navicare/l10n/app_localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MainNavigation extends StatefulWidget {

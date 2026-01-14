@@ -48,7 +48,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAACyTDMbz5v0J1Vy3wjZ3HQgTNOcXVwpo',
-    appId: '1:536465457827:android:da0572e1ca95d2e1adb516',
+    appId: '1:536465457827:android:5bcf6ee649b4f05badb516',
     messagingSenderId: '536465457827',
     projectId: 'navi-care-b7a15',
     storageBucket: 'navi-care-b7a15.firebasestorage.app',
@@ -65,11 +65,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyB4tkaoDp42jUqjDZHJ3sTHXu2IfMpAgX8',
-    appId: '1:536465457827:ios:a0fd2a8b890ab42fadb516',
+    appId: '1:536465457827:ios:d74263afeb6c0139adb516',
     messagingSenderId: '536465457827',
     projectId: 'navi-care-b7a15',
     storageBucket: 'navi-care-b7a15.firebasestorage.app',
-    iosBundleId: 'com.Abthon.navitheraTherapist',
+    iosBundleId: 'com.abthon.navithera.therapist',
   );
 
 }

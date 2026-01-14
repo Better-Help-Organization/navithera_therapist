@@ -6,7 +6,7 @@ import 'package:navicare/core/providers/socket_provider.dart';
 import 'package:navicare/core/theme/app_colors.dart';
 import '../../../../core/routes/app_router.dart';
 import '../providers/auth_provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localization.dart';
+import 'package:navicare/l10n/app_localization.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   @override
@@ -72,12 +72,17 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
     try {
       // Await the token retrieval
-      final token = await ref.read(fcmServiceProvider).getToken();
+      final fcmService = ref.read(fcmServiceProvider);
+      final token = await fcmService.getToken();
+      final voIpToken = await fcmService.getVoIPToken();
       print("FCM Token: $token");
+      print("VoIP Token from login screen: $voIpToken");
 
       //ref.read(authProvider.notifier).login(phoneNumber, password, "token");
       if (token != null) {
-        ref.read(authProvider.notifier).login(phoneNumber, password, token);
+        ref
+            .read(authProvider.notifier)
+            .login(phoneNumber, password, token, voIpToken: voIpToken);
       } else {
         // Handle case where token is null
         ScaffoldMessenger.of(context).showSnackBar(

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:navicare/feature/profile/presentation/widgets/avatar_screen.dart';
 import 'package:navicare/feature/profile/presentation/widgets/student_id.dart';
 import 'package:navicare/feature/profile/presentation/widgets/update_personal_detail_widget.dart';
-import "package:flutter_gen/gen_l10n/app_localization.dart";
+import "package:navicare/l10n/app_localization.dart";
 
 class UpdateProfileWrapperPage extends ConsumerStatefulWidget {
   final int initialIndex;
