@@ -10,6 +10,7 @@ abstract class TransactionRepository {
   Future<Either<Failure, TransactionListResponse>> getTransactions({
     int? page,
     int? limit,
+    required String therapistId,
   });
 }
 
@@ -22,12 +23,14 @@ class TransactionRepositoryImpl implements TransactionRepository {
   Future<Either<Failure, TransactionListResponse>> getTransactions({
     int? page,
     int? limit,
+    required String therapistId,
   }) async {
     try {
       final response = await remoteDataSource.getTransactions(
         page: page,
         take: limit,
         sort: 'createdAt=Desc',
+        filters: 'therapist.id=$therapistId',
       );
       return Right(response);
     } on DioException catch (e) {

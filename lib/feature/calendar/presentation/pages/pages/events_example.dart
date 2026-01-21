@@ -30,7 +30,7 @@ class SessionNotifier extends StateNotifier<List<Session>> {
     try {
       await _attachAuthHeader();
       final response = await _dio.get(
-        '${base_url_dev}/therapist/me/sessions?fields=client.*,schedule,duration,hasTherapistAttended,approvalStatus,groupName&take=0',
+        '${base_url_dev}/therapist/me/sessions?fields=client.*,schedule,duration,hasTherapistAttended,approvalStatus,groupName,groupAttendance.*&take=0',
       );
 
       log("response data: ${response.data}");
@@ -67,6 +67,7 @@ class Session {
   final bool hasTherapistAttended;
   final String approvalStatus;
   final String? groupName; // Add groupName field
+  final List<dynamic> groupAttendance;
 
   Session({
     required this.id,
@@ -77,6 +78,7 @@ class Session {
     this.note,
     this.hasTherapistAttended = false,
     this.groupName, // Add groupName to constructor
+    this.groupAttendance = const [],
   });
 
   factory Session.fromMap(Map<String, dynamic> map) {
@@ -99,6 +101,8 @@ class Session {
               ? map['hasTherapistAttended'] as bool
               : false,
       groupName: map['groupName']?.toString(), // Parse groupName
+      groupAttendance:
+          map['groupAttendance'] is List ? map['groupAttendance'] as List : [],
     );
   }
 
@@ -111,6 +115,7 @@ class Session {
     bool? hasTherapistAttended,
     String? approvalStatus,
     String? groupName,
+    List<dynamic>? groupAttendance,
   }) {
     return Session(
       id: id ?? this.id,
@@ -121,6 +126,7 @@ class Session {
       hasTherapistAttended: hasTherapistAttended ?? this.hasTherapistAttended,
       approvalStatus: approvalStatus ?? this.approvalStatus,
       groupName: groupName ?? this.groupName,
+      groupAttendance: groupAttendance ?? this.groupAttendance,
     );
   }
 
@@ -986,7 +992,7 @@ class _DayCalendarView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 600, // Fixed height for the day calendar
+      height: 1200, // Fixed height for the day calendar
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -1086,18 +1092,17 @@ class _DayCalendarView extends StatelessWidget {
       final localTime = session.schedule.toLocal();
       final startHour = localTime.hour;
       final startMinute = localTime.minute;
-      final durationHours = session.duration ~/ 60;
-      final durationMinutes = session.duration % 60;
 
       // Calculate position and height based on time
-      final top = (startHour + 0.1 / 60) * (600 / 24);
-      final height = (durationHours + durationMinutes / 60) * (600 / 24);
+      final rowHeight = 1200 / 24;
+      final top = startHour * rowHeight;
+      final height = rowHeight;
 
       return Positioned(
         left: 60, // Offset for time markers
         top: top,
         right: 16,
-        height: 24,
+        height: height,
         child: _SessionTimeBlock(
           session: session,
           onTap: () => onSessionTap(session),
@@ -1118,16 +1123,28 @@ class _SessionTimeBlock extends StatelessWidget {
     // Determine color based on approval status
     final Color primaryColor = AppColors.primary;
 
+    // Correct attendance check
+    bool isAttended = false;
+    if (session.client == null) {
+      // Group session
+      isAttended = session.groupAttendance.isNotEmpty;
+    } else {
+      isAttended = session.hasTherapistAttended;
+    }
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
+        clipBehavior: Clip.hardEdge,
         margin: const EdgeInsets.all(2),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors:
-                session.approvalStatus == 'pending'
+                session.client == null
+                    ? [Colors.purple, Colors.deepPurple]
+                    : session.approvalStatus == 'pending'
                     ? [Colors.yellow, Colors.yellow.shade700]
                     : [primaryColor, AppColors.darkCyan],
           ),
@@ -1146,21 +1163,24 @@ class _SessionTimeBlock extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
-                session.displayName, // Use the new displayName getter
-                style: TextStyle(
-                  color:
-                      session.approvalStatus == 'pending'
-                          ? Colors.black45
-                          : Colors.white,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
+              Flexible(
+                child: Text(
+                  session.displayName, // Use the new displayName getter
+                  style: TextStyle(
+                    color:
+                        session.approvalStatus == 'pending'
+                            ? Colors.black45
+                            : Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               ),
-              if (session.hasTherapistAttended)
+              if (isAttended)
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     SizedBox(width: 6),
                     Icon(Icons.check_circle, color: Colors.white, size: 12),

@@ -229,6 +229,9 @@ class _RoomPageState extends ConsumerState<RoomPage> {
         ..on<LocalTrackUnpublishedEvent>((_) => _sortParticipants())
         ..on<TrackSubscribedEvent>((_) => _sortParticipants())
         ..on<TrackUnsubscribedEvent>((_) => _sortParticipants())
+        ..on<TrackPublishedEvent>(
+          (_) => _sortParticipants(),
+        ) // Handle when remote tracks are published
         ..on<TrackE2EEStateEvent>(_onE2EEStateEvent)
         ..on<ParticipantNameUpdatedEvent>((event) {
           print(
@@ -294,6 +297,9 @@ class _RoomPageState extends ConsumerState<RoomPage> {
   void _sortParticipants() {
     final userMediaTracks = <ParticipantTrack>[];
     final screenTracks = <ParticipantTrack>[];
+    final addedRemoteParticipants =
+        <String>{}; // Track which participants we've added
+
     for (var participant in widget.room.remoteParticipants.values) {
       for (var t in participant.videoTrackPublications) {
         if (t.isScreenShare) {
@@ -305,7 +311,16 @@ class _RoomPageState extends ConsumerState<RoomPage> {
           );
         } else {
           userMediaTracks.add(ParticipantTrack(participant: participant));
+          addedRemoteParticipants.add(participant.identity);
         }
+      }
+    }
+
+    // Ensure all remote participants are in the list even if no video tracks yet
+    // (e.g., when they join from terminated state and tracks haven't published)
+    for (var participant in widget.room.remoteParticipants.values) {
+      if (!addedRemoteParticipants.contains(participant.identity)) {
+        userMediaTracks.add(ParticipantTrack(participant: participant));
       }
     }
 

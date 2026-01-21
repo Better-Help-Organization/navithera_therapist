@@ -39,9 +39,25 @@ class AuthGate extends ConsumerWidget {
           router.go("/blocked-user");
         } else if (pendingRoute != null) {
           // Navigate to the pending route
-          // Navigate to the pending route
-          router.go("/main");
-          router.push(pendingRoute.path, extra: pendingRoute.extra);
+          if (pendingRoute.callData != null) {
+            // Handle pending call route - navigate to main first, then join call
+            router.go("/main");
+            final callData = pendingRoute.callData!;
+            ref
+                .read(fcmServiceProvider)
+                .joinCallFromCallKit(
+                  roomName: callData['roomName'] ?? '',
+                  participantName: callData['participantName'] ?? 'Caller',
+                  chatId: callData['chatId'] ?? '',
+                  isVideocall: callData['isVideoCall'] ?? false,
+                  token: callData['token'] ?? '',
+                  isGroupCall: callData['isGroupCall'] ?? false,
+                );
+          } else {
+            // Regular pending route
+            router.go("/main");
+            router.push(pendingRoute.path, extra: pendingRoute.extra);
+          }
           ref.read(pendingRouteProvider.notifier).state = null;
         } else {
           router.go('/main');

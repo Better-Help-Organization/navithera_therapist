@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:navicare/core/theme/app_colors.dart';
+import 'package:navicare/feature/auth/presentation/providers/user_provider.dart';
 import 'package:navicare/feature/transaction/data/models/transaction_models.dart';
 import 'package:navicare/feature/transaction/presentation/providers/transaction_provider.dart';
 
@@ -36,9 +37,25 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
     bool silent = false,
   }) async {
     try {
+      final currentUser = ref.read(currentUserProvider);
+      if (currentUser == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('User not found'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        return;
+      }
       await ref
           .read(transactionProvider.notifier)
-          .getTransactions(loadMore: loadMore, silent: silent);
+          .getTransactions(
+            loadMore: loadMore,
+            silent: silent,
+            therapistId: currentUser.id,
+          );
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

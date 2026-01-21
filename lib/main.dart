@@ -88,6 +88,9 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
 
     // Listen CallKit actions when app is foregrounded/resumed
     _listenCallKitActions();
+
+    // Check for active calls that were accepted before Flutter initialized (Android fix)
+    _checkForActiveCallOnStartup();
   }
 
   Map<String, dynamic> _asMap(dynamic v) {
@@ -111,6 +114,49 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
       }
     } catch (_) {}
     return <String, dynamic>{};
+  }
+
+  /// Checks for active calls on app startup (Android fix).
+  /// When the app was terminated and a call was accepted via the notification,
+  /// the CallKit event may fire before Flutter's listener is ready.
+  /// This method checks for any active calls and stores them as pending routes.
+  Future<void> _checkForActiveCallOnStartup() async {
+    try {
+      final activeCalls = await FlutterCallkitIncoming.activeCalls();
+      if (activeCalls == null || activeCalls.isEmpty) return;
+
+      // Get the most recent call
+      final call = activeCalls.first as Map<dynamic, dynamic>;
+      final extra = call['extra'] as Map<dynamic, dynamic>?;
+
+      if (extra == null) return;
+
+      final roomName = extra['room']?.toString();
+      final chatId = extra['chatId']?.toString();
+      final token = extra['token']?.toString();
+      final isVideoCall = extra['isVideoCall'] == true;
+      final isGroupCall = extra['isGroupCall'] == true;
+      final callerName = extra['callerName']?.toString() ?? 'Caller';
+
+      if (roomName == null || chatId == null || token == null) return;
+
+      print('Active call found on startup: room=$roomName, chatId=$chatId');
+
+      // Store as pending route - will be processed when auth gate completes
+      ref.read(pendingRouteProvider.notifier).state = PendingRoute(
+        path: '/call-screen',
+        callData: {
+          'roomName': roomName,
+          'participantName': callerName,
+          'chatId': chatId,
+          'isVideoCall': isVideoCall,
+          'isGroupCall': isGroupCall,
+          'token': token,
+        },
+      );
+    } catch (e) {
+      print('Error checking active calls on startup: $e');
+    }
   }
 
   void _listenCallKitActions() {

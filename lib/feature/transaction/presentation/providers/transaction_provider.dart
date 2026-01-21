@@ -28,6 +28,7 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
   Future<void> getTransactions({
     bool loadMore = false,
     bool silent = false,
+    required String therapistId,
   }) async {
     try {
       final currentState = state;
@@ -42,7 +43,10 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
         }
       }
 
-      final result = await _repository.getTransactions(page: nextPage);
+      final result = await _repository.getTransactions(
+        page: nextPage,
+        therapistId: therapistId,
+      );
 
       result.fold((failure) => state = TransactionState.error(failure), (
         response,
