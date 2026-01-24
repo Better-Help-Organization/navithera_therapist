@@ -275,7 +275,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   onTap: () async {
                     final Uri url = Uri.parse('http://navithera.com/contact');
                     if (await canLaunchUrl(url)) {
-                      await launchUrl(url);
+                      await launchUrl(
+                        url,
+                        mode: LaunchMode.externalApplication,
+                      );
+                    } else {
+                      // Fallback - try to launch anyway
+                      await launchUrl(
+                        url,
+                        mode: LaunchMode.externalApplication,
+                      );
                     }
                   },
                 ),
