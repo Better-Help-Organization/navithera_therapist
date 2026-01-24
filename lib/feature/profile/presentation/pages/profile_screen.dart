@@ -214,15 +214,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 _buildListTile(
                   icon: Icons.notifications_outlined,
                   title: AppLocalizations.of(context)!.notification,
-                  onTap: () {},
+                  onTap: () {
+                    router.push('/notifications');
+                  },
                 ),
-                _buildListTile(
+                /*_buildListTile(
                   icon: Icons.card_giftcard,
                   title: AppLocalizations.of(context)!.giftTherapy,
                   onTap: () {},
                   badge: '${AppLocalizations.of(context)!.xnew}',
                   badgeColor: AppColors.primary,
-                ),
+                ),*/
                 _buildListTile(
                   icon: Icons.language,
                   title: AppLocalizations.of(context)!.language,
@@ -252,11 +254,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                _buildListTile(
-                  icon: Icons.support_agent,
-                  title: AppLocalizations.of(context)!.livechatSupport,
-                  onTap: () {},
-                ),
+                // _buildListTile(
+                //   icon: Icons.support_agent,
+                //   title: AppLocalizations.of(context)!.livechatSupport,
+                //   onTap: () {},
+                // ),
                 _buildListTile(
                   icon: Icons.call_outlined,
                   title: AppLocalizations.of(context)!.callUs,
@@ -270,18 +272,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 _buildListTile(
                   icon: Icons.bug_report_outlined,
                   title: AppLocalizations.of(context)!.feedbackAndBugReports,
-                  onTap: () {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder:
-                    //         (context) => CallScreen(
-                    //           roomName: "test",
-                    //           participantName: "tester",
-                    //           isVideoCall: true,
-                    //         ),
-                    //   ),
-                    // );
+                  onTap: () async {
+                    final Uri url = Uri.parse('http://navithera.com/contact');
+                    if (await canLaunchUrl(url)) {
+                      await launchUrl(url);
+                    }
                   },
                 ),
 

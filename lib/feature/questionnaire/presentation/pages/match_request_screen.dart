@@ -656,7 +656,7 @@ class _MatchRequestScreenState extends ConsumerState<MatchRequestScreen> {
       // NEW: Create the data structure matching your backend
       final requestData = {
         "note": "",
-        "groupName": "Individual Therapy Session",
+        "groupName": "",
         "dates": _buildDatesArray(),
         "duration": 60,
         "type": "video",

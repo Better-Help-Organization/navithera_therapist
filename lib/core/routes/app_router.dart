@@ -20,6 +20,7 @@ import 'package:navicare/feature/questionnaire/presentation/pages/category_selec
 import 'package:navicare/feature/profile/presentation/pages/update_profile_screen.dart';
 import 'package:navicare/feature/therapy/presentation/pages/user_list_screen.dart';
 import 'package:navicare/feature/transaction/presentation/pages/transaction_screen.dart';
+import 'package:navicare/feature/notification/presentation/pages/notification_screen.dart'; // Added import
 import 'package:navicare/main.dart'; // Add this import to access navigatorKey
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -60,6 +61,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/blocked-user',
         builder: (context, state) => BlockedUserScreen(),
+      ),
+      GoRoute(
+        path: '/notifications',
+        builder: (context, state) => const NotificationScreen(),
       ),
       GoRoute(path: '/journal', builder: (context, state) => MyJournalScreen()),
       GoRoute(
