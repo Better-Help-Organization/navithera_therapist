@@ -91,6 +91,11 @@
   "workSmarter": "Work Smarter, Not Harder",
   "setYourHours": "Set your own hours, connect easily with clients, and focus on what you do best.",
   "supportedByAI": "Supported by AI, Driven by You",
-  "leverageSmartTools": "Leverage smart tools to enhance therapy sessions and deliver personalized care."
+  "leverageSmartTools": "Leverage smart tools to enhance therapy sessions and deliver personalized care.",
+  "deleteAccount": "Delete Account",
+  "deleteAccountWarning": "Are you sure you want to delete your account? This action is permanent and cannot be undone.",
+  "delete": "Delete",
+  "error": "Error",
+  "ok": "OK"
 }
 

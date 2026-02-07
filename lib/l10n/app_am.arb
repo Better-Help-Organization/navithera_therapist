@@ -88,5 +88,10 @@
   "goodEvening": "እንደምን አደርክ",
   "goodMorning": "እንደምን አደሩ",
   "goodAfternoon": "እንደምን ዋሉ",
-  "goodNight": "እንደምን አመሹ"
+  "goodNight": "እንደምን አመሹ",
+  "deleteAccount": "መለያ ሰርዝ",
+  "deleteAccountWarning": "መለያዎን መሰረዝ እርግጠኛ ነዎት? ይህ ድርጊት ቋሚ ነው እና መልሰው ማግኘት አይቻልም።",
+  "delete": "ሰርዝ",
+  "error": "ስህተት",
+  "ok": "እሺ"
 }

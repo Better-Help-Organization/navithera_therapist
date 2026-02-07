@@ -17,6 +17,9 @@ abstract class ProfileRemoteDataSource {
 
   @GET('/therapist/me')
   Future<ProfileModel> getCurrentProfile();
+
+  @DELETE('/account/therapist')
+  Future<void> deleteAccount();
 }
 
 final profileRemoteDataSourceProvider = Provider<ProfileRemoteDataSource>((

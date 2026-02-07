@@ -288,4 +288,20 @@ class AppLocalizationsAm extends AppLocalizations {
 
   @override
   String get leverageSmartTools => 'ናቪተራን ይቀላቀሉ — ለለውጥ ኃይል ይሁኑ';
+
+  @override
+  String get deleteAccount => 'መለያ ሰርዝ';
+
+  @override
+  String get deleteAccountWarning =>
+      'መለያዎን መሰረዝ እርግጠኛ ነዎት? ይህ ድርጊት ቋሚ ነው እና መልሰው ማግኘት አይቻልም።';
+
+  @override
+  String get delete => 'ሰርዝ';
+
+  @override
+  String get error => 'ስህተት';
+
+  @override
+  String get ok => 'እሺ';
 }

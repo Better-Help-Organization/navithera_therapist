@@ -293,4 +293,20 @@ class AppLocalizationsTi extends AppLocalizations {
   @override
   String get leverageSmartTools =>
       'ጥበበኛ መሳርሕታት ተጠቐምኩም ክፍለ ጊዜ ሕክምናኻት ምምሕዳር ምምሕዳር ኣድላይ ክትንከብ እናትን።';
+
+  @override
+  String get deleteAccount => 'መለያ ደምስስ';
+
+  @override
+  String get deleteAccountWarning =>
+      'መለያኻ ክትደምስስ ትደሊ ዲኻ? እዚ ተግባር ቀዋሚ እዩ እሞ ክትመልሶ ኣይትኽእልን።';
+
+  @override
+  String get delete => 'ደምስስ';
+
+  @override
+  String get error => 'ጌጋ';
+
+  @override
+  String get ok => 'እሺ';
 }

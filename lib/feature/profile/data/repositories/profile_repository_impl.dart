@@ -105,4 +105,33 @@ class ProfileRepositoryImpl implements ProfileRepository {
       return Left(Failure.unknownFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, void>> deleteAccount() async {
+    try {
+      await remoteDataSource.deleteAccount();
+      return const Right(null);
+    } on DioException catch (e) {
+      return Left(_handleDioError(e));
+    } catch (e) {
+      return Left(Failure.unknownFailure(e.toString()));
+    }
+  }
+
+  Failure _handleDioError(DioException error) {
+    if (error.type == DioExceptionType.connectionTimeout ||
+        error.type == DioExceptionType.receiveTimeout ||
+        error.type == DioExceptionType.connectionError) {
+      return const Failure.networkFailure('Network connection error');
+    }
+
+    final statusCode = error.response?.statusCode;
+    if (statusCode != null && statusCode >= 500) {
+      return const Failure.serverFailure('Server error occurred');
+    }
+
+    return Failure.serverFailure(
+      error.response?.data['message'] ?? 'Failed to delete account',
+    );
+  }
 }

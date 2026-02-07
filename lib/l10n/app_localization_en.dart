@@ -295,4 +295,20 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get leverageSmartTools =>
       'Leverage smart tools to enhance therapy sessions and deliver personalized care.';
+
+  @override
+  String get deleteAccount => 'Delete Account';
+
+  @override
+  String get deleteAccountWarning =>
+      'Are you sure you want to delete your account? This action is permanent and cannot be undone.';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get error => 'Error';
+
+  @override
+  String get ok => 'OK';
 }

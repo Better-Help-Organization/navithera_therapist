@@ -91,5 +91,10 @@
   "workSmarter": "U Shaqee Si Caqli badan, Ha Ahaato Si Adag",
   "setYourHours": "Deji saacadahaaga, si fudud ula xiriir macaamiisha, oo diiradda saar waxa aad ugu fiican tahay.",
   "supportedByAI": "Waxaa Taageera AI, Waxaana Wada Adiga",
-  "leverageSmartTools": "Ka faa'iidayso qalabka caqliga leh si aad u horumariso kulannada daaweynta oo aad u bixiso daryeel shaqsiyeed."
+  "leverageSmartTools": "Ka faa'iidayso qalabka caqliga leh si aad u horumariso kulannada daaweynta oo aad u bixiso daryeel shaqsiyeed.",
+  "deleteAccount": "Tirtir Akoonka",
+  "deleteAccountWarning": "Ma hubtaa inaad rabto inaad tirtirto akoonkaaga? Tallaabadani waa mid joogto ah oo aan dib loo celin karin.",
+  "delete": "Tirtir",
+  "error": "Khalad",
+  "ok": "Haye"
 }

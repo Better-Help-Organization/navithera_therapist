@@ -42,7 +42,7 @@
   "guidedMeditationResources": "Yaada Guddisuu Qajeelaa",
   "curatedSounds": "Sagalee Filadhaa",
   "myClients": "Mirkaneessitoota Koo",
- "goodEvening": "Akkam Oolte",
+  "goodEvening": "Akkam Oolte",
   "goodMorning": "Akkam bulte",
   "goodAfternoon": "Akkam oolte",
   "goodNight": "Edana gaarii",
@@ -71,7 +71,7 @@
   "next": "Itaanaa",
   "skip": "Darbi",
   "getStarted2": "Get started",
-   "selfEsteemQuote": "Ofii kabajuu iddoo qabuufi fayyaa keenyaaf akka miila miseensaaf guddaadha. Fayyaa qaamaa fi sammuu fi gammachuuf barbaachisaadha.",
+  "selfEsteemQuote": "Ofii kabajuu iddoo qabuufi fayyaa keenyaaf akka miila miseensaaf guddaadha. Fayyaa qaamaa fi sammuu fi gammachuuf barbaachisaadha.",
   "share": "Qoodsi",
   "home": "Mana",
   "myTherapist": "Doktora Koo",
@@ -86,7 +86,12 @@
   "joinNavithera": "Navithera waliin makami — Jijjiirama fidee geessi",
   "connectWithClients": "Maamila heddu waliin wal qunnamiitii dhiibbaa guddaa geessi.",
   "workSmarter": "Hojii sammuu fayyadamuun hojjedhu, rakkina malee.",
-  "setYourHours":  "Sa’aatii kee ofii kaa’i, maamiltoota waliin salphaatti wal qunnami, waan ati itti dandeessu irratti xiyyeeffadhu.",
-  "supportedByAI": "AI’n ni deeggarama, ati immoo ni hogganta",
-  "leverageSmartTools": "Meeshaalee sammuu fayyadamiitii yeroo gargaarsaa fooyyeessi fi kunuunsa dhuunfaa kennuuf."
+  "setYourHours": "Sa'aatii kee ofii kaa'i, maamiltoota waliin salphaatti wal qunnami, waan ati itti dandeessu irratti xiyyeeffadhu.",
+  "supportedByAI": "AI'n ni deeggarama, ati immoo ni hogganta",
+  "leverageSmartTools": "Meeshaalee sammuu fayyadamiitii yeroo gargaarsaa fooyyeessi fi kunuunsa dhuunfaa kennuuf.",
+  "deleteAccount": "Akkaawuntii Haquu",
+  "deleteAccountWarning": "Akkaawuntii kee haquuf mirkaneessitee? Kun yeroo hundaa ta'ee deebi'ee hin argamu.",
+  "delete": "Haquu",
+  "error": "Dogongora",
+  "ok": "Tole"
 }

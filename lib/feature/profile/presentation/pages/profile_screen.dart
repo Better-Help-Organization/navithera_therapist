@@ -9,11 +9,10 @@ import 'package:navicare/core/theme/app_colors.dart';
 import 'package:navicare/core/util/avatar_util.dart';
 import 'package:navicare/feature/auth/presentation/providers/user_provider.dart';
 import 'package:navicare/feature/auth/presentation/providers/auth_provider.dart';
-import 'package:navicare/feature/therapy/presentation/pages/call_screen.dart';
+import 'package:navicare/feature/profile/presentation/providers/profile_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import "package:navicare/l10n/app_localization.dart";
 import 'package:url_launcher/url_launcher.dart';
-//import 'package:flutter_gen/gen_l10n/app_localization.dart'
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -91,6 +90,87 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ],
           ),
     );
+  }
+
+  Future<void> _showDeleteAccountDialog(BuildContext context) async {
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: Text(AppLocalizations.of(context)!.deleteAccount),
+        content: Text(
+          AppLocalizations.of(context)!.deleteAccountWarning,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(AppLocalizations.of(context)!.cancel),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              await _handleDeleteAccount();
+            },
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.error,
+            ),
+            child: Text(AppLocalizations.of(context)!.delete),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _handleDeleteAccount() async {
+    // Show loading indicator
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+
+    // Call delete account
+    await ref.read(profileProvider.notifier).deleteAccount();
+
+    // Check result
+    final state = ref.read(profileProvider);
+
+    if (mounted) {
+      Navigator.pop(context); // Dismiss loading
+
+      state.when(
+        initial: () async {
+          // Success - account deleted
+          await ref.read(authProvider.notifier).logout();
+          ref.read(routerProvider).go('/login');
+          final socketService = ref.read(socketServiceProvider);
+          socketService.disconnect();
+        },
+        loading: () {},
+        loaded: (_) {},
+        updating: () {},
+        updated: (_) {},
+        error: (message) {
+          // Show error dialog
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
+              title: Text(AppLocalizations.of(context)!.error),
+              content: Text(message),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(AppLocalizations.of(context)!.ok),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    }
   }
 
   @override
@@ -285,6 +365,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   icon: Icons.logout,
                   title: AppLocalizations.of(context)!.logout,
                   onTap: () => _showLogoutDialog(context),
+                  isLogout: true,
+                ),
+                _buildListTile(
+                  icon: Icons.delete_outline,
+                  title: AppLocalizations.of(context)!.deleteAccount,
+                  onTap: () => _showDeleteAccountDialog(context),
                   isLogout: true,
                 ),
               ],

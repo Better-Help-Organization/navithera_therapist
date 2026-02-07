@@ -83,6 +83,17 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
     );
   }
 
+  Future<void> deleteAccount() async {
+    state = const ProfileState.loading();
+
+    final result = await _profileRepository.deleteAccount();
+
+    result.fold(
+      (failure) => state = ProfileState.error(_getErrorMessage(failure)),
+      (_) => state = const ProfileState.initial(),
+    );
+  }
+
   String _getErrorMessage(Failure failure) {
     return failure.when(
       serverFailure: (message) => message,

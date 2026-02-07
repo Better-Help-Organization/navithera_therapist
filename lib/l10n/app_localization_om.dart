@@ -284,12 +284,28 @@ class AppLocalizationsOm extends AppLocalizations {
 
   @override
   String get setYourHours =>
-      'Sa’aatii kee ofii kaa’i, maamiltoota waliin salphaatti wal qunnami, waan ati itti dandeessu irratti xiyyeeffadhu.';
+      'Sa\'aatii kee ofii kaa\'i, maamiltoota waliin salphaatti wal qunnami, waan ati itti dandeessu irratti xiyyeeffadhu.';
 
   @override
-  String get supportedByAI => 'AI’n ni deeggarama, ati immoo ni hogganta';
+  String get supportedByAI => 'AI\'n ni deeggarama, ati immoo ni hogganta';
 
   @override
   String get leverageSmartTools =>
       'Meeshaalee sammuu fayyadamiitii yeroo gargaarsaa fooyyeessi fi kunuunsa dhuunfaa kennuuf.';
+
+  @override
+  String get deleteAccount => 'Akkaawuntii Haquu';
+
+  @override
+  String get deleteAccountWarning =>
+      'Akkaawuntii kee haquuf mirkaneessitee? Kun yeroo hundaa ta\'ee deebi\'ee hin argamu.';
+
+  @override
+  String get delete => 'Haquu';
+
+  @override
+  String get error => 'Dogongora';
+
+  @override
+  String get ok => 'Tole';
 }

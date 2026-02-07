@@ -299,4 +299,20 @@ class AppLocalizationsSo extends AppLocalizations {
   @override
   String get leverageSmartTools =>
       'Ka faa\'iidayso qalabka caqliga leh si aad u horumariso kulannada daaweynta oo aad u bixiso daryeel shaqsiyeed.';
+
+  @override
+  String get deleteAccount => 'Tirtir Akoonka';
+
+  @override
+  String get deleteAccountWarning =>
+      'Ma hubtaa inaad rabto inaad tirtirto akoonkaaga? Tallaabadani waa mid joogto ah oo aan dib loo celin karin.';
+
+  @override
+  String get delete => 'Tirtir';
+
+  @override
+  String get error => 'Khalad';
+
+  @override
+  String get ok => 'Haye';
 }
