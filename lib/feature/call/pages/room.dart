@@ -18,7 +18,6 @@ import '../utils.dart';
 import '../widgets/controls.dart';
 import '../widgets/participant.dart';
 import '../widgets/participant_info.dart';
-import '../widgets/sound_waveform.dart';
 
 class RoomPage extends ConsumerStatefulWidget {
   final Room room;
@@ -93,11 +92,8 @@ class _RoomPageState extends ConsumerState<RoomPage> {
     widget.room.addListener(_onRoomDidUpdate);
     _setUpListeners();
     _sortParticipants();
-    WidgetsBindingCompatible.instance?.addPostFrameCallback((_) {
-      if (!fastConnection) {
-        _askPublish();
-      }
-    });
+    // Camera/mic are already configured during _join via fastConnectOptions,
+    // so no need to ask the user to publish again.
 
     if (lkPlatformIs(PlatformType.android)) {
       unawaited(Hardware.instance.setSpeakerphoneOn(true));
@@ -116,6 +112,7 @@ class _RoomPageState extends ConsumerState<RoomPage> {
   @override
   void dispose() {
     _callTimer?.cancel();
+    _fcmSubscription?.cancel();
     widget.room.removeListener(_onRoomDidUpdate);
     if (!_isEnteringPiP) {
       unawaited(_disposeRoomAsync());
@@ -141,8 +138,12 @@ class _RoomPageState extends ConsumerState<RoomPage> {
   }
 
   Future<void> _disposeRoomAsync() async {
-    await _listener.dispose();
-    await widget.room.dispose();
+    try {
+      await _listener.dispose();
+    } catch (_) {}
+    try {
+      await widget.room.dispose();
+    } catch (_) {}
   }
 
   Future<void> _activatePiP() async {
@@ -198,10 +199,11 @@ class _RoomPageState extends ConsumerState<RoomPage> {
           if (event.reason != null) {
             print('Room disconnected: reason => ${event.reason}');
           }
-          WidgetsBindingCompatible.instance?.addPostFrameCallback(
-            (timeStamp) =>
-                Navigator.popUntil(context, (route) => route.isFirst),
-          );
+          WidgetsBindingCompatible.instance?.addPostFrameCallback((timeStamp) {
+            if (mounted) {
+              Navigator.popUntil(context, (route) => route.isFirst);
+            }
+          });
           print("xoxochatId: ${widget.chatId}");
           print("xoxochatId: ${widget.isGroup}");
           if (widget.chatId != "") {
@@ -265,26 +267,6 @@ class _RoomPageState extends ConsumerState<RoomPage> {
             }
           }
         });
-
-  void _askPublish() async {
-    final result = await context.showPublishDialog();
-    if (!mounted) return;
-    if (result != true) return;
-    try {
-      await widget.room.localParticipant?.setCameraEnabled(true);
-    } catch (error) {
-      print('could not publish video: $error');
-      if (!mounted) return;
-      await context.showErrorDialog(error);
-    }
-    try {
-      await widget.room.localParticipant?.setMicrophoneEnabled(true);
-    } catch (error) {
-      print('could not publish audio: $error');
-      if (!mounted) return;
-      await context.showErrorDialog(error);
-    }
-  }
 
   void _onRoomDidUpdate() {
     _sortParticipants();
@@ -643,11 +625,6 @@ class _RoomPageState extends ConsumerState<RoomPage> {
       (t) => !t.muted,
     );
 
-    // Check for audio track
-    final audioPublication = track.participant.audioTrackPublications
-        .firstWhereOrNull((t) => t.source == TrackSource.microphone);
-    final audioTrack = audioPublication?.track;
-
     if (hasVideo) {
       // Full screen video
       return ParticipantWidget.widgetFor(track, showStatsLayer: true);
@@ -659,21 +636,6 @@ class _RoomPageState extends ConsumerState<RoomPage> {
           Stack(
             alignment: Alignment.center,
             children: [
-              if (audioTrack is AudioTrack)
-                SizedBox(
-                  width: 300,
-                  height: 100,
-                  child: Center(
-                    child: SoundWaveformWidget(
-                      audioTrack: audioTrack,
-                      barCount: 7,
-                      width: 10,
-                      minHeight: 40,
-                      maxHeight: 120,
-                      color: Colors.white.withOpacity(0.5),
-                    ),
-                  ),
-                ),
               Container(
                 width: 160,
                 height: 160,

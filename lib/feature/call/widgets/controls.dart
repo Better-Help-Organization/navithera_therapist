@@ -387,9 +387,7 @@ class _ControlsWidgetState extends State<ControlsWidget> {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color:
-                  isDestructive
-                      ? Colors.red.withOpacity(0.8)
-                      : Colors.white.withOpacity(0.2),
+                  isDestructive ? Colors.red.withOpacity(0.8) : Colors.black45,
             ),
             child: Icon(icon, color: Colors.white, size: 28),
           ),
