@@ -125,35 +125,74 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
       final activeCalls = await FlutterCallkitIncoming.activeCalls();
       if (activeCalls == null || activeCalls.isEmpty) return;
 
-      // Get the most recent call
-      final call = activeCalls.first as Map<dynamic, dynamic>;
-      final extra = call['extra'] as Map<dynamic, dynamic>?;
+      // Find the first valid, accepted call that hasn't expired
+      for (var activeCall in activeCalls) {
+        final call = activeCall as Map<dynamic, dynamic>;
+        final extra = call['extra'] as Map<dynamic, dynamic>?;
 
-      if (extra == null) return;
+        if (extra == null) continue;
 
-      final roomName = extra['room']?.toString();
-      final chatId = extra['chatId']?.toString();
-      final token = extra['token']?.toString();
-      final isVideoCall = extra['isVideoCall'] == true;
-      final isGroupCall = extra['isGroupCall'] == true;
-      final callerName = extra['callerName']?.toString() ?? 'Caller';
+        // Skip calls that aren't actually accepted (maybe ringing but app opened manually)
+        if (call['accepted'] != true) continue;
 
-      if (roomName == null || chatId == null || token == null) return;
+        final roomName = extra['room']?.toString();
+        final chatId = extra['chatId']?.toString();
+        final token = extra['token']?.toString();
+        final isVideoCall = extra['isVideoCall'] == true;
+        final isGroupCall = extra['isGroupCall'] == true;
+        final callerName = extra['callerName']?.toString() ?? 'Caller';
 
-      print('Active call found on startup: room=$roomName, chatId=$chatId');
+        if (roomName == null || chatId == null || token == null) continue;
 
-      // Store as pending route - will be processed when auth gate completes
-      ref.read(pendingRouteProvider.notifier).state = PendingRoute(
-        path: '/call-screen',
-        callData: {
-          'roomName': roomName,
-          'participantName': callerName,
-          'chatId': chatId,
-          'isVideoCall': isVideoCall,
-          'isGroupCall': isGroupCall,
-          'token': token,
-        },
-      );
+        // Verify token hasn't expired to prevent crashing on launch with old active calls
+        try {
+          final parts = token.split('.');
+          if (parts.length != 3) continue;
+
+          var payloadPattern = parts[1];
+          // Base64Url decoding requires padding if length is not a multiple of 4
+          while (payloadPattern.length % 4 != 0) {
+            payloadPattern += '=';
+          }
+          final String payloadJson = utf8.decode(
+            base64Url.decode(payloadPattern),
+          );
+          final payload = jsonDecode(payloadJson) as Map<String, dynamic>;
+
+          if (payload.containsKey('exp')) {
+            final exp = payload['exp'] as int;
+            final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+            if (exp < now) {
+              print('Active call found but token is expired. Skipping.');
+              // Tell CallKit to clean it up so it doesn't linger
+              await FlutterCallkitIncoming.endCall(
+                call['id']?.toString() ?? '',
+              );
+              continue; // Expired
+            }
+          }
+        } catch (e) {
+          print('Failed to decode token on startup: $e');
+        }
+
+        print('Active call found on startup: room=$roomName, chatId=$chatId');
+
+        // Store as pending route - will be processed when auth gate completes
+        ref.read(pendingRouteProvider.notifier).state = PendingRoute(
+          path: '/call-screen',
+          callData: {
+            'roomName': roomName,
+            'participantName': callerName,
+            'chatId': chatId,
+            'isVideoCall': isVideoCall,
+            'isGroupCall': isGroupCall,
+            'token': token,
+          },
+        );
+
+        // We only want to join one call
+        break;
+      }
     } catch (e) {
       print('Error checking active calls on startup: $e');
     }
@@ -221,8 +260,18 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
           (extra['chatId'] ?? idMap['chatId'] ?? body['chatId'])?.toString();
       final String? roomName =
           (extra['room'] ?? idMap['room'] ?? body['room'])?.toString();
-      final String? token =
+      String? token =
           (extra['token'] ?? idMap['token'] ?? body['token'])?.toString();
+
+      if (token == null && chatId != null) {
+        try {
+          final prefs = await SharedPreferences.getInstance();
+          token = prefs.getString('call_token_$chatId');
+          print("Recovered token from SharedPreferences for chatId: $chatId");
+        } catch (e) {
+          print("Failed to recover token: $e");
+        }
+      }
       final bool isVideoCall =
           (extra['isVideoCall'] ??
               idMap['isVideoCall'] ??
@@ -255,11 +304,7 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
         case 'ACTION_CALL_ACCEPT':
         case 'actionCallAccept':
           print("4x4x4x   context not null praying1");
-          if (roomName != null &&
-              chatId != null &&
-              isVideoCall != null &&
-              isGroupCall != null &&
-              token != null) {
+          if (roomName != null && chatId != null && token != null) {
             print("3x3x3x");
             if (context != null) {
               print("1x1x1x");

@@ -73,7 +73,9 @@ class _SoundWaveformWidgetState extends State<SoundWaveformWidget>
   EventsListener<AudioVisualizerEvent>? _listener;
 
   Future<void> _startVisualizer(AudioTrack track) async {
-    samples = List.filled(widget.barCount, 0);
+    samples = List.filled(widget.barCount, 5.0);
+    // Visualizer disabled due to missing libnoise.so on Android
+    /*
     _visualizer ??= createVisualizer(
       track,
       options: AudioVisualizerOptions(barCount: widget.barCount),
@@ -88,6 +90,7 @@ class _SoundWaveformWidgetState extends State<SoundWaveformWidget>
     });
 
     await _visualizer!.start();
+    */
   }
 
   void _stopVisualizer(AudioTrack track) async {

@@ -135,14 +135,7 @@ _join(
 
     // Try to connect to the room
     // This will throw an Exception if it fails for any reason.
-    await room.connect(
-      url,
-      token,
-      fastConnectOptions: FastConnectOptions(
-        microphone: TrackOption(enabled: true),
-        camera: TrackOption(enabled: isVideoCall),
-      ),
-    );
+    await room.connect(url, token);
 
     if (!context.mounted) return;
 

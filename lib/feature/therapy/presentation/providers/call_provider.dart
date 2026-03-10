@@ -200,8 +200,6 @@ class CallController extends StateNotifier<CallState> {
 
       final token = _generateToken();
 
-      final wantCamera = !state.isCameraOff && state.isVideoCall;
-
       await _room!
           .connect(
             _serverUrl,
@@ -209,10 +207,6 @@ class CallController extends StateNotifier<CallState> {
             roomOptions: const RoomOptions(
               adaptiveStream: true,
               dynacast: true,
-            ),
-            fastConnectOptions: FastConnectOptions(
-              microphone: TrackOption(enabled: !state.isMicMuted),
-              camera: TrackOption(enabled: wantCamera),
             ),
           )
           .timeout(

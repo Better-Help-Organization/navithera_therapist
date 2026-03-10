@@ -142,14 +142,7 @@ class FCMService {
       final listener = room.createListener();
 
       // Connect to the room directly (prepareConnection is called internally)
-      await room.connect(
-        url,
-        token,
-        fastConnectOptions: FastConnectOptions(
-          microphone: TrackOption(enabled: true),
-          camera: TrackOption(enabled: isVideoCall),
-        ),
-      );
+      await room.connect(url, token);
 
       print("printed after connected ${context.mounted}");
 
@@ -1367,6 +1360,16 @@ class FCMBackgroundBridge {
   }
 
   static Future<void> _showCallKitIncoming(_IncomingCall call) async {
+    try {
+      final sharedPreferences = await SharedPreferences.getInstance();
+      await sharedPreferences.setString(
+        'call_token_${call.chatId}',
+        call.token,
+      );
+    } catch (e) {
+      log("Error saving call token: $e");
+    }
+
     final uuid = const Uuid().v4();
     final params = CallKitParams(
       id: uuid,

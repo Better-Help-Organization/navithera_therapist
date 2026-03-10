@@ -271,14 +271,7 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
       await room.prepareConnection(url, token);
 
       // Try to connect to the room
-      await room.connect(
-        url,
-        token,
-        fastConnectOptions: FastConnectOptions(
-          microphone: TrackOption(enabled: true),
-          camera: TrackOption(enabled: isVideoCall),
-        ),
-      );
+      await room.connect(url, token);
 
       if (!context.mounted) return;
 
@@ -380,7 +373,7 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
         // Store the call ID if your backend returns one
         callId = responseData['callId'] ?? roomName;
 
-        if (token == null || token.isEmpty) {
+        if (token.isEmpty) {
           removeOverlay();
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
