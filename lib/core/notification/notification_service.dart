@@ -1256,8 +1256,8 @@ class FCMService {
     bool isGroupCall,
   ) {
     print("isVideoCall1: ${isVideoCall}");
-    final token2 =
-        "eyJhbGciOiJIUzI1NiJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6InF1aWNrc3RhcnQtcm9vbSJ9LCJpc3MiOiJBUEkzclBhWnVHcWIyODgiLCJleHAiOjE3NjQyMzU0MzYsIm5iZiI6MCwic3ViIjoibWVtZS11c2VybmFtZSJ9.MonNLbSa1SibeZh6M51kWCX5jmuesbg06psBD7ykSbE";
+    // final token2 =
+    //     "eyJhbGciOiJIUzI1NiJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6InF1aWNrc3RhcnQtcm9vbSIsImNhblB1Ymxpc2giOnRydWUsImNhblN1YnNjcmliZSI6dHJ1ZX0sImlzcyI6IkFQSTNyUGFadUdxYjI4OCIsImV4cCI6MTc2NDMyOTEzNCwibmJmIjowLCJzdWIiOiJxdWlja3N0YXJ0LXVzZXJuYW1lIn0.Ef8iTBjiIGhpVbYBo9mt8hK0sQaqTUzpDcJCjXOrVQs";
     _join(
       "wss://livekit.navigo.et",
       token,
@@ -1266,34 +1266,6 @@ class FCMService {
       isGroupCall: isGroupCall,
       chatId: chatId,
     );
-
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder:
-    //         (context) =>
-    //         //  CallScreen(
-    //         //   roomName: roomName,
-    //         //   participantName: participantName,
-    //         //   isVideoCall: isVideoCall,
-    //         //   chatId: chatId,
-    //         // ),
-    //         PreJoinPage(
-    //           args: JoinArgs(
-    //             url: "wss://livekit.navigo.et",
-    //             token: token, // Your known URL
-    //             // token:
-    //             //     "eyJhbGciOiJIUzI1NiJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6InF1aWNrc3RhcnQtcm9vbSIsImNhblB1Ymxpc2giOnRydWUsImNhblN1YnNjcmliZSI6dHJ1ZX0sImlzcyI6IkFQSTNyUGFadUdxYjI4OCIsImV4cCI6MTc2NDE5NDM3OSwibmJmIjowLCJzdWIiOiJ4by1tZW1lLXVzZXJuYW1lIn0._1FxCuD1OlcMJ_mQusKOhfEzD_RZObzHIHYb2y2Z_70", // Your known token
-    //             adaptiveStream: true,
-    //             dynacast: true,
-    //             simulcast: false,
-    //             e2ee: false,
-    //             preferredCodec: 'VP8',
-    //             enableBackupVideoCodec: true,
-    //           ),
-    //         ),
-    //   ),
-    // );
   }
 }
 

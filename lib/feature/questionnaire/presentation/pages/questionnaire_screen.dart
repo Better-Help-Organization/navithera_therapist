@@ -3486,19 +3486,25 @@ class _PostSignupQuestionnaireScreenState
                   ),
                 ),
             data: (banks) {
-              // Auto-select the non-optional bank on first load
+              // Auto-select all non-optional banks on first load
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                final nonOptionalBank = banks.firstWhere(
-                  (bank) => !bank.optional,
-                  orElse: () => banks.first,
-                );
+                final nonOptionalBanks =
+                    banks.where((bank) => !bank.optional).toList();
 
                 final currentSelected = ref.read(selectedBankIdsProvider);
-                if (!currentSelected.contains(nonOptionalBank.id)) {
-                  ref.read(selectedBankIdsProvider.notifier).state = [
-                    nonOptionalBank.id,
-                    ...currentSelected,
-                  ];
+                bool changed = false;
+                final newSelected = List<String>.from(currentSelected);
+
+                for (final bank in nonOptionalBanks) {
+                  if (!newSelected.contains(bank.id)) {
+                    newSelected.insert(0, bank.id);
+                    changed = true;
+                  }
+                }
+
+                if (changed) {
+                  ref.read(selectedBankIdsProvider.notifier).state =
+                      newSelected;
                 }
               });
 
