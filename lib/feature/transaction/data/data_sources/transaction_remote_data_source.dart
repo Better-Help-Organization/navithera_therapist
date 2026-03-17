@@ -16,6 +16,7 @@ abstract class TransactionRemoteDataSource {
     @Query('page') int? page,
     @Query('take') int? take,
     @Query('sort') String? sort,
+    @Query('filters') String? filters,
   });
 }
 

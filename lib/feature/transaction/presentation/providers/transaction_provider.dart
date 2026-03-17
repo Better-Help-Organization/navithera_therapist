@@ -4,6 +4,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:navicare/core/error/failures.dart';
 import 'package:navicare/feature/transaction/data/models/transaction_models.dart';
 import 'package:navicare/feature/transaction/domain/repositories/transaction_repository.dart';
+import 'package:navicare/feature/auth/presentation/providers/user_provider.dart';
 
 part 'transaction_provider.freezed.dart';
 
@@ -21,8 +22,9 @@ class TransactionState with _$TransactionState {
 
 class TransactionNotifier extends StateNotifier<TransactionState> {
   final TransactionRepository _repository;
+  final Ref _ref;
 
-  TransactionNotifier(this._repository)
+  TransactionNotifier(this._repository, this._ref)
     : super(const TransactionState.initial());
 
   Future<void> getTransactions({
@@ -42,7 +44,11 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
         }
       }
 
-      final result = await _repository.getTransactions(page: nextPage);
+      final user = _ref.read(currentUserProvider);
+      final result = await _repository.getTransactions(
+        page: nextPage,
+        therapistId: user?.id,
+      );
 
       result.fold((failure) => state = TransactionState.error(failure), (
         response,
@@ -97,5 +103,5 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
 final transactionProvider =
     StateNotifierProvider<TransactionNotifier, TransactionState>((ref) {
       final repository = ref.read(transactionRepositoryProvider);
-      return TransactionNotifier(repository);
+      return TransactionNotifier(repository, ref);
     });

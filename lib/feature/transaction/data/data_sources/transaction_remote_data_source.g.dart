@@ -22,12 +22,14 @@ class _TransactionRemoteDataSource implements TransactionRemoteDataSource {
     int? page,
     int? take,
     String? sort,
+    String? filters,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'page': page,
       r'take': take,
       r'sort': sort,
+      r'filters': filters,
     };
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
