@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:navicare/core/constants/base_url.dart';
 import 'package:navicare/core/localization/providers/locale_provider.dart';
 import 'package:navicare/core/providers/socket_provider.dart';
@@ -9,6 +10,8 @@ import 'package:navicare/core/theme/app_colors.dart';
 import 'package:navicare/core/util/avatar_util.dart';
 import 'package:navicare/feature/auth/presentation/providers/user_provider.dart';
 import 'package:navicare/feature/auth/presentation/providers/auth_provider.dart';
+import 'package:navicare/feature/home/presentation/pages/home_screen.dart';
+import 'package:navicare/feature/notification/presentation/pages/notification_screen.dart';
 import 'package:navicare/feature/profile/presentation/providers/profile_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import "package:navicare/l10n/app_localization.dart";
@@ -45,13 +48,39 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       query: encodeQueryParameters(<String, String>{'subject': ''}),
     );
 
-    launchUrl(emailLaunchUri);
+    try {
+      final canLaunch = await canLaunchUrl(emailLaunchUri);
+      if (canLaunch) {
+        await launchUrl(emailLaunchUri, mode: LaunchMode.externalApplication);
+      } else {
+        print('Cannot launch email: $emailLaunchUri');
+        if (context.mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Cannot open email app')));
+        }
+      }
+    } catch (e) {
+      print('Error launching email: $e');
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error opening email: $e')));
+      }
+    }
   }
 
   void _callUs() async {
     final Uri phoneUri = Uri(scheme: 'tel', path: '0998888866');
-    if (await canLaunchUrl(phoneUri)) {
-      await launchUrl(phoneUri);
+    try {
+      final canLaunch = await canLaunchUrl(phoneUri);
+      if (canLaunch) {
+        await launchUrl(phoneUri, mode: LaunchMode.externalApplication);
+      } else {
+        print('Cannot launch phone: $phoneUri');
+      }
+    } catch (e) {
+      print('Error launching phone: $e');
     }
   }
 
@@ -95,29 +124,26 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Future<void> _showDeleteAccountDialog(BuildContext context) async {
     return showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Colors.white,
-        title: Text(AppLocalizations.of(context)!.deleteAccount),
-        content: Text(
-          AppLocalizations.of(context)!.deleteAccountWarning,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(AppLocalizations.of(context)!.cancel),
+      builder:
+          (context) => AlertDialog(
+            backgroundColor: Colors.white,
+            title: Text(AppLocalizations.of(context)!.deleteAccount),
+            content: Text(AppLocalizations.of(context)!.deleteAccountWarning),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(AppLocalizations.of(context)!.cancel),
+              ),
+              TextButton(
+                onPressed: () async {
+                  Navigator.pop(context);
+                  await _handleDeleteAccount();
+                },
+                style: TextButton.styleFrom(foregroundColor: AppColors.error),
+                child: Text(AppLocalizations.of(context)!.delete),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              await _handleDeleteAccount();
-            },
-            style: TextButton.styleFrom(
-              foregroundColor: AppColors.error,
-            ),
-            child: Text(AppLocalizations.of(context)!.delete),
-          ),
-        ],
-      ),
     );
   }
 
@@ -126,9 +152,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(
-        child: CircularProgressIndicator(),
-      ),
+      builder: (context) => const Center(child: CircularProgressIndicator()),
     );
 
     // Call delete account
@@ -156,17 +180,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           // Show error dialog
           showDialog(
             context: context,
-            builder: (context) => AlertDialog(
-              backgroundColor: Colors.white,
-              title: Text(AppLocalizations.of(context)!.error),
-              content: Text(message),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(AppLocalizations.of(context)!.ok),
+            builder:
+                (context) => AlertDialog(
+                  backgroundColor: Colors.white,
+                  title: Text(AppLocalizations.of(context)!.error),
+                  content: Text(message),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(AppLocalizations.of(context)!.ok),
+                    ),
+                  ],
                 ),
-              ],
-            ),
           );
         },
       );
@@ -293,15 +318,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 _buildListTile(
                   icon: Icons.notifications_outlined,
                   title: AppLocalizations.of(context)!.notification,
-                  onTap: () {},
+                  onTap: () {
+                    ref.read(notificationCountProvider.notifier).reset();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const NotificationScreen(),
+                      ),
+                    );
+                  },
                 ),
-                _buildListTile(
-                  icon: Icons.card_giftcard,
-                  title: AppLocalizations.of(context)!.giftTherapy,
-                  onTap: () {},
-                  badge: '${AppLocalizations.of(context)!.xnew}',
-                  badgeColor: AppColors.primary,
-                ),
+                // _buildListTile(
+                //   icon: Icons.card_giftcard,
+                //   title: AppLocalizations.of(context)!.giftTherapy,
+                //   onTap: () {},
+                //   badge: '${AppLocalizations.of(context)!.xnew}',
+                //   badgeColor: AppColors.primary,
+                // ),
                 _buildListTile(
                   icon: Icons.language,
                   title: AppLocalizations.of(context)!.language,
@@ -318,11 +351,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                _buildListTile(
-                  icon: Icons.support_agent,
-                  title: AppLocalizations.of(context)!.livechatSupport,
-                  onTap: () {},
-                ),
+                // _buildListTile(
+                //   icon: Icons.support_agent,
+                //   title: AppLocalizations.of(context)!.livechatSupport,
+                //   onTap: () {},
+                // ),
                 _buildListTile(
                   icon: Icons.call_outlined,
                   title: AppLocalizations.of(context)!.callUs,
@@ -333,24 +366,24 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   title: AppLocalizations.of(context)!.emailUs,
                   onTap: () => _emailUs(context),
                 ),
-                _buildListTile(
-                  icon: Icons.bug_report_outlined,
-                  title: AppLocalizations.of(context)!.feedbackAndBugReports,
-                  onTap: () {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder:
-                    //         (context) => CallScreen(
-                    //           roomName: "test",
-                    //           participantName: "tester",
-                    //           isVideoCall: true,
-                    //         ),
-                    //   ),
-                    // );
-                  },
-                ),
 
+                // _buildListTile(
+                //   icon: Icons.bug_report_outlined,
+                //   title: AppLocalizations.of(context)!.feedbackAndBugReports,
+                //   onTap: () {
+                //     // Navigator.push(
+                //     //   context,
+                //     //   MaterialPageRoute(
+                //     //     builder:
+                //     //         (context) => CallScreen(
+                //     //           roomName: "test",
+                //     //           participantName: "tester",
+                //     //           isVideoCall: true,
+                //     //         ),
+                //     //   ),
+                //     // );
+                //   },
+                // ),
                 const SizedBox(height: 20),
                 // More Section
                 Text(

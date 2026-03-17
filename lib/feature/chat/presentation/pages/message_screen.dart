@@ -1168,7 +1168,9 @@ import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:livekit_client/livekit_client.dart';
 import 'package:navicare/core/constants/base_url.dart';
@@ -1979,6 +1981,59 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
   //   );
   // }
 
+Widget _buildMessageText(String text, bool isMe) {
+    final RegExp urlRegExp = RegExp(
+      r'((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)',
+      caseSensitive: false,
+    );
+
+    final List<TextSpan> spans = [];
+    int start = 0;
+
+    for (final Match match in urlRegExp.allMatches(text)) {
+      if (match.start > start) {
+        spans.add(TextSpan(text: text.substring(start, match.start)));
+      }
+
+      final String urlText = match.group(0)!;
+      final String urlString = urlText.startsWith('http') ? urlText : 'https://$urlText';
+
+      spans.add(
+        TextSpan(
+          text: urlText,
+          style: TextStyle(
+            color: isMe ? Colors.white : Colors.blue,
+            decoration: TextDecoration.underline,
+            decorationColor: isMe ? Colors.white : Colors.blue,
+          ),
+          recognizer: TapGestureRecognizer()
+            ..onTap = () async {
+              final Uri uri = Uri.parse(urlString);
+              if (await canLaunchUrl(uri)) {
+                await launchUrl(uri);
+              }
+            },
+        ),
+      );
+
+      start = match.end;
+    }
+
+    if (start < text.length) {
+      spans.add(TextSpan(text: text.substring(start)));
+    }
+
+    return RichText(
+      text: TextSpan(
+        style: TextStyle(
+          color: isMe ? Colors.white : AppColors.primary,
+          fontSize: 16,
+        ),
+        children: spans,
+      ),
+    );
+  }
+
   Widget _buildMessageBubble(ChatMessageDetail message) {
     final isMe = message.client == null;
     final isSelected = _selectedMessageIds.contains(message.id);
@@ -2040,13 +2095,7 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
                             ? CrossAxisAlignment.end
                             : CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        message.content,
-                        style: TextStyle(
-                          color: isMe ? Colors.white : AppColors.primary,
-                          fontSize: 16,
-                        ),
-                      ),
+                      _buildMessageText(message.content, isMe),
                       const SizedBox(height: 4),
                       Row(
                         mainAxisSize: MainAxisSize.min,

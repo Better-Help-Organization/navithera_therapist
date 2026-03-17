@@ -3486,21 +3486,7 @@ class _PostSignupQuestionnaireScreenState
                   ),
                 ),
             data: (banks) {
-              // Auto-select the non-optional bank on first load
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                final nonOptionalBank = banks.firstWhere(
-                  (bank) => !bank.optional,
-                  orElse: () => banks.first,
-                );
-
-                final currentSelected = ref.read(selectedBankIdsProvider);
-                if (!currentSelected.contains(nonOptionalBank.id)) {
-                  ref.read(selectedBankIdsProvider.notifier).state = [
-                    nonOptionalBank.id,
-                    ...currentSelected,
-                  ];
-                }
-              });
+              // Removed single bank auto-selection limitation
 
               return ListView.separated(
                 itemCount: banks.length,
@@ -3508,33 +3494,29 @@ class _PostSignupQuestionnaireScreenState
                 itemBuilder: (context, index) {
                   final bank = banks[index];
                   final isSelected = selectedBanks.contains(bank.id);
-                  final isNonOptional = !bank.optional;
 
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Bank selection tile
                       InkWell(
-                        onTap:
-                            isNonOptional
-                                ? null // Disable tapping for non-optional banks
-                                : () {
-                                  final upd = [...selectedBanks];
-                                  if (isSelected) {
-                                    upd.remove(bank.id);
-                                  } else {
-                                    upd.add(bank.id);
-                                  }
-                                  ref
-                                      .read(selectedBankIdsProvider.notifier)
-                                      .state = upd;
-                                },
+                        onTap: () {
+                          final upd = [...selectedBanks];
+                          if (isSelected) {
+                            upd.remove(bank.id);
+                          } else {
+                            upd.add(bank.id);
+                          }
+                          ref
+                              .read(selectedBankIdsProvider.notifier)
+                              .state = upd;
+                        },
                         borderRadius: BorderRadius.circular(12),
                         child: Opacity(
-                          opacity: isNonOptional ? 0.7 : 1.0,
+                          opacity: 1.0,
                           child: _selectTile(
                             title: bank.name,
-                            subtitle: isNonOptional ? 'Required' : null,
+                            subtitle: null,
                             selected: isSelected,
                           ),
                         ),

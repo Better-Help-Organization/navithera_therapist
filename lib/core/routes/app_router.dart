@@ -13,6 +13,7 @@ import 'package:navicare/feature/chat/presentation/pages/chat_list_screen.dart';
 import 'package:navicare/feature/chat/presentation/pages/message_screen.dart';
 import 'package:navicare/feature/journal/presentation/pages/my_journal.dart';
 import 'package:navicare/feature/navigation/presentation/pages/main_navigation.dart';
+import 'package:navicare/feature/notification/presentation/pages/notification_screen.dart';
 import 'package:navicare/feature/onboarding/presentation/pages/onboarding_screen.dart';
 import 'package:navicare/feature/questionnaire/presentation/pages/match_request_screen.dart';
 import 'package:navicare/feature/questionnaire/presentation/pages/questionnaire_screen.dart';
