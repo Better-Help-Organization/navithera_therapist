@@ -9,12 +9,12 @@ class NewMessageNotificationBanner extends StatelessWidget {
   final bool isMessage; // Function to call when tapped
 
   const NewMessageNotificationBanner({
-    Key? key,
+    super.key,
     required this.title,
     required this.body,
     this.onTap,
     this.isMessage = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

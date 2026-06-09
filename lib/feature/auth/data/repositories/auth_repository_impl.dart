@@ -73,7 +73,7 @@ class AuthRepositoryImpl implements AuthRepository {
       return Right(user);
     } on DioException catch (e) {
       String errorMessage = 'Login failed. Please try again.';
-      log("The login error: ${e}");
+      log("The login error: $e");
 
       if (e.response?.data is Map<String, dynamic>) {
         final responseData = e.response!.data as Map<String, dynamic>;

@@ -51,7 +51,7 @@ class _GroupMemberSelectionBottomSheetState
     print("Selected chatid: ${widget.chatId}");
     print('Selected user IDs: ${_selectedUserIds.toList()}');
 
-    _join(
+    join(
       String url,
       String token,
       BuildContext context, {
@@ -125,7 +125,7 @@ class _GroupMemberSelectionBottomSheetState
       } finally {}
     }
 
-    String _generateRandomRoomName() {
+    String generateRandomRoomName() {
       const chars =
           'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
       final random = Random();
@@ -139,7 +139,7 @@ class _GroupMemberSelectionBottomSheetState
 
     final sharedPreferences = await SharedPreferences.getInstance();
     final accessToken = sharedPreferences.getString('access_token');
-    final roomName = _generateRandomRoomName();
+    final roomName = generateRandomRoomName();
 
     // Show loading indicator
     if (!mounted) return;
@@ -159,7 +159,7 @@ class _GroupMemberSelectionBottomSheetState
       dio.options.headers['Authorization'] = 'Bearer $accessToken';
 
       final response = await dio.post(
-        '${base_url_dev}/chat/call/${widget.chatId}',
+        '$base_url_dev/chat/call/${widget.chatId}',
         data: {
           'room': roomName,
           'isVideoCall': isVideoCall,
@@ -197,7 +197,7 @@ class _GroupMemberSelectionBottomSheetState
           //         ),
           //   ),
           // );
-          _join(
+          join(
             "wss://livekit.navigo.et",
             token,
             context,

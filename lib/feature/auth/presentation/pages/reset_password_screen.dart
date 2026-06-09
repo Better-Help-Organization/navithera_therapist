@@ -7,7 +7,7 @@ import 'package:navicare/l10n/app_localization.dart';
 
 class ResetPasswordScreen extends ConsumerStatefulWidget {
   final String email;
-  const ResetPasswordScreen({required this.email});
+  const ResetPasswordScreen({super.key, required this.email});
 
   @override
   _ResetPasswordScreenState createState() => _ResetPasswordScreenState();
@@ -168,7 +168,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                     ),
                   ),
                   // Logo/title area
-                  Container(
+                  SizedBox(
                     height: 250,
                     child: Center(
                       child: Row(

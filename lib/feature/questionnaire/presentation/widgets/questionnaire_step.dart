@@ -51,7 +51,7 @@ class QuestionnaireStep extends ConsumerWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 60),
-              Container(
+              SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {

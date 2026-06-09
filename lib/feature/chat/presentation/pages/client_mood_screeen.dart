@@ -24,7 +24,7 @@ class MoodNotifier extends StateNotifier<AsyncValue<List<MoodEntry>>> {
     try {
       await _attachAuthHeader();
       final response = await _dio
-          .get('${base_url_dev}/mood?filters=client.id%3D$clientId&take=100')
+          .get('$base_url_dev/mood?filters=client.id%3D$clientId&take=100')
           .timeout(const Duration(seconds: 30));
 
       if (response.data != null && response.data['data'] != null) {
@@ -503,7 +503,7 @@ class _MoodCalendarScreenState extends State<MoodCalendarScreen> {
                   ),
                 )
               else
-                ...dayMoods.map((mood) => _buildMoodDetail(mood)).toList(),
+                ...dayMoods.map((mood) => _buildMoodDetail(mood)),
             ],
           ),
         ),

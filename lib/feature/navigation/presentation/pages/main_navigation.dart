@@ -31,7 +31,7 @@ class _MainNavigationState extends State<MainNavigation> {
 
     _dio.options.headers['Authorization'] = 'Bearer $accessToken';
     final response = await _dio.get(
-      '${base_url_dev}/therapist/me/sessions?fields=schedule,duration,client.*&take=0',
+      '$base_url_dev/therapist/me/sessions?fields=schedule,duration,client.*&take=0',
     );
     final sessionsData = response.data['data'] as List;
     return sessionsData.map((data) => Session.fromMap(data)).toList();
@@ -54,7 +54,7 @@ class _MainNavigationState extends State<MainNavigation> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> _screens = [
+    final List<Widget> screens = [
       const HomeScreen(),
       const ChatListScreen(),
       const SessionCalendarScreen(),
@@ -65,7 +65,7 @@ class _MainNavigationState extends State<MainNavigation> {
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
-        body: IndexedStack(index: _selectedIndex, children: _screens),
+        body: IndexedStack(index: _selectedIndex, children: screens),
         bottomNavigationBar: Container(
           decoration: BoxDecoration(
             boxShadow: [

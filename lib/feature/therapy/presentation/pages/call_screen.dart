@@ -77,7 +77,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
 
       dio.options.headers['Authorization'] = 'Bearer $accessToken';
 
-      final response = await dio.post('${base_url_dev}/chat/call/end/$chatId');
+      final response = await dio.post('$base_url_dev/chat/call/end/$chatId');
 
       if (response.statusCode == 201) {
         // Call ended successfully
@@ -293,7 +293,6 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                 isLocalVideoEnabled &&
                 isRemoteVideoEnabled &&
                 hasSingleRemote &&
-                firstRemote != null &&
                 local != null)
               Positioned(
                 left: _previewOffset.dx,

@@ -164,7 +164,7 @@ class _ChatSearchScreenState extends ConsumerState<ChatSearchScreen> {
                                       client!.profile!.isNotEmpty)
                               ? Image(
                                 image: NetworkImage(
-                                  '${base_url_for_image}${client.profile}?v=${DateTime.now().millisecondsSinceEpoch}',
+                                  '$base_url_for_image${client.profile}?v=${DateTime.now().millisecondsSinceEpoch}',
                                 ),
                                 width: 50,
                                 height: 50,
@@ -172,7 +172,7 @@ class _ChatSearchScreenState extends ConsumerState<ChatSearchScreen> {
                                 errorBuilder: (context, error, stackTrace) {
                                   return Image(
                                     image: AssetImage(
-                                      getAvatarImage(client?.avatar ?? 0),
+                                      getAvatarImage(client.avatar ?? 0),
                                     ),
                                     width: 50,
                                     height: 50,

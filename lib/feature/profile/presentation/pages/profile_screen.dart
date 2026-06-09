@@ -132,7 +132,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                           user!.profile!.isNotEmpty)
                                   ? Image(
                                     image: NetworkImage(
-                                      '${base_url_for_image}${user.profile}?v=${DateTime.now().millisecondsSinceEpoch}',
+                                      '$base_url_for_image${user.profile}?v=${DateTime.now().millisecondsSinceEpoch}',
                                     ),
                                     width: 80,
                                     height: 80,

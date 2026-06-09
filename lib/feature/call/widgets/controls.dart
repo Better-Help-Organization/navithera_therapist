@@ -219,7 +219,7 @@ class _ControlsWidgetState extends State<ControlsWidget> {
   void _onTapSimulateScenario() async {
     final result = await context.showSimulateScenarioDialog();
     if (result != null) {
-      print('${result}');
+      print('$result');
 
       if (SimulateScenarioResult.e2eeKeyRatchet == result) {
         await widget.room.e2eeManager?.ratchetKey();

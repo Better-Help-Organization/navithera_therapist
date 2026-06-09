@@ -366,7 +366,7 @@ class _RoomPageState extends ConsumerState<RoomPage> {
 
       dio.options.headers['Authorization'] = 'Bearer $accessToken';
 
-      final response = await dio.post('${base_url_dev}/chat/call/end/$chatId');
+      final response = await dio.post('$base_url_dev/chat/call/end/$chatId');
 
       if (response.statusCode == 201) {
         print("xoxo: Called");

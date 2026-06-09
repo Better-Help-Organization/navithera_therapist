@@ -9,6 +9,8 @@ import '../providers/auth_provider.dart';
 import 'package:navicare/l10n/app_localization.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
+  const LoginPage({super.key}); 
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -182,7 +184,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   //   child: Row(children: []),
                   // ),
                   // Logo
-                  Container(
+                  SizedBox(
                     height: 250,
                     child: Center(
                       child: Row(
@@ -437,7 +439,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             ),
                           ),
                           //SizedBox(height: 20),
-                          Container(
+                          SizedBox(
                             width: double.infinity,
                             height: 55,
                             child: ElevatedButton(

@@ -12,6 +12,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 //class SignupPage extends StatefulWidget {
 class SignupPage extends ConsumerStatefulWidget {
+  const SignupPage({super.key});
+
   @override
   _SignupPageState createState() => _SignupPageState();
 }
@@ -636,7 +638,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                                     context,
                                   ).copyWith(canvasColor: Color(0xFFF5F5F5)),
                                   child: DropdownButtonFormField<String>(
-                                    value: _selectedGender,
+                                    initialValue: _selectedGender,
                                     decoration: InputDecoration(
                                       border: InputBorder.none,
                                       contentPadding: EdgeInsets.symmetric(
@@ -981,7 +983,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                       ),
                     ),
                     SizedBox(height: 30),
-                    Container(
+                    SizedBox(
                       width: double.infinity,
                       height: 55,
                       child: ElevatedButton(

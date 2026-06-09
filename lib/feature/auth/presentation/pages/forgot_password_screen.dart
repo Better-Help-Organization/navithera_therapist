@@ -6,6 +6,8 @@ import 'package:navicare/l10n/app_localization.dart';
 import 'package:navicare/feature/auth/presentation/providers/auth_provider.dart';
 
 class ForgotPasswordScreen extends ConsumerStatefulWidget {
+  const ForgotPasswordScreen({super.key});
+
   @override
   _ForgotPasswordScreenState createState() => _ForgotPasswordScreenState();
 }
@@ -91,7 +93,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                     ),
                   ),
                   // Logo/title area (matches Login)
-                  Container(
+                  SizedBox(
                     height: 250,
                     child: Center(
                       child: Row(

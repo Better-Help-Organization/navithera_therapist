@@ -323,7 +323,7 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
 
       // Only cancel if we haven't initiated the call yet
       if (callId != null) {
-        await _sendCallCancelNotification(callId!);
+        await _sendCallCancelNotification(callId);
       }
 
       if (mounted) {
@@ -362,7 +362,7 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
       dio.options.headers['Authorization'] = 'Bearer $accessToken';
 
       final response = await dio.post(
-        '${base_url_dev}/chat/call/${widget.chat.id}',
+        '$base_url_dev/chat/call/${widget.chat.id}',
         data: {'room': roomName, 'isVideoCall': isVideoCall},
       );
 
@@ -462,10 +462,10 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
       final accessToken = sharedPreferences.getString('access_token');
 
       final dio = Dio();
-      dio.options.headers['Authorization'] = 'Bearer ${accessToken}';
+      dio.options.headers['Authorization'] = 'Bearer $accessToken';
 
       await dio.post(
-        '${base_url_dev}/chat/call/cancel',
+        '$base_url_dev/chat/call/cancel',
         data: {
           'callId': callId,
           'chatId': widget.chat.id,
@@ -763,12 +763,12 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
     final bool isOnline;
     if (isOnlineFromSocket != null) {
       print("user st id: ${clientInfoAsync?.value?.id}");
-      print("user st Online 1 socket: ${isOnlineFromSocket}");
+      print("user st Online 1 socket: $isOnlineFromSocket");
       // Prefer real-time socket status
       isOnline = isOnlineFromSocket;
     } else if (clientInfoAsync != null &&
         clientInfoAsync is AsyncData<UserModel>) {
-      print("user st Online 2 socket: ${clientInfoAsync}");
+      print("user st Online 2 socket: $clientInfoAsync");
       // Use client info status as fallback
       isOnline =
           clientInfoAsync.value.isOnline ??
@@ -826,7 +826,7 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
                             ),
                           );
                         } else {
-                          print("clientId: ${clientId}");
+                          print("clientId: $clientId");
                           // For non-group chat, fetch therapist info
                           if (clientId != null) {
                             Navigator.push(

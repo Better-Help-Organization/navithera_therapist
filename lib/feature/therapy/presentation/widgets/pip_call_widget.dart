@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:livekit_client/livekit_client.dart';
 import 'package:navicare/core/constants/emoji_list.dart';
-import 'package:navicare/core/util/format_duration.dart';
 import '../providers/call_provider.dart';
 
 class PiPCallWidget extends ConsumerStatefulWidget {

@@ -302,7 +302,7 @@ class ChatRepositoryImpl implements ChatRepository {
         take: 0,
         sort: 'schedule=Asc',
       );
-      log("here: ${response}");
+      log("here: $response");
       return Right(response);
     } on DioException catch (e) {
       String errorMessage =
@@ -332,7 +332,7 @@ class ChatRepositoryImpl implements ChatRepository {
         take: 0,
         sort: 'schedule=Asc',
       );
-      log("here: ${response}");
+      log("here: $response");
       return Right(response);
     } on DioException catch (e) {
       String errorMessage =
@@ -380,7 +380,7 @@ class ChatRepositoryImpl implements ChatRepository {
         therapistId,
         {'note': note},
       );
-      print("responsexoxo: ${response}");
+      print("responsexoxo: $response");
       return Right(response.data);
     } on DioException catch (e) {
       String errorMessage = 'Failed to update session note';

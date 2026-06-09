@@ -19,7 +19,7 @@ final answersProvider = FutureProvider.family<AnswerResponse, List<String>>((
 
   final idsParam = answerIds.join(',');
   final response = await dio.get(
-    '${base_url_dev}/answer',
+    '$base_url_dev/answer',
     queryParameters: {
       'fields': 'question.*,singleOption.*,multiOption.*,text',
       'ids': idsParam,

@@ -59,7 +59,7 @@ class FCMService {
   bool get _isCallDialogOpen => _activeCallChatId != null;
   // Match request ringtone state
   AudioPlayer? _matchRequestPlayer;
-  bool _hasActiveMatchRequest = false;
+  final bool _hasActiveMatchRequest = false;
   bool get hasActiveMatchRequest => _hasActiveMatchRequest;
 
   // Future<void> startMatchRequestRingtone() async {
@@ -488,7 +488,7 @@ class FCMService {
     }
 
     if (_isIncomingCallMessage(message)) {
-      print("new kind: ${message}");
+      print("new kind: $message");
       // App opened from terminated by tapping notification is typical.
       // We should present CallKit immediately to mirror Telegram-like behavior.
       final call = _parseIncomingCall(message);
@@ -829,7 +829,7 @@ class FCMService {
       String body = data['message_preview'] ?? notification?.body ?? '';
       final chatData = jsonDecode(data["id"]);
       final chatId = chatData['chat']['id'];
-      print("chatId: ${chatId}");
+      print("chatId: $chatId");
       _updateChatData(chatId);
       print('Error showing notification banner: $e');
     }
@@ -1036,8 +1036,8 @@ class FCMService {
                             ).pop();
                             _activeCallChatId = null;
                             _ringtonePlayer = null;
-                            print("xoxoch; ${chatId}");
-                            print("xoxo: ${isGroupCall}");
+                            print("xoxoch; $chatId");
+                            print("xoxo: $isGroupCall");
                             _joinCallRoom(
                               roomName,
                               participant,
@@ -1132,12 +1132,12 @@ class FCMService {
       final token = idMap['token'] as String?;
       final isVideoCall = idMap['isVideoCall'] as bool? ?? false;
       final isGroupCall = idMap['isGroupCall'] as bool? ?? false;
-      print("isVideoCall4: ${isVideoCall}");
+      print("isVideoCall4: $isVideoCall");
       final callerData = idMap['callerData'] as Map<String, dynamic>?;
       final firstName = callerData?['firstName'] as String? ?? '';
       final lastName = callerData?['lastName'] as String? ?? '';
       final fullName =
-          (firstName + ' ' + lastName).trim().isEmpty
+          ('$firstName $lastName').trim().isEmpty
               ? 'Caller'
               : '$firstName $lastName';
 
@@ -1190,21 +1190,6 @@ class FCMService {
     if (context == null) return;
     print("context not null praying: $context");
 
-    if (context == null) {
-      _ref.read(pendingRouteProvider.notifier).state = PendingRoute(
-        path: '/call-screen',
-        callData: {
-          'roomName': roomName,
-          'participantName': participantName,
-          'chatId': chatId,
-          'isVideoCall': isVideocall,
-          'token': token,
-          'isGroupCall': isGroupCall,
-        },
-      );
-      return;
-    }
-
     _join(
       "wss://livekit.navigo.et",
       token,
@@ -1248,7 +1233,7 @@ class FCMService {
     String token,
     bool isGroupCall,
   ) {
-    print("isVideoCall1: ${isVideoCall}");
+    print("isVideoCall1: $isVideoCall");
     // final token2 =
     //     "eyJhbGciOiJIUzI1NiJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6InF1aWNrc3RhcnQtcm9vbSIsImNhblB1Ymxpc2giOnRydWUsImNhblN1YnNjcmliZSI6dHJ1ZX0sImlzcyI6IkFQSTNyUGFadUdxYjI4OCIsImV4cCI6MTc2NDMyOTEzNCwibmJmIjowLCJzdWIiOiJxdWlja3N0YXJ0LXVzZXJuYW1lIn0.Ef8iTBjiIGhpVbYBo9mt8hK0sQaqTUzpDcJCjXOrVQs";
     _join(
@@ -1288,7 +1273,7 @@ class FCMBackgroundBridge {
     try {
       // Show CallKit incoming for incoming call messages
       if (_isIncomingCallMessage(message)) {
-        print("new kind bg: ${message}");
+        print("new kind bg: $message");
         final call = _parseIncomingCall(message);
         if (call != null) {
           await _showCallKitIncoming(call);
@@ -1335,11 +1320,11 @@ class FCMBackgroundBridge {
       final callerData = idMap['callerData'] as Map<String, dynamic>?;
       final isVideoCall = idMap['isVideoCall'] as bool? ?? false;
       final isGroupCall = idMap['isGroupCall'] as bool? ?? false;
-      print("isVideoCall5: ${isVideoCall}");
+      print("isVideoCall5: $isVideoCall");
       final firstName = callerData?['firstName'] as String? ?? '';
       final lastName = callerData?['lastName'] as String? ?? '';
       final fullName =
-          (firstName + ' ' + lastName).trim().isEmpty
+          ('$firstName $lastName').trim().isEmpty
               ? 'Caller'
               : '$firstName $lastName';
 

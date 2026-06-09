@@ -14,7 +14,7 @@ class FileUploadService {
       throw Exception('No access token found. Please login again.');
     }
 
-    final uri = Uri.parse('${base_url_dev}/therapist/me/upload/profile');
+    final uri = Uri.parse('$base_url_dev/therapist/me/upload/profile');
     final request = http.MultipartRequest('POST', uri);
 
     // Add authorization header

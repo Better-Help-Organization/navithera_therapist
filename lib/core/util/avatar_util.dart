@@ -22,7 +22,7 @@ List<Color> getRandomGradient() {
 
 String truncate(String input, [int maxLength = 10]) {
   if (input.length <= maxLength) return input;
-  return input.substring(0, maxLength) + '...';
+  return '${input.substring(0, maxLength)}...';
 }
 
 String getAvatarImage(int index) {

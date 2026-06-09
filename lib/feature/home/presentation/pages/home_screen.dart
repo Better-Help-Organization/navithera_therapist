@@ -63,7 +63,7 @@ class NotificationService {
       await _attachAuthHeader();
 
       final response = await _dio.get(
-        '${base_url_dev}/therapist/me/notifications',
+        '$base_url_dev/therapist/me/notifications',
       );
 
       if (response.statusCode == 200) {
@@ -192,7 +192,7 @@ class LiveSessionService {
       await _attachAuthHeader();
 
       final response = await _dio.get(
-        '${base_url_dev}/therapist/me/chats?filters=activeCallRoom!==null&sort=updatedAt=desc&take=10&page=1',
+        '$base_url_dev/therapist/me/chats?filters=activeCallRoom!==null&sort=updatedAt=desc&take=10&page=1',
       );
 
       if (response.statusCode == 200) {
@@ -214,7 +214,7 @@ class LiveSessionService {
       await _attachAuthHeader();
 
       final response = await _dio.post(
-        '${base_url_dev}/chat/call/$chatId/join',
+        '$base_url_dev/chat/call/$chatId/join',
       );
 
       if (response.statusCode == 201) {
@@ -346,7 +346,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                             user!.profile!.isNotEmpty)
                                     ? Image(
                                       image: NetworkImage(
-                                        '${base_url_for_image}${user.profile}?v=${DateTime.now().millisecondsSinceEpoch}',
+                                        '$base_url_for_image${user.profile}?v=${DateTime.now().millisecondsSinceEpoch}',
                                       ),
                                       width: 50,
                                       height: 50,
@@ -746,10 +746,10 @@ class _FirstRowSection extends StatelessWidget {
   final int totalUsers;
 
   const _FirstRowSection({
-    Key? key,
+    super.key,
     required this.totalSessions,
     required this.totalUsers,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -803,10 +803,10 @@ class _SecondRowSection extends StatelessWidget {
   final String totalRevenueFormatted;
 
   const _SecondRowSection({
-    Key? key,
+    super.key,
     required this.totalHours,
     required this.totalRevenueFormatted,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -863,13 +863,13 @@ class _MetricCard extends StatelessWidget {
   final Color accentColor;
 
   const _MetricCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.value,
     required this.icon,
     required this.gradient,
     required this.accentColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -908,7 +908,7 @@ class _MetricCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: AppTypography.bodySmall?.copyWith(
+                  style: AppTypography.bodySmall.copyWith(
                     color: Colors.grey.shade700,
                   ),
                   maxLines: 2,
@@ -941,12 +941,12 @@ class _ModernLineChartCard extends StatelessWidget {
   final Color backgroundTint;
 
   const _ModernLineChartCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.spots,
     required this.color,
     required this.backgroundTint,
-  }) : super(key: key);
+  });
 
   double _maxY(List<FlSpot> s) {
     if (s.isEmpty) return 10;
@@ -989,7 +989,7 @@ class _ModernLineChartCard extends StatelessWidget {
           // Title
           Text(
             title,
-            style: AppTypography.bodyLarge?.copyWith(
+            style: AppTypography.bodyLarge.copyWith(
               fontWeight: FontWeight.w600,
               color: Colors.black87,
             ),
@@ -1068,7 +1068,7 @@ class _ModernLineChartCard extends StatelessWidget {
                             padding: const EdgeInsets.only(top: 8.0),
                             child: Text(
                               weekDays[index],
-                              style: AppTypography.bodySmall?.copyWith(
+                              style: AppTypography.bodySmall.copyWith(
                                 color: Colors.grey.shade600,
                                 fontSize: 10,
                               ),
@@ -1087,7 +1087,7 @@ class _ModernLineChartCard extends StatelessWidget {
                       getTitlesWidget: (double value, TitleMeta meta) {
                         return Text(
                           value.toInt().toString(),
-                          style: AppTypography.bodySmall?.copyWith(
+                          style: AppTypography.bodySmall.copyWith(
                             color: Colors.grey.shade600,
                             fontSize: 10,
                           ),
@@ -1176,7 +1176,7 @@ class _StatsSkeleton extends StatelessWidget {
 }
 
 class _MetricSkeleton extends StatelessWidget {
-  const _MetricSkeleton({Key? key}) : super(key: key);
+  const _MetricSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -1231,7 +1231,7 @@ class _MetricSkeleton extends StatelessWidget {
 }
 
 class _ChartSkeleton extends StatelessWidget {
-  const _ChartSkeleton({Key? key}) : super(key: key);
+  const _ChartSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -1342,11 +1342,9 @@ class _ShimmerBlock extends StatefulWidget {
   final Color? colorOverride;
 
   const _ShimmerBlock({
-    super.key,
     required this.width,
     required this.height,
-    required this.radius,
-    this.colorOverride,
+    required this.radius, this.colorOverride,
   });
 
   @override

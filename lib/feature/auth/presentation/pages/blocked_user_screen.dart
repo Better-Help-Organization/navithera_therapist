@@ -84,7 +84,7 @@ class _BlockedUserScreenState extends ConsumerState<BlockedUserScreen> {
     final user = ref.watch(currentUserProvider);
     final messageAsync = ref.watch(therapistDocumentMessageProvider);
 
-    log("userjono: ${user}");
+    log("userjono: $user");
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -114,7 +114,7 @@ class _BlockedUserScreenState extends ConsumerState<BlockedUserScreen> {
                       (error, stack) => Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Text(
-                          'Dear ${user != null ? (user?.firstName) : 'Customer'}, your account is ${user?.status ?? "not active"}. Please contact admin to activate.',
+                          'Dear ${user != null ? (user.firstName) : 'Customer'}, your account is ${user?.status ?? "not active"}. Please contact admin to activate.',
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w500,

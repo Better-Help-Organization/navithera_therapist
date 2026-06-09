@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class GradientAvatar extends StatelessWidget {
-  const GradientAvatar({
+  const GradientAvatar({super.key, 
     required this.label,
     required this.gradient,
     this.size = 56,

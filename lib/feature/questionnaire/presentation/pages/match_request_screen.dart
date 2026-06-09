@@ -296,12 +296,12 @@ class _MatchRequestScreenState extends ConsumerState<MatchRequestScreen> {
                                         client.gender!.isNotEmpty)
                                       _Chip(
                                         text: _capitalize(client.gender!),
-                                        icon: Icons.person_rounded,
+                                        icon: Icons.person_rounded, iconSize: 1,
                                       ),
                                     if (age != null)
                                       _Chip(
                                         text: 'Signed up $age years ago',
-                                        icon: Icons.schedule,
+                                        icon: Icons.schedule, iconSize: 1,
                                       ),
                                   ],
                                 ),
@@ -621,7 +621,7 @@ class _MatchRequestScreenState extends ConsumerState<MatchRequestScreen> {
 
       // 1. First accept the match
       final response_2 = await dio.post(
-        '${base_url_dev}/match/accept/',
+        '$base_url_dev/match/accept/',
         data: {'matchId': matchId},
       );
 
@@ -664,14 +664,14 @@ class _MatchRequestScreenState extends ConsumerState<MatchRequestScreen> {
         "client": clientId,
       };
 
-      print("Request data: ${requestData}");
+      print("Request data: $requestData");
 
       final response = await dio.post(
-        '${base_url_dev}/session',
+        '$base_url_dev/session',
         data: requestData,
       );
 
-      print("Response: ${response}");
+      print("Response: $response");
 
       if (response.statusCode == 201) {
         if (!mounted) return;
@@ -744,7 +744,7 @@ class _MatchRequestScreenState extends ConsumerState<MatchRequestScreen> {
 
       if (times.isNotEmpty) {
         if (!datesByWeekday.containsKey(weekday)) {
-          datesByWeekday[weekday] = Set<String>();
+          datesByWeekday[weekday] = <String>{};
         }
         datesByWeekday[weekday]!.addAll(times);
       }
@@ -827,7 +827,7 @@ class _MatchRequestScreenState extends ConsumerState<MatchRequestScreen> {
 
   Widget _buildAnswersSection(AnswerResponse answerResponse) {
     final answers = answerResponse.data;
-    log("im here 3 ${answers}");
+    log("im here 3 $answers");
 
     if (answers.isEmpty) {
       return _SectionCard(
@@ -847,7 +847,7 @@ class _MatchRequestScreenState extends ConsumerState<MatchRequestScreen> {
     return Padding(
       //padding: const EdgeInsets.all(8.0),
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-      child: Container(
+      child: SizedBox(
         width: double.infinity,
         child: _SectionCard(
           title: 'Questionnaire Answers',
@@ -953,8 +953,7 @@ class _InfoTile extends StatelessWidget {
   const _InfoTile({
     required this.icon,
     required this.label,
-    required this.value,
-    this.trailing,
+    required this.value, this.trailing,
   });
 
   @override
@@ -1010,7 +1009,7 @@ class _Chip extends StatelessWidget {
   final IconData? icon;
   final double iconSize;
 
-  const _Chip({required this.text, this.icon, this.iconSize = 14});
+  const _Chip({required this.text, this.icon, required this.iconSize});
 
   @override
   Widget build(BuildContext context) {
@@ -1018,7 +1017,7 @@ class _Chip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: cs.surfaceVariant.withOpacity(0.45),
+        color: cs.surfaceContainerHighest.withOpacity(0.45),
         borderRadius: BorderRadius.circular(999),
         border: Border.all(color: cs.outlineVariant.withOpacity(0.35)),
       ),
@@ -1610,7 +1609,7 @@ class _DateChips extends StatelessWidget {
                   color: isSelected ? cs.onPrimary : cs.onSurface,
                   fontWeight: FontWeight.w600,
                 ),
-                backgroundColor: cs.surfaceVariant.withOpacity(0.45),
+                backgroundColor: cs.surfaceContainerHighest.withOpacity(0.45),
                 shape: StadiumBorder(
                   side: BorderSide(
                     color:
@@ -1704,7 +1703,7 @@ class _TimesForSelectedDate extends StatelessWidget {
     final matched =
         availabilities.where((a) => _getDayIndex(a.day) == weekday).toList();
 
-    print("availablity: ${availabilities}");
+    print("availablity: $availabilities");
 
     if (matched.isEmpty) {
       return _InfoPill(
@@ -2003,7 +2002,7 @@ class _SelectedAppointmentsSummary extends StatelessWidget {
               ],
             ),
           );
-        }).toList(),
+        }),
       ],
     );
   }

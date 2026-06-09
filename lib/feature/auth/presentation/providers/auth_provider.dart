@@ -277,7 +277,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   String _getErrorMessage(Failure failure) {
-    print("failurexyz, ${failure}");
+    print("failurexyz, $failure");
     return failure.when(
       serverFailure: (message) => message,
       networkFailure: (message) => 'Network error: $message',

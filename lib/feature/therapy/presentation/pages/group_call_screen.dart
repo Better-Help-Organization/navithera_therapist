@@ -94,7 +94,7 @@ class _GroupCallScreenState extends ConsumerState<GroupCallScreen> {
       final accessToken = sharedPreferences.getString('access_token');
 
       dio.options.headers['Authorization'] = 'Bearer $accessToken';
-      await dio.post('${base_url_dev}/chat/call/end/$chatId');
+      await dio.post('$base_url_dev/chat/call/end/$chatId');
     } catch (e) {
       // Optional: log error
     }
