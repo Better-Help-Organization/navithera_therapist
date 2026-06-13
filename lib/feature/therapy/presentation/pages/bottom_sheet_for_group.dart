@@ -35,7 +35,7 @@ class GroupMemberSelectionBottomSheet extends StatefulWidget {
 class _GroupMemberSelectionBottomSheetState
     extends State<GroupMemberSelectionBottomSheet> {
   final Set<String> _selectedUserIds = {};
-   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
     aOptions: AndroidOptions(encryptedSharedPreferences: true),
     iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
   );
@@ -142,6 +142,9 @@ class _GroupMemberSelectionBottomSheetState
     }
 
     final accessToken = await _secureStorage.read(key: 'access_token');
+    if (accessToken == null || accessToken.isEmpty) {
+      throw Exception('Session expired. Please login again');
+    }
     final roomName = generateRandomRoomName();
 
     // Show loading indicator
@@ -178,10 +181,10 @@ class _GroupMemberSelectionBottomSheetState
         final responseData = response.data['data'];
         final String token = responseData['token'];
 
-        print("✅ Backend call successful, navigating to GroupCallScreen...");
-        print("Room name: $roomName");
-        print("Chat ID: ${widget.chatId}");
-        print("Is video call: $isVideoCall");
+        // print("✅ Backend call successful, navigating to GroupCallScreen...");
+        // print("Room name: $roomName");
+        // print("Chat ID: ${widget.chatId}");
+        // print("Is video call: $isVideoCall");
 
         // Close the bottom sheet first
         Navigator.of(context).pop();

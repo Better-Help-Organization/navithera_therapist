@@ -59,7 +59,7 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
   bool _busy = false;
   bool _isSelectionMode = false;
   final Set<String> _selectedMessageIds = {};
-   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
     aOptions: AndroidOptions(encryptedSharedPreferences: true),
     iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
   );
@@ -357,10 +357,21 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
       _busy = true;
     });
 
-    final accessToken = await _secureStorage.read(key: 'access_token');
     final roomName = _generateRandomRoomName();
 
     try {
+      final accessToken = await _secureStorage.read(key: 'access_token');
+      if (accessToken == null || accessToken.isEmpty) {
+        removeOverlay();
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Session expired. Please Sign in again'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
       final dio = Dio();
       dio.options.headers['Authorization'] = 'Bearer $accessToken';
 
@@ -462,6 +473,7 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
   Future<void> _sendCallCancelNotification(String callId) async {
     try {
       final accessToken = await _secureStorage.read(key: 'access_token');
+      if (accessToken == null || accessToken.isEmpty) return;
 
       final dio = Dio();
       dio.options.headers['Authorization'] = 'Bearer $accessToken';
@@ -764,13 +776,10 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
     // Determine the final online status
     final bool isOnline;
     if (isOnlineFromSocket != null) {
-      print("user st id: ${clientInfoAsync?.value?.id}");
-      print("user st Online 1 socket: $isOnlineFromSocket");
       // Prefer real-time socket status
       isOnline = isOnlineFromSocket;
     } else if (clientInfoAsync != null &&
         clientInfoAsync is AsyncData<UserModel>) {
-      print("user st Online 2 socket: $clientInfoAsync");
       // Use client info status as fallback
       isOnline =
           clientInfoAsync.value.isOnline ??
@@ -828,7 +837,6 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
                             ),
                           );
                         } else {
-                          print("clientId: $clientId");
                           // For non-group chat, fetch therapist info
                           if (clientId != null) {
                             Navigator.push(

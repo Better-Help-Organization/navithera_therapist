@@ -32,6 +32,9 @@ class _MainNavigationState extends State<MainNavigation> {
 
   Future<List<Session>> _fetchSessions() async {
     final accessToken = await _secureStorage.read(key: 'access_token');
+    if (accessToken == null || accessToken.isEmpty) {
+      return [];
+    }
 
     _dio.options.headers['Authorization'] = 'Bearer $accessToken';
     final response = await _dio.get(

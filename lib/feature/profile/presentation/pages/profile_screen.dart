@@ -39,8 +39,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   Future<void> _loadAccessToken() async {
     // final sharedPreferences = await SharedPreferences.getInstance();
-    setState(() async {
-      _accessToken = await _secureStorage.read(key: 'access_token');
+    final accessToken = await _secureStorage.read(key: 'access_token');
+
+    if (accessToken == null || accessToken.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Session expired. Please login again')));
+      }
+    }
+    setState(() {
+      _accessToken = accessToken;
     });
   }
 

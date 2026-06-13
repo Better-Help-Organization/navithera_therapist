@@ -33,7 +33,7 @@ class GroupCallScreen extends ConsumerStatefulWidget {
 
 class _GroupCallScreenState extends ConsumerState<GroupCallScreen> {
   StreamSubscription<RemoteMessage>? _notificationSubscription;
-   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
     aOptions: AndroidOptions(encryptedSharedPreferences: true),
     iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
   );
@@ -95,6 +95,9 @@ class _GroupCallScreenState extends ConsumerState<GroupCallScreen> {
     final Dio dio = Dio();
     try {
       final accessToken = await _secureStorage.read(key: 'access_token');
+      if (accessToken == null || accessToken.isEmpty) {
+        throw Exception('Session expired. Please login again');
+      }
 
       dio.options.headers['Authorization'] = 'Bearer $accessToken';
       await dio.post('$base_url_dev/chat/call/end/$chatId');

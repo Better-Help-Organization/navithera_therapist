@@ -300,12 +300,12 @@ class _MatchRequestScreenState extends ConsumerState<MatchRequestScreen> {
                                         client.gender!.isNotEmpty)
                                       _Chip(
                                         text: _capitalize(client.gender!),
-                                        icon: Icons.person_rounded, iconSize: 1,
+                                        icon: Icons.person_rounded, iconSize: 16,
                                       ),
                                     if (age != null)
                                       _Chip(
                                         text: 'Signed up $age years ago',
-                                        icon: Icons.schedule, iconSize: 1,
+                                        icon: Icons.schedule, iconSize: 16,
                                       ),
                                   ],
                                 ),
