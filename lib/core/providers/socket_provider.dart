@@ -24,7 +24,7 @@ class SocketService {
     // Get token from shared preferences
     final accessToken = await _secureStorage.read(key: 'access_token');
 
-    print('Attempting to connect to socket with token: $accessToken');
+    print('Attempting to connect to socket');
 
     if (accessToken == null) {
       print('No access token found');
