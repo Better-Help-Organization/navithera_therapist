@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:dartz/dartz.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../../../core/error/failures.dart';
 import '../data_sources/auth_remote_data_source.dart';
 import '../models/auth_models.dart';
@@ -13,12 +13,16 @@ import '../../../profile/data/data_sources/profile_remote_data_source.dart';
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
   final ProfileRemoteDataSource profileRemoteDataSource;
-  final SharedPreferences sharedPreferences;
+  // final SharedPreferences sharedPreferences;
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+  );
 
   AuthRepositoryImpl({
     required this.remoteDataSource,
     required this.profileRemoteDataSource,
-    required this.sharedPreferences,
+    // required this.Preferences,
   });
 
   @override
@@ -40,15 +44,15 @@ class AuthRepositoryImpl implements AuthRepository {
       );
 
       // This now returns ApiResponse instead of LoginResponse directly
-      print("loginRequest: ${loginRequest.toJson()}");
+      // print("loginRequest: ${loginRequest.toJson()}");
       final apiResponse = await remoteDataSource.login(loginRequest);
 
       // Access the data property
       final authData = apiResponse.data;
 
       // Store tokens
-      await sharedPreferences.setString('access_token', authData.accessToken);
-      await sharedPreferences.setString('refresh_token', authData.refreshToken);
+      await _secureStorage.write(key: 'access_token', value: authData.accessToken);
+      await _secureStorage.write(key:'refresh_token',value:  authData.refreshToken);
       log("authData: ${authData.toJson()}");
       // Convert model to entity
       final user = User(
@@ -65,9 +69,9 @@ class AuthRepositoryImpl implements AuthRepository {
       );
 
       // Store complete user object as JSON
-      await sharedPreferences.setString(
-        'current_user',
-        jsonEncode(user.toJson()),
+      await _secureStorage.write(
+       key:  'current_user',
+       value:  jsonEncode(user.toJson()),
       );
 
       return Right(user);
@@ -97,15 +101,15 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<Failure, void>> logout() async {
     try {
       // Get the refresh token before removing it
-      final refreshToken = sharedPreferences.getString('refresh_token');
+      final refreshToken = await _secureStorage.read(key: 'refresh_token');
 
       if (refreshToken != null) {
         await remoteDataSource.logout();
       }
 
       // Clear local storage
-      await sharedPreferences.remove('access_token');
-      await sharedPreferences.remove('refresh_token');
+      await _secureStorage.delete(key: 'access_token');
+      await _secureStorage.delete(key: 'refresh_token');
 
       return const Right(null);
     } on DioException catch (e) {
@@ -145,8 +149,8 @@ class AuthRepositoryImpl implements AuthRepository {
       final authData = apiResponse.data;
 
       // Store tokens if they exist
-      await sharedPreferences.setString('access_token', authData.accessToken);
-      await sharedPreferences.setString('refresh_token', authData.refreshToken);
+      await _secureStorage.write(key: 'access_token',value:  authData.accessToken);
+      await _secureStorage.write(key: 'refresh_token',value:  authData.refreshToken);
 
       // Convert response to User entity
       final user = User(
@@ -162,9 +166,9 @@ class AuthRepositoryImpl implements AuthRepository {
       );
 
       // Store complete user object as JSON
-      await sharedPreferences.setString(
-        'current_user',
-        jsonEncode(user.toJson()),
+      await _secureStorage.write(
+       key:  'current_user',
+        value:  jsonEncode(user.toJson()),
       );
 
       return Right(user);
@@ -196,13 +200,13 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Either<Failure, User>> getCurrentUser() async {
     try {
-      final token = sharedPreferences.getString('access_token');
+      final token = await _secureStorage.read(key: 'access_token');
       if (token == null) {
         return const Left(Failure.authFailure('No token found'));
       }
 
       // Get stored user JSON
-      final userJsonString = sharedPreferences.getString('current_user');
+      final userJsonString = await _secureStorage.read(key: 'current_user');
       if (userJsonString == null) {
         return const Left(Failure.authFailure('No user data found'));
       }
@@ -248,9 +252,9 @@ class AuthRepositoryImpl implements AuthRepository {
       );
 
       // Update stored user data
-      await sharedPreferences.setString(
-        'current_user',
-        jsonEncode(updatedUser.toJson()),
+      await _secureStorage.write(
+        key: 'current_user',
+        value:  jsonEncode(updatedUser.toJson()),
       );
 
       return Right(updatedUser);
@@ -291,9 +295,9 @@ class AuthRepositoryImpl implements AuthRepository {
       );
 
       // Update stored user data with complete information
-      await sharedPreferences.setString(
-        'current_user',
-        jsonEncode(user.toJson()),
+      await _secureStorage.write(
+        key: 'current_user',
+        value:  jsonEncode(user.toJson()),
       );
 
       return Right(user);
@@ -336,9 +340,9 @@ class AuthRepositoryImpl implements AuthRepository {
       );
 
       // Update stored user data
-      await sharedPreferences.setString(
-        'current_user',
-        jsonEncode(updatedUser.toJson()),
+      await _secureStorage.write(
+        key: 'current_user',
+        value:  jsonEncode(updatedUser.toJson()),
       );
 
       return Right(updatedUser);
@@ -420,7 +424,7 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Either<Failure, bool>> isLoggedIn() async {
     try {
-      final token = sharedPreferences.getString('access_token');
+      final token = await _secureStorage.read(key: 'access_token');
       return Right(token != null);
     } catch (e) {
       return Left(Failure.unknownFailure(e.toString()));

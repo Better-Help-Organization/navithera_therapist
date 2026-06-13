@@ -78,8 +78,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       final token = await fcmService.getToken();
       // final token = "abc";
       final voIpToken = await fcmService.getVoIPToken();
-      print("FCM Token: $token");
-      print("VoIP Token from login screen: $voIpToken");
+      // print("FCM Token: $token");
+      // print("VoIP Token from login screen: $voIpToken");
 
       //ref.read(authProvider.notifier).login(phoneNumber, password, "token");
       if (token != null) {

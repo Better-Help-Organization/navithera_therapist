@@ -3,16 +3,20 @@ import 'dart:developer';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:navicare/core/constants/base_url.dart';
 import 'package:navicare/feature/questionnaire/domain/entities/answer_models.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
+ final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+  );
 
 final answersProvider = FutureProvider.family<AnswerResponse, List<String>>((
   ref,
   answerIds,
 ) async {
-  final sharedPreferences = await SharedPreferences.getInstance();
-  final accessToken = sharedPreferences.getString('access_token');
+  final accessToken = await _secureStorage.read(key: 'access_token');
 
   final dio = Dio();
   dio.options.headers['Authorization'] = 'Bearer $accessToken';

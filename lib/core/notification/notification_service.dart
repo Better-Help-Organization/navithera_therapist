@@ -11,6 +11,7 @@ import 'package:flutter_callkit_incoming/entities/call_kit_params.dart';
 import 'package:flutter_callkit_incoming/entities/ios_params.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:livekit_client/livekit_client.dart';
 import 'package:navicare/core/constants/base_url.dart';
@@ -28,7 +29,7 @@ import 'package:navicare/feature/home/presentation/providers/chart_data_provider
 import 'package:navicare/feature/questionnaire/presentation/pages/match_request_screen.dart';
 import 'package:navicare/main.dart';
 import 'package:overlay_support/overlay_support.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:uuid/uuid.dart';
 
 class PendingRoute {
@@ -104,6 +105,18 @@ class FCMService {
     // final args = widget.args;
 
     try {
+      final micStatus = await Permission.microphone.request();
+    if (micStatus.isDenied || micStatus.isPermanentlyDenied) {
+      print('Microphone permission denied');
+      return;
+    }
+    if (isVideoCall) {
+      final camStatus = await Permission.camera.request();
+      if (camStatus.isDenied || camStatus.isPermanentlyDenied) {
+        print('Camera permission denied');
+        return;
+      }
+    }
       //create new room
       const cameraEncoding = VideoEncoding(
         maxBitrate: 5 * 1000 * 1000,
@@ -142,7 +155,15 @@ class FCMService {
       final listener = room.createListener();
 
       // Connect to the room directly (prepareConnection is called internally)
-      await room.connect(url, token);
+      await room.prepareConnection(url, token);
+      await room.connect(
+        url,
+        token,
+        fastConnectOptions: FastConnectOptions(
+          microphone: TrackOption(enabled: true),
+          camera: TrackOption(enabled: isVideoCall),
+        ),
+      );
 
       print("printed after connected ${context.mounted}");
 
@@ -1158,10 +1179,13 @@ class FCMService {
   }
 
   Future<void> rejectCall(String chatId) async {
+    final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+      aOptions: AndroidOptions(encryptedSharedPreferences: true),
+      iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+    );
     final Dio dio = Dio();
     try {
-      final sharedPreferences = await SharedPreferences.getInstance();
-      final accessToken = sharedPreferences.getString('access_token');
+      final accessToken = await _secureStorage.read(key: 'access_token');
 
       dio.options.headers['Authorization'] = 'Bearer $accessToken';
 
@@ -1191,7 +1215,7 @@ class FCMService {
     print("context not null praying: $context");
 
     _join(
-      "wss://livekit.navigo.et",
+      "wss://livekit.navithera.com",
       token,
       context,
       isVideoCall: isVideocall,
@@ -1237,7 +1261,7 @@ class FCMService {
     // final token2 =
     //     "eyJhbGciOiJIUzI1NiJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6InF1aWNrc3RhcnQtcm9vbSIsImNhblB1Ymxpc2giOnRydWUsImNhblN1YnNjcmliZSI6dHJ1ZX0sImlzcyI6IkFQSTNyUGFadUdxYjI4OCIsImV4cCI6MTc2NDMyOTEzNCwibmJmIjowLCJzdWIiOiJxdWlja3N0YXJ0LXVzZXJuYW1lIn0.Ef8iTBjiIGhpVbYBo9mt8hK0sQaqTUzpDcJCjXOrVQs";
     _join(
-      "wss://livekit.navigo.et",
+      "wss://livekit.navithera.com",
       token,
       context,
       isVideoCall: isVideoCall,
@@ -1345,11 +1369,15 @@ class FCMBackgroundBridge {
   }
 
   static Future<void> _showCallKitIncoming(_IncomingCall call) async {
+    final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+      aOptions: AndroidOptions(encryptedSharedPreferences: true),
+      iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+    );
     try {
-      final sharedPreferences = await SharedPreferences.getInstance();
-      await sharedPreferences.setString(
-        'call_token_${call.chatId}',
-        call.token,
+      // final sharedPreferences = await SharedPreferences.getInstance();
+      await _secureStorage.write(
+        key: 'call_token_${call.chatId}',
+        value: call.token,
       );
     } catch (e) {
       log("Error saving call token: $e");

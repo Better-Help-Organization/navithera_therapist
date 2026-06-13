@@ -4,12 +4,12 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:navicare/core/constants/base_url.dart';
 import 'package:navicare/core/routes/app_router.dart';
 import 'package:navicare/feature/questionnaire/presentation/widgets/progress_indicator.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
 // ============ Providers ============
 
@@ -42,9 +42,12 @@ const Map<String, String> expertiseOptions = {
 };
 
 class FileUploadService {
+  static const FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+  );
   static Future<String> uploadFile(File imageFile, String endpoint) async {
-    final prefs = await SharedPreferences.getInstance();
-    final accessToken = prefs.getString('access_token');
+    final accessToken = await _secureStorage.read(key: 'access_token');
 
     if (accessToken == null) {
       throw Exception('No access token found. Please login again.');
@@ -139,8 +142,7 @@ class FileUploadService {
     String endpoint,
     String modalId,
   ) async {
-    final prefs = await SharedPreferences.getInstance();
-    final accessToken = prefs.getString('access_token');
+    final accessToken = await _secureStorage.read(key: 'access_token');
 
     if (accessToken == null) {
       throw Exception('No access token found. Please login again.');
@@ -217,8 +219,11 @@ final currentStepProvider = StateProvider<int>((ref) => 0);
 
 // Languages - fetched from /language endpoint
 final languagesAsyncProvider = FutureProvider<List<_Language>>((ref) async {
-  final prefs = await SharedPreferences.getInstance();
-  final accessToken = prefs.getString('access_token');
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+  );
+  final accessToken = await _secureStorage.read(key: 'access_token');
   if (accessToken == null) throw Exception('No access token found');
 
   final response = await http.get(
@@ -240,8 +245,11 @@ final languagesAsyncProvider = FutureProvider<List<_Language>>((ref) async {
   }
 });
 final modalsAsyncProvider = FutureProvider<List<_Modal>>((ref) async {
-  final prefs = await SharedPreferences.getInstance();
-  final accessToken = prefs.getString('access_token');
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+  );
+  final accessToken = await _secureStorage.read(key: 'access_token');
 
   if (accessToken == null) {
     throw Exception('No access token found');
@@ -302,8 +310,11 @@ final bankAccountNumbersProvider = StateProvider<Map<String, String>>(
 final bankBranchesProvider = StateProvider<Map<String, String>>((ref) => {});
 // Levels - fetched from /level endpoint
 final levelsAsyncProvider = FutureProvider<List<_Level>>((ref) async {
-  final prefs = await SharedPreferences.getInstance();
-  final accessToken = prefs.getString('access_token');
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+  );
+  final accessToken = await _secureStorage.read(key: 'access_token');
 
   if (accessToken == null) {
     throw Exception('No access token found');
@@ -339,8 +350,11 @@ final goalsTextProvider = StateProvider<String>((ref) => '');
 
 // Add providers for banks
 final banksAsyncProvider = FutureProvider<List<_Bank>>((ref) async {
-  final prefs = await SharedPreferences.getInstance();
-  final accessToken = prefs.getString('access_token');
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+  );
+  final accessToken = await _secureStorage.read(key: 'access_token');
 
   if (accessToken == null) {
     throw Exception('No access token found');
@@ -629,10 +643,13 @@ class _PostSignupQuestionnaireScreenState
 
   Future<void> _submit() async {
     setState(() => _submitting = true);
+    final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+      aOptions: AndroidOptions(encryptedSharedPreferences: true),
+      iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+    );
 
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final accessToken = prefs.getString('access_token');
+      final accessToken = await _secureStorage.read(key: 'access_token');
 
       if (accessToken == null) {
         throw Exception('No access token found');
@@ -3259,9 +3276,7 @@ class _PostSignupQuestionnaireScreenState
                 children: [
                   Row(
                     children: [
-                      fileTypeBadge(
-                        getFileExtension(professionalLicenseImage),
-                      ),
+                      fileTypeBadge(getFileExtension(professionalLicenseImage)),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(

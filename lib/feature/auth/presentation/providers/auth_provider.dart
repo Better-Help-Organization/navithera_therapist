@@ -33,12 +33,12 @@ final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   final remoteDataSource = ref.read(authRemoteDataSourceProvider);
   final profileRemoteDataSource = ref.read(profileRemoteDataSourceProvider);
-  final sharedPreferences = ref.read(sharedPreferencesProvider);
+  // final sharedPreferences = ref.read(sharedPreferencesProvider);
 
   return AuthRepositoryImpl(
     remoteDataSource: remoteDataSource,
     profileRemoteDataSource: profileRemoteDataSource,
-    sharedPreferences: sharedPreferences,
+    // sharedPreferences: sharedPreferences,
   );
 });
 

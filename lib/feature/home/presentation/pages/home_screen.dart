@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:livekit_client/livekit_client.dart';
 import 'package:navicare/core/constants/base_url.dart';
@@ -42,6 +43,10 @@ final notificationServiceProvider = Provider<NotificationService>((ref) {
 
 class NotificationService {
   final Dio _dio = Dio();
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+  );
 
   NotificationService() {
     _dio.options.connectTimeout = const Duration(seconds: 20);
@@ -49,8 +54,7 @@ class NotificationService {
   }
 
   Future<void> _attachAuthHeader() async {
-    final sharedPreferences = await SharedPreferences.getInstance();
-    final accessToken = sharedPreferences.getString('access_token');
+    final accessToken = await _secureStorage.read(key: 'access_token');
     if (accessToken != null && accessToken.isNotEmpty) {
       _dio.options.headers['Authorization'] = 'Bearer $accessToken';
     } else {
@@ -171,6 +175,10 @@ final liveSessionServiceProvider = Provider<LiveSessionService>((ref) {
 
 class LiveSessionService {
   final Dio _dio = Dio();
+   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+  );
 
   LiveSessionService() {
     _dio.options.connectTimeout = const Duration(seconds: 20);
@@ -178,8 +186,7 @@ class LiveSessionService {
   }
 
   Future<void> _attachAuthHeader() async {
-    final sharedPreferences = await SharedPreferences.getInstance();
-    final accessToken = sharedPreferences.getString('access_token');
+    final accessToken = await _secureStorage.read(key: 'access_token');
     if (accessToken != null && accessToken.isNotEmpty) {
       _dio.options.headers['Authorization'] = 'Bearer $accessToken';
     } else {
@@ -554,7 +561,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         // print('JWT Token: ${currentState.joinData.token}');
         // print('Room: ${currentState.joinData.room}');
         await _join(
-          "wss://livekit.navigo.et",
+          "wss://livekit.navithera.com",
           currentState.joinData.token,
           context,
           isVideoCall: true,

@@ -1,14 +1,17 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:navicare/core/constants/base_url.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class FileUploadService {
+  static const FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+  );
   static Future<String> uploadProfilePicture(File imageFile) async {
-    final prefs = await SharedPreferences.getInstance();
-    final accessToken = prefs.getString('access_token');
+    final accessToken = await _secureStorage.read(key: 'access_token');
 
     if (accessToken == null) {
       throw Exception('No access token found. Please login again.');

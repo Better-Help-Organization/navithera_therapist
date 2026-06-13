@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:navicare/core/constants/base_url.dart';
 import 'package:navicare/core/theme/app_colors.dart';
 import 'package:navicare/core/util/avatar_util.dart';
@@ -33,6 +34,10 @@ class _GroupProfileScreenState extends State<GroupProfileScreen> {
   bool _isSelectionMode = false;
 
   final String groupName = 'Test';
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+  );
 
   void _toggleUserSelection(UserModel user) {
     setState(() {
@@ -71,8 +76,7 @@ class _GroupProfileScreenState extends State<GroupProfileScreen> {
       );
     }
 
-    final sharedPreferences = await SharedPreferences.getInstance();
-    final accessToken = sharedPreferences.getString('access_token');
+    final accessToken = await _secureStorage.read(key: 'access_token');
     final roomName = generateRandomRoomName();
 
     // Show loading indicator

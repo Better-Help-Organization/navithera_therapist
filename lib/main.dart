@@ -1,13 +1,18 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_jailbreak_detection_plus/flutter_jailbreak_detection_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:navicare/core/localization/providers/locale_provider.dart';
 import 'package:navicare/core/notification/notification_service.dart';
 import 'package:navicare/core/providers/socket_provider.dart';
 import 'package:navicare/core/routes/app_router.dart';
+import 'package:navicare/core/security/rootdetection.dart';
 import 'package:navicare/feature/auth/presentation/providers/auth_provider.dart';
 import 'package:navicare/feature/chat/presentation/providers/chat_provider.dart';
 import 'package:navicare/firebase_options.dart';
@@ -50,6 +55,19 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   }
 }
 
+Future<bool> _isFridaDetected() async {
+  try {
+    final socket = await Socket.connect(
+      '127.0.0.1',
+      27042,
+      timeout: const Duration(milliseconds: 300),
+    );
+    socket.destroy();
+    return true;
+  } catch (_) {}
+  return false;
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -57,6 +75,17 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   final sharedPreferences = await SharedPreferences.getInstance();
+
+  if (!kDebugMode) {
+    bool isRooted = await FlutterJailbreakDetectionPlus.jailbroken;
+    bool developerMode = await FlutterJailbreakDetectionPlus.developerMode;
+    bool fridaDetected = await _isFridaDetected();
+
+    if (isRooted || developerMode || fridaDetected) {
+      runApp(Rootdetection());
+      return;
+    }
+  }
 
   runApp(
     ProviderScope(
@@ -199,6 +228,10 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
   }
 
   void _listenCallKitActions() {
+    final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+      aOptions: AndroidOptions(encryptedSharedPreferences: true),
+      iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+    );
     FlutterCallkitIncoming.onEvent.listen((callEvent) async {
       if (callEvent == null) return;
 
@@ -265,9 +298,9 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
 
       if (token == null && chatId != null) {
         try {
-          final prefs = await SharedPreferences.getInstance();
-          token = prefs.getString('call_token_$chatId');
-          print("Recovered token from SharedPreferences for chatId: $chatId");
+          // final prefs = await SharedPreferences.getInstance();
+          token = await _secureStorage.read(key: 'call_token_$chatId');
+          // print("Recovered token from SharedPreferences for chatId: $chatId");
         } catch (e) {
           print("Failed to recover token: $e");
         }

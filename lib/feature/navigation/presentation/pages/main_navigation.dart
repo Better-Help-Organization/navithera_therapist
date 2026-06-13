@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:navicare/core/constants/base_url.dart';
 import 'package:navicare/feature/calendar/presentation/pages/pages/events_example.dart';
 import 'package:navicare/feature/chat/presentation/pages/chat_list_screen.dart';
@@ -24,10 +25,13 @@ class _MainNavigationState extends State<MainNavigation> {
   late Future<List<Session>> _sessionsFuture;
 
   final Dio _dio = Dio();
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+  );
 
   Future<List<Session>> _fetchSessions() async {
-    final sharedPreferences = await SharedPreferences.getInstance();
-    final accessToken = sharedPreferences.getString('access_token');
+    final accessToken = await _secureStorage.read(key: 'access_token');
 
     _dio.options.headers['Authorization'] = 'Bearer $accessToken';
     final response = await _dio.get(

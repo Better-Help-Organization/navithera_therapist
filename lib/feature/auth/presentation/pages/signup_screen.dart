@@ -185,7 +185,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
     }
 
     final token = await ref.read(fcmServiceProvider).getToken();
-    print("FCM Token: $token");
+    // print("FCM Token: $token");
 
     // Call the signup method from your auth provider
     if (token != null) {

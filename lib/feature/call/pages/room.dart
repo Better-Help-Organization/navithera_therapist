@@ -7,6 +7,7 @@ import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:livekit_client/livekit_client.dart';
 import 'package:navicare/core/constants/base_url.dart';
 import 'package:navicare/core/theme/app_colors.dart';
@@ -63,6 +64,10 @@ class _RoomPageState extends ConsumerState<RoomPage> {
     '🎡',
   ];
 
+   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+  );
   List<ParticipantTrack> participantTracks = [];
   List<String> headerEmojis = [];
   EventsListener<RoomEvent> get _listener => widget.listener;
@@ -361,8 +366,7 @@ class _RoomPageState extends ConsumerState<RoomPage> {
   Future<void> EndCall(String chatId) async {
     final Dio dio = Dio();
     try {
-      final sharedPreferences = await SharedPreferences.getInstance();
-      final accessToken = sharedPreferences.getString('access_token');
+      final accessToken = await _secureStorage.read(key: 'access_token');
 
       dio.options.headers['Authorization'] = 'Bearer $accessToken';
 

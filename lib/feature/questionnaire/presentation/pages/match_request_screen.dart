@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:navicare/core/constants/base_url.dart';
 import 'package:navicare/core/notification/notification_service.dart';
 import 'package:navicare/core/theme/app_colors.dart';
@@ -11,7 +12,6 @@ import 'package:navicare/feature/chat/domain/repositories/chat_repository.dart';
 import 'package:navicare/feature/chat/presentation/providers/chat_provider.dart';
 import 'package:navicare/feature/questionnaire/domain/entities/answer_models.dart';
 import 'package:navicare/feature/questionnaire/presentation/providers/answer_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class MatchRequest {
   final int? code;
@@ -192,6 +192,10 @@ class _MatchRequestScreenState extends ConsumerState<MatchRequestScreen> {
   String? currentViewingDate; // Currently viewing date for time selection
   Map<String, bool> expandedAvailability = {};
   bool isLoading = false;
+   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+  );
 
   @override
   void initState() {
@@ -610,8 +614,7 @@ class _MatchRequestScreenState extends ConsumerState<MatchRequestScreen> {
       isLoading = true;
     });
 
-    final sharedPreferences = await SharedPreferences.getInstance();
-    final accessToken = sharedPreferences.getString('access_token');
+    final accessToken = await _secureStorage.read(key: 'access_token');
 
     try {
       final dio = Dio();

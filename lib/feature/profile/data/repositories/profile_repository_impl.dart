@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/error/failures.dart';
 import '../../domain/entities/profile.dart';
@@ -10,6 +11,10 @@ import '../models/profile_models.dart';
 class ProfileRepositoryImpl implements ProfileRepository {
   final ProfileRemoteDataSource remoteDataSource;
   final SharedPreferences sharedPreferences;
+   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+  );
 
   ProfileRepositoryImpl({
     required this.remoteDataSource,
@@ -75,7 +80,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
   @override
   Future<Either<Failure, Profile>> getCurrentProfile() async {
     try {
-      final token = sharedPreferences.getString('access_token');
+      final token = await _secureStorage.read(key: 'access_token');
       if (token == null) {
         return const Left(Failure.authFailure('No token found'));
       }

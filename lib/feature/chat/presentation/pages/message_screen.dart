@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:livekit_client/livekit_client.dart';
 import 'package:navicare/core/constants/base_url.dart';
 import 'package:navicare/core/notification/notification_service.dart';
@@ -26,7 +27,6 @@ import 'package:navicare/feature/chat/presentation/providers/chat_provider.dart'
 import 'package:navicare/feature/chat/presentation/providers/message_provider.dart';
 import 'package:navicare/feature/therapy/presentation/pages/bottom_sheet_for_group.dart';
 import 'package:navicare/feature/therapy/presentation/pages/call_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -59,6 +59,10 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
   bool _busy = false;
   bool _isSelectionMode = false;
   final Set<String> _selectedMessageIds = {};
+   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+  );
 
   @override
   void initState() {
@@ -353,8 +357,7 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
       _busy = true;
     });
 
-    final sharedPreferences = await SharedPreferences.getInstance();
-    final accessToken = sharedPreferences.getString('access_token');
+    final accessToken = await _secureStorage.read(key: 'access_token');
     final roomName = _generateRandomRoomName();
 
     try {
@@ -407,7 +410,7 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
         if (!mounted) return;
 
         await _join(
-          "wss://livekit.navigo.et",
+          "wss://livekit.navithera.com",
           token,
           context,
           isVideoCall: isVideoCall,
@@ -458,8 +461,7 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
   // Add this helper method to notify backend about call cancellation
   Future<void> _sendCallCancelNotification(String callId) async {
     try {
-      final sharedPreferences = await SharedPreferences.getInstance();
-      final accessToken = sharedPreferences.getString('access_token');
+      final accessToken = await _secureStorage.read(key: 'access_token');
 
       final dio = Dio();
       dio.options.headers['Authorization'] = 'Bearer $accessToken';

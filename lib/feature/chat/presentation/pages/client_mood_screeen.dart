@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:navicare/core/constants/base_url.dart';
 import 'package:navicare/core/theme/app_colors.dart';
 import 'package:navicare/main.dart';
@@ -17,6 +18,10 @@ class MoodNotifier extends StateNotifier<AsyncValue<List<MoodEntry>>> {
   MoodNotifier() : super(const AsyncValue.loading());
 
   final Dio _dio = Dio();
+   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+  );
 
   Future<void> loadMoods(String clientId) async {
     state = const AsyncValue.loading();
@@ -41,8 +46,8 @@ class MoodNotifier extends StateNotifier<AsyncValue<List<MoodEntry>>> {
   }
 
   Future<void> _attachAuthHeader() async {
-    final prefs = await SharedPreferences.getInstance();
-    final accessToken = prefs.getString('access_token');
+    // final prefs = await SharedPreferences.getInstance();
+    final accessToken = await _secureStorage.read(key: 'access_token');
     if (accessToken != null && accessToken.isNotEmpty) {
       _dio.options.headers['Authorization'] = 'Bearer $accessToken';
     } else {

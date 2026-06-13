@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:navicare/core/constants/base_url.dart';
 import 'package:navicare/core/theme/app_colors.dart';
 import 'package:navicare/feature/auth/presentation/providers/user_provider.dart';
@@ -18,6 +19,10 @@ final sessionProvider = StateNotifierProvider<SessionNotifier, List<Session>>((
 });
 
 class SessionNotifier extends StateNotifier<List<Session>> {
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+  );
   SessionNotifier() : super([]);
 
   final Dio _dio = Dio();
@@ -48,8 +53,8 @@ class SessionNotifier extends StateNotifier<List<Session>> {
   }
 
   Future<void> _attachAuthHeader() async {
-    final prefs = await SharedPreferences.getInstance();
-    final accessToken = prefs.getString('access_token');
+    // final prefs = await SharedPreferences.getInstance();
+    final accessToken = await _secureStorage.read(key: 'access_token');
     if (accessToken != null && accessToken.isNotEmpty) {
       _dio.options.headers['Authorization'] = 'Bearer $accessToken';
     } else {
@@ -201,6 +206,10 @@ class _SessionCalendarScreenState extends ConsumerState<SessionCalendarScreen>
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+  );
 
   final ValueNotifier<List<Session>> _selectedSessions = ValueNotifier([]);
   bool _isLoading = false;
@@ -283,8 +292,8 @@ class _SessionCalendarScreenState extends ConsumerState<SessionCalendarScreen>
     });
 
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final accessToken = prefs.getString('access_token');
+      // final prefs = await SharedPreferences.getInstance();
+      final accessToken = await _secureStorage.read(key: 'access_token');
 
       final dio = Dio();
       if (accessToken != null && accessToken.isNotEmpty) {
@@ -380,8 +389,8 @@ class _SessionCalendarScreenState extends ConsumerState<SessionCalendarScreen>
     });
 
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final accessToken = prefs.getString('access_token');
+      // final prefs = await SharedPreferences.getInstance();
+      final accessToken = await _secureStorage.read(key: 'access_token');
 
       final dio = Dio();
       if (accessToken != null && accessToken.isNotEmpty) {
