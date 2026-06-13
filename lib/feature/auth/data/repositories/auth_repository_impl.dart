@@ -51,8 +51,14 @@ class AuthRepositoryImpl implements AuthRepository {
       final authData = apiResponse.data;
 
       // Store tokens
-      await _secureStorage.write(key: 'access_token', value: authData.accessToken);
-      await _secureStorage.write(key:'refresh_token',value:  authData.refreshToken);
+      await _secureStorage.write(
+        key: 'access_token',
+        value: authData.accessToken,
+      );
+      await _secureStorage.write(
+        key: 'refresh_token',
+        value: authData.refreshToken,
+      );
       log("authData: ${authData.toJson()}");
       // Convert model to entity
       final user = User(
@@ -70,8 +76,8 @@ class AuthRepositoryImpl implements AuthRepository {
 
       // Store complete user object as JSON
       await _secureStorage.write(
-       key:  'current_user',
-       value:  jsonEncode(user.toJson()),
+        key: 'current_user',
+        value: jsonEncode(user.toJson()),
       );
 
       return Right(user);
@@ -110,6 +116,7 @@ class AuthRepositoryImpl implements AuthRepository {
       // Clear local storage
       await _secureStorage.delete(key: 'access_token');
       await _secureStorage.delete(key: 'refresh_token');
+      await _secureStorage.delete(key: 'current_user');
 
       return const Right(null);
     } on DioException catch (e) {
@@ -149,8 +156,14 @@ class AuthRepositoryImpl implements AuthRepository {
       final authData = apiResponse.data;
 
       // Store tokens if they exist
-      await _secureStorage.write(key: 'access_token',value:  authData.accessToken);
-      await _secureStorage.write(key: 'refresh_token',value:  authData.refreshToken);
+      await _secureStorage.write(
+        key: 'access_token',
+        value: authData.accessToken,
+      );
+      await _secureStorage.write(
+        key: 'refresh_token',
+        value: authData.refreshToken,
+      );
 
       // Convert response to User entity
       final user = User(
@@ -167,8 +180,8 @@ class AuthRepositoryImpl implements AuthRepository {
 
       // Store complete user object as JSON
       await _secureStorage.write(
-       key:  'current_user',
-        value:  jsonEncode(user.toJson()),
+        key: 'current_user',
+        value: jsonEncode(user.toJson()),
       );
 
       return Right(user);
@@ -254,7 +267,7 @@ class AuthRepositoryImpl implements AuthRepository {
       // Update stored user data
       await _secureStorage.write(
         key: 'current_user',
-        value:  jsonEncode(updatedUser.toJson()),
+        value: jsonEncode(updatedUser.toJson()),
       );
 
       return Right(updatedUser);
@@ -297,7 +310,7 @@ class AuthRepositoryImpl implements AuthRepository {
       // Update stored user data with complete information
       await _secureStorage.write(
         key: 'current_user',
-        value:  jsonEncode(user.toJson()),
+        value: jsonEncode(user.toJson()),
       );
 
       return Right(user);
@@ -342,7 +355,7 @@ class AuthRepositoryImpl implements AuthRepository {
       // Update stored user data
       await _secureStorage.write(
         key: 'current_user',
-        value:  jsonEncode(updatedUser.toJson()),
+        value: jsonEncode(updatedUser.toJson()),
       );
 
       return Right(updatedUser);
