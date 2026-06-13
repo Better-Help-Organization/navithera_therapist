@@ -76,15 +76,17 @@ void main() async {
 
   final sharedPreferences = await SharedPreferences.getInstance();
 
-  if (!kDebugMode) {
-    bool isRooted = await FlutterJailbreakDetectionPlus.jailbroken;
-    bool developerMode = await FlutterJailbreakDetectionPlus.developerMode;
-    bool fridaDetected = await _isFridaDetected();
+  if (!kDebugMode && (Platform.isAndroid || Platform.isIOS)) {
+    try {
+      final isRooted = await FlutterJailbreakDetectionPlus.jailbroken;
+      final developerMode = await FlutterJailbreakDetectionPlus.developerMode;
+      final fridaDetected = await _isFridaDetected();
 
-    if (isRooted || developerMode || fridaDetected) {
-      runApp(Rootdetection());
-      return;
-    }
+      if (isRooted || developerMode || fridaDetected) {
+        runApp(Rootdetection());
+        return;
+      }
+    } catch (e) {}
   }
 
   runApp(
