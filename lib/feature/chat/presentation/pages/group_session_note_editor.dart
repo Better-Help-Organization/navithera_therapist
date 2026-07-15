@@ -30,7 +30,7 @@ class GroupSessionNoteEditor extends ConsumerStatefulWidget {
 class _GroupSessionNoteEditorState
     extends ConsumerState<GroupSessionNoteEditor> {
   late TextEditingController _noteController;
-  bool _isLoading = false;
+  final bool _isLoading = false;
   bool _isSaving = false;
 
   @override

@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:navicare/core/providers/user_status_provider.dart';
 import 'package:navicare/feature/chat/presentation/providers/chat_provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
@@ -16,11 +17,14 @@ class SocketService {
   SocketService(this.ref);
 
   Future<void> connect() async {
+    FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+      aOptions: AndroidOptions(encryptedSharedPreferences: true),
+      iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+    );
     // Get token from shared preferences
-    final sharedPreferences = await SharedPreferences.getInstance();
-    final accessToken = sharedPreferences.getString('access_token');
+    final accessToken = await _secureStorage.read(key: 'access_token');
 
-    print('Attempting to connect to socket with token: $accessToken');
+    print('Attempting to connect to socket');
 
     if (accessToken == null) {
       print('No access token found');
@@ -37,7 +41,7 @@ class SocketService {
 
     // Create socket connection
     socket = io.io(
-      'https://app.navigo.et',
+      'https://app.navithera.com',
       io.OptionBuilder()
           .setTransports(['websocket'])
           .setPath('/$basePath/socket.io')

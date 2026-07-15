@@ -15,7 +15,13 @@ abstract class ChatRemoteDataSource {
   Future<ChatListResponse> getChatThreads({
     @Query('page') int? page,
     @Query('take') int? take,
-    @Query('fields') String? fields,
+    @Query('fields')
+    String? fields =
+        'id,updatedAt,unreadCount,groupName,'
+            'client.id,client.firstName,client.lastName,client.avatar,'
+            'group.id,group.firstName,group.lastName,group.avatar,'
+            'therapist.id,therapist.firstName,therapist.lastName,therapist.avatar,'
+            'lastMessage.id,lastMessage.content,lastMessage.createdAt,lastMessage.isRead',
     @Query('sort') String? sort,
     @Query('filters') String? filters, // Add this parameter
   });
@@ -29,6 +35,11 @@ abstract class ChatRemoteDataSource {
     @Query('page') int? page,
     @Query('take') int? take,
     @Query('sort') String? sort,
+    @Query('fields')
+    String? fields =
+        'id,content,createdAt,updatedAt',
+            // 'therapist.id,therapist.firstName,therapist.avatar'
+            // 'client.id,client.firstName,client.avatar',
   });
 
   @POST('/chat/{id}/messages')
@@ -54,6 +65,8 @@ abstract class ChatRemoteDataSource {
     @Query('page') int? page,
     @Query('take') int? take,
     @Query('sort') String? sort,
+    @Query('fields')
+    String? fields = 'id,createdAt,schedule,duration,type,note,therapist.id',
   });
 
   @PATCH('/session/{id}')
@@ -70,8 +83,11 @@ abstract class ChatRemoteDataSource {
 
   @GET('/therapist/me/sessions')
   Future<GroupSessionNoteResponse> getGroupSessionNote({
-    @Query('fields') String? fields,
     @Query('filters') String? filters,
+    @Query('fields')
+    String? fields = 'id,paymentPeriod,therapist.id,'
+    'clientNotes.id,clientNotes.note,clientNotes.updatedAt,clientNotes.createdAt,'
+    'clientNotes.client.id,clientNotes.client.firstName,clientNotes.client.lastName,clientNotes.client.avatar'
   });
 
   @PATCH('/session/group-notes/{id}')

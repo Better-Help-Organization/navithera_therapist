@@ -19,9 +19,9 @@ class AuthGate extends ConsumerWidget {
       loading: () {}, // Still resolving auth
       authenticated: (user) async {
         final userStatus = user.status;
-        print("userStatus: ${userStatus}");
+        print("userStatus: $userStatus");
         print("user hours: ${user.hoursDedicatedPerWeek}");
-        print("pendingRoute: ${pendingRoute}");
+        print("pendingRoute: $pendingRoute");
         // Decide where to go based on user data
         try {
           final socketService = ref.read(socketServiceProvider);

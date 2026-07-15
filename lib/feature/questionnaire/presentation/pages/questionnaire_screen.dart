@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:navicare/core/constants/base_url.dart';
@@ -43,8 +44,11 @@ const Map<String, String> expertiseOptions = {
 
 class FileUploadService {
   static Future<String> uploadFile(File imageFile, String endpoint) async {
-    final prefs = await SharedPreferences.getInstance();
-    final accessToken = prefs.getString('access_token');
+   FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+      aOptions: AndroidOptions(encryptedSharedPreferences: true),
+      iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+    );
+    final accessToken = await _secureStorage.read(key: 'access_token');
 
     if (accessToken == null) {
       throw Exception('No access token found. Please login again.');
@@ -139,8 +143,11 @@ class FileUploadService {
     String endpoint,
     String modalId,
   ) async {
-    final prefs = await SharedPreferences.getInstance();
-    final accessToken = prefs.getString('access_token');
+FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+      aOptions: AndroidOptions(encryptedSharedPreferences: true),
+      iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+    );
+    final accessToken = await _secureStorage.read(key: 'access_token');
 
     if (accessToken == null) {
       throw Exception('No access token found. Please login again.');
@@ -217,8 +224,11 @@ final currentStepProvider = StateProvider<int>((ref) => 0);
 
 // Languages - fetched from /language endpoint
 final languagesAsyncProvider = FutureProvider<List<_Language>>((ref) async {
-  final prefs = await SharedPreferences.getInstance();
-  final accessToken = prefs.getString('access_token');
+FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+      aOptions: AndroidOptions(encryptedSharedPreferences: true),
+      iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+    );
+    final accessToken = await _secureStorage.read(key: 'access_token');
   if (accessToken == null) throw Exception('No access token found');
 
   final response = await http.get(
@@ -240,8 +250,11 @@ final languagesAsyncProvider = FutureProvider<List<_Language>>((ref) async {
   }
 });
 final modalsAsyncProvider = FutureProvider<List<_Modal>>((ref) async {
-  final prefs = await SharedPreferences.getInstance();
-  final accessToken = prefs.getString('access_token');
+FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+      aOptions: AndroidOptions(encryptedSharedPreferences: true),
+      iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+    );
+    final accessToken = await _secureStorage.read(key: 'access_token');
 
   if (accessToken == null) {
     throw Exception('No access token found');
@@ -302,8 +315,11 @@ final bankAccountNumbersProvider = StateProvider<Map<String, String>>(
 final bankBranchesProvider = StateProvider<Map<String, String>>((ref) => {});
 // Levels - fetched from /level endpoint
 final levelsAsyncProvider = FutureProvider<List<_Level>>((ref) async {
-  final prefs = await SharedPreferences.getInstance();
-  final accessToken = prefs.getString('access_token');
+FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+      aOptions: AndroidOptions(encryptedSharedPreferences: true),
+      iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+    );
+    final accessToken = await _secureStorage.read(key: 'access_token');
 
   if (accessToken == null) {
     throw Exception('No access token found');
@@ -339,8 +355,11 @@ final goalsTextProvider = StateProvider<String>((ref) => '');
 
 // Add providers for banks
 final banksAsyncProvider = FutureProvider<List<_Bank>>((ref) async {
-  final prefs = await SharedPreferences.getInstance();
-  final accessToken = prefs.getString('access_token');
+FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+      aOptions: AndroidOptions(encryptedSharedPreferences: true),
+      iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+    );
+    final accessToken = await _secureStorage.read(key: 'access_token');
 
   if (accessToken == null) {
     throw Exception('No access token found');
@@ -631,8 +650,11 @@ class _PostSignupQuestionnaireScreenState
     setState(() => _submitting = true);
 
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final accessToken = prefs.getString('access_token');
+FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+      aOptions: AndroidOptions(encryptedSharedPreferences: true),
+      iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+    );
+    final accessToken = await _secureStorage.read(key: 'access_token');
 
       if (accessToken == null) {
         throw Exception('No access token found');
@@ -1282,7 +1304,7 @@ class _PostSignupQuestionnaireScreenState
           await FileUploadService.uploadFileWithModal(
             file,
             'licence',
-            selectedModalId!,
+            selectedModalId,
           );
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
@@ -1400,7 +1422,7 @@ class _PostSignupQuestionnaireScreenState
           Text(
             selectedModalId == null
                 ? 'Please select a modality first'
-                : 'Upload your documents for ${ref.watch(modalsAsyncProvider).when(data: (modals) => modals.firstWhere((m) => m.id == selectedModalId, orElse: () => _Modal(id: '', name: 'Selected', order: 0, description: '')).name, loading: () => 'selected modality', error: (_, __) => 'selected modality')}',
+                : 'Upload your documents for ${ref.watch(modalsAsyncProvider).when(data: (modals) => modals.firstWhere((m) => m.id == selectedModalId, orElse: () => _Modal(id: '', name: '', order: 0, description: '')).name, loading: () => 'selected modality', error: (_, __) => 'selected modality')}',
             style: TextStyle(
               fontSize: 14,
               color: selectedModalId == null ? Colors.red : textSecondary,
@@ -1445,14 +1467,14 @@ class _PostSignupQuestionnaireScreenState
                 children: [
                   Row(
                     children: [
-                      _fileTypeBadge(_getFileExtension(normalLicenceImage!)),
+                      _fileTypeBadge(_getFileExtension(normalLicenceImage)),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              _getFileName(normalLicenceImage!),
+                              _getFileName(normalLicenceImage),
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -1463,7 +1485,7 @@ class _PostSignupQuestionnaireScreenState
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '${_getFileExtension(normalLicenceImage!)} • ${_formatFileSize(normalLicenceImage!.lengthSync())}',
+                              '${_getFileExtension(normalLicenceImage)} • ${_formatFileSize(normalLicenceImage.lengthSync())}',
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: textSecondary,
@@ -2390,14 +2412,14 @@ class _PostSignupQuestionnaireScreenState
                 children: [
                   Row(
                     children: [
-                      _fileTypeBadge(_getFileExtension(licenceImage!)),
+                      _fileTypeBadge(_getFileExtension(licenceImage)),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              _getFileName(licenceImage!),
+                              _getFileName(licenceImage),
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -2408,7 +2430,7 @@ class _PostSignupQuestionnaireScreenState
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '${_getFileExtension(licenceImage!)} • ${_formatFileSize(licenceImage!.lengthSync())}',
+                              '${_getFileExtension(licenceImage)} • ${_formatFileSize(licenceImage.lengthSync())}',
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: textSecondary,
@@ -3086,7 +3108,7 @@ class _PostSignupQuestionnaireScreenState
       ),
     );
   }
-
+       //This is an optional file to upload
   Widget _professionalLicenseUploadStep(WidgetRef ref) {
     final professionalLicenseImage = ref.watch(
       professionalLicenseImageProvider,
@@ -3901,7 +3923,7 @@ class _PostSignupQuestionnaireScreenState
               borderRadius: BorderRadius.circular(12),
               child: Image.file(
                 image,
-                fit: BoxFit.cover,
+                fit: BoxFit.none,
                 errorBuilder: (context, error, stackTrace) {
                   return const Center(
                     child: Icon(
@@ -4201,8 +4223,8 @@ class _PostSignupQuestionnaireScreenState
                     _wrapCard(_normalLicenceUploadStep(ref)),
                     _wrapCard(_licenceUploadStep(ref)),
                     _wrapCard(_degreeUploadStep(ref)),
-                    _wrapCard(_professionalLicenseUploadStep(ref)),
-                    _wrapCard(_specialTrainingUploadStep(ref)),
+                    _wrapCard(_professionalLicenseUploadStep(ref)),//optional
+                    _wrapCard(_specialTrainingUploadStep(ref)),//optional
                     _wrapCard(_profileUploadStep(ref)),
                   ],
                 ),

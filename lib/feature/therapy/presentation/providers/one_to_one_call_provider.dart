@@ -101,7 +101,7 @@ class CallController extends StateNotifier<CallState> {
   EventsListener<RoomEvent>? _listener;
 
   // LiveKit credentials
-  static const String _serverUrl = 'wss://livekit.navigo.et';
+  static const String _serverUrl = 'wss://livekit.navithera.com';
   static const String _apiKey = 'APIY64mRzLyKhzH';
   static const String _apiSecret =
       'PeSoRVkmyfNqL8ThefHQ3vN6d8xp8dw8UZbyRAazRduB';
@@ -217,8 +217,14 @@ class CallController extends StateNotifier<CallState> {
           );
 
       _localParticipant = _room!.localParticipant;
-
+      // print('=== CALL DEBUG ===');
+      // print('isVideoCall: ${state.isVideoCall}');
+      // print('localParticipant: $_localParticipant');
       // Initial sync of state after connection
+      // await _localParticipant!.setMicrophoneEnabled(true);
+      // if (state.isVideoCall) {
+      //   await _localParticipant!.setCameraEnabled(true);
+      // }
       _syncStateWithLocalParticipant();
 
       state = state.copyWith(

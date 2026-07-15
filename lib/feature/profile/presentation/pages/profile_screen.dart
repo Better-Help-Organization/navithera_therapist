@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:navicare/core/constants/base_url.dart';
 import 'package:navicare/core/localization/providers/locale_provider.dart';
 import 'package:navicare/core/providers/socket_provider.dart';
@@ -25,6 +26,10 @@ class ProfileScreen extends ConsumerStatefulWidget {
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   String? _accessToken;
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+  );
 
   @override
   void initState() {
@@ -33,11 +38,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   Future<void> _loadAccessToken() async {
-    final sharedPreferences = await SharedPreferences.getInstance();
+    // final sharedPreferences = await SharedPreferences.getInstance();
+    final accessToken = await _secureStorage.read(key: 'access_token');
+
+    if (accessToken == null || accessToken.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Session expired. Please login again')));
+      }
+    }
     setState(() {
-      _accessToken = sharedPreferences.getString('access_token');
+      _accessToken = accessToken;
     });
-    print("Access Token: $_accessToken");
   }
 
   void _emailUs(BuildContext context) async {
@@ -132,7 +145,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                           user!.profile!.isNotEmpty)
                                   ? Image(
                                     image: NetworkImage(
-                                      '${base_url_for_image}${user.profile}?v=${DateTime.now().millisecondsSinceEpoch}',
+                                      '$base_url_for_image${user.profile}?v=${DateTime.now().millisecondsSinceEpoch}',
                                     ),
                                     width: 80,
                                     height: 80,

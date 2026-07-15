@@ -6,7 +6,7 @@ import 'package:navicare/l10n/app_localization.dart';
 class AddEditJournalScreen extends StatefulWidget {
   final JournalEntry? entry;
 
-  AddEditJournalScreen({this.entry});
+  const AddEditJournalScreen({super.key, this.entry});
 
   @override
   _AddEditJournalScreenState createState() => _AddEditJournalScreenState();
@@ -147,7 +147,7 @@ class _AddEditJournalScreenState extends State<AddEditJournalScreen> {
               SizedBox(height: 20),
 
               // Save Button
-              Container(
+              SizedBox(
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(

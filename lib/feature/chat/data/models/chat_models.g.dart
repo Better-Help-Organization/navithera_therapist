@@ -327,7 +327,10 @@ _$SessionImpl _$$SessionImplFromJson(Map<String, dynamic> json) =>
       duration: (json['duration'] as num?)?.toInt(),
       type: json['type'] as String?,
       note: json['note'] as String?,
-      therapist: UserModel.fromJson(json['therapist'] as Map<String, dynamic>),
+      therapist:
+          json['therapist'] == null
+              ? null
+              : UserModel.fromJson(json['therapist'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$SessionImplToJson(_$SessionImpl instance) =>

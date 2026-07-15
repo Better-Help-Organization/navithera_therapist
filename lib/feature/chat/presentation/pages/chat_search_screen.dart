@@ -243,9 +243,9 @@ class _ChatSearchScreenState extends ConsumerState<ChatSearchScreen> {
                         ? '${client.firstName} ${client.lastName}'
                         : "Group Chat",
                 lastMessage: 'I sent you the design files 📎',
-                avatarUrl: 'https://randomuser.me/api/portraits/women/2.jpg',
+                // avatarUrl: 'https://randomuser.me/api/portraits/women/2.jpg',
                 unreadCount: 0,
-                timestamp: DateTime(2025, 4, 2, 14, 15),
+                timestamp: thread.lastMessage?.createdAt,
                 isOutgoing: true,
                 isRead: true,
                 isGroup: thread.group.isNotEmpty,

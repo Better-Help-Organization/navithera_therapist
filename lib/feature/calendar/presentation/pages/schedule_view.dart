@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:navicare/feature/calendar/presentation/pages/pages/basics_example.dart';
 import 'package:navicare/feature/calendar/presentation/pages/pages/complex_example.dart';
-import 'package:navicare/feature/calendar/presentation/pages/pages/events_example.dart';
 import 'package:navicare/feature/calendar/presentation/pages/pages/multi_example.dart';
 import 'package:navicare/feature/calendar/presentation/pages/pages/range_example.dart';
 

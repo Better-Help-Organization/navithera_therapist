@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:navicare/core/constants/base_url.dart';
 import 'package:navicare/core/theme/app_colors.dart';
 import 'package:navicare/feature/auth/presentation/providers/user_provider.dart';
@@ -18,6 +19,10 @@ final sessionProvider = StateNotifierProvider<SessionNotifier, List<Session>>((
 });
 
 class SessionNotifier extends StateNotifier<List<Session>> {
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+  );
   SessionNotifier() : super([]);
 
   final Dio _dio = Dio();
@@ -30,7 +35,7 @@ class SessionNotifier extends StateNotifier<List<Session>> {
     try {
       await _attachAuthHeader();
       final response = await _dio.get(
-        '${base_url_dev}/therapist/me/sessions?fields=client.*,schedule,duration,hasTherapistAttended,approvalStatus,groupName,groupAttendance.*&take=0',
+        '$base_url_dev/therapist/me/sessions?fields=client.firstName,client.lastName,schedule,duration,hasTherapistAttended,approvalStatus,group.*,groupAttendance.*&take=0',
       );
 
       log("response data: ${response.data}");
@@ -48,8 +53,8 @@ class SessionNotifier extends StateNotifier<List<Session>> {
   }
 
   Future<void> _attachAuthHeader() async {
-    final prefs = await SharedPreferences.getInstance();
-    final accessToken = prefs.getString('access_token');
+    // final prefs = await SharedPreferences.getInstance();
+    final accessToken = await _secureStorage.read(key: 'access_token');
     if (accessToken != null && accessToken.isNotEmpty) {
       _dio.options.headers['Authorization'] = 'Bearer $accessToken';
     } else {
@@ -82,7 +87,7 @@ class Session {
   });
 
   factory Session.fromMap(Map<String, dynamic> map) {
-    log("object: ${map}");
+    log("object: $map");
 
     Client? client;
     if (map['client'] != null && map['client'] is Map<String, dynamic>) {
@@ -201,6 +206,10 @@ class _SessionCalendarScreenState extends ConsumerState<SessionCalendarScreen>
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+  );
 
   final ValueNotifier<List<Session>> _selectedSessions = ValueNotifier([]);
   bool _isLoading = false;
@@ -283,8 +292,8 @@ class _SessionCalendarScreenState extends ConsumerState<SessionCalendarScreen>
     });
 
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final accessToken = prefs.getString('access_token');
+      // final prefs = await SharedPreferences.getInstance();
+      final accessToken = await _secureStorage.read(key: 'access_token');
 
       final dio = Dio();
       if (accessToken != null && accessToken.isNotEmpty) {
@@ -294,17 +303,17 @@ class _SessionCalendarScreenState extends ConsumerState<SessionCalendarScreen>
       // Format the date to the required format
       final formattedDate = newSchedule.toUtc().toIso8601String();
       final therapistId = ref.read(currentUserProvider)?.id;
-      print("Access formatted: ${formattedDate}");
-      print("Access SessioniD: ${sessionId}");
-      print("Access therapist: ${therapistId}");
+      print("Access formatted: $formattedDate");
+      print("Access SessioniD: $sessionId");
+      print("Access therapist: $therapistId");
 
       // Make the API call
       final response = await dio.patch(
-        '${base_url_dev}/session/$sessionId',
+        '$base_url_dev/session/$sessionId',
         data: {'schedule': formattedDate},
       );
 
-      print("responsexoxo: ${response}");
+      print("responsexoxo: $response");
 
       if (response.statusCode == 200) {
         // Reload sessions to get updated data
@@ -380,22 +389,22 @@ class _SessionCalendarScreenState extends ConsumerState<SessionCalendarScreen>
     });
 
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final accessToken = prefs.getString('access_token');
+      // final prefs = await SharedPreferences.getInstance();
+      final accessToken = await _secureStorage.read(key: 'access_token');
 
       final dio = Dio();
       if (accessToken != null && accessToken.isNotEmpty) {
         dio.options.headers['Authorization'] = 'Bearer $accessToken';
       }
-      print("response: ${sessionId} ${hasAttended}");
+      print("response: $sessionId $hasAttended");
 
       // Make the API call
       final response = await dio.patch(
-        '${base_url_dev}/session/$sessionId',
+        '$base_url_dev/session/$sessionId',
         data: {'hasTherapistAttended': hasAttended},
       );
 
-      print("response: ${response}");
+      print("response: $response");
 
       if (response.statusCode == 200) {
         // Reload sessions to get updated data
@@ -417,7 +426,7 @@ class _SessionCalendarScreenState extends ConsumerState<SessionCalendarScreen>
         throw Exception('Failed to update attendance');
       }
     } catch (e) {
-      print("response: ${e}");
+      print("response: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to update attendance: '),
@@ -811,7 +820,7 @@ class _SessionCalendarScreenState extends ConsumerState<SessionCalendarScreen>
                                   color:
                                       hasSessions
                                           ? AppColors.primary
-                                          : AppColors.primary.withOpacity(0.1),
+                                          : AppColors.primary,
                                   borderRadius: BorderRadius.circular(8),
                                   border:
                                       hasSessions

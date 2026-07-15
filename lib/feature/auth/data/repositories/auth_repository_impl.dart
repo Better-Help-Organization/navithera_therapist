@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:dartz/dartz.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../../../core/error/failures.dart';
 import '../data_sources/auth_remote_data_source.dart';
 import '../models/auth_models.dart';
@@ -13,12 +13,16 @@ import '../../../profile/data/data_sources/profile_remote_data_source.dart';
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
   final ProfileRemoteDataSource profileRemoteDataSource;
-  final SharedPreferences sharedPreferences;
+  // final SharedPreferences sharedPreferences;
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+  );
 
   AuthRepositoryImpl({
     required this.remoteDataSource,
     required this.profileRemoteDataSource,
-    required this.sharedPreferences,
+    // required this.Preferences,
   });
 
   @override
@@ -40,15 +44,21 @@ class AuthRepositoryImpl implements AuthRepository {
       );
 
       // This now returns ApiResponse instead of LoginResponse directly
-      print("loginRequest: ${loginRequest.toJson()}");
+      // print("loginRequest: ${loginRequest.toJson()}");
       final apiResponse = await remoteDataSource.login(loginRequest);
 
       // Access the data property
       final authData = apiResponse.data;
 
       // Store tokens
-      await sharedPreferences.setString('access_token', authData.accessToken);
-      await sharedPreferences.setString('refresh_token', authData.refreshToken);
+      await _secureStorage.write(
+        key: 'access_token',
+        value: authData.accessToken,
+      );
+      await _secureStorage.write(
+        key: 'refresh_token',
+        value: authData.refreshToken,
+      );
       log("authData: ${authData.toJson()}");
       // Convert model to entity
       final user = User(
@@ -61,19 +71,20 @@ class AuthRepositoryImpl implements AuthRepository {
         avatar: authData.user.avatar,
         status: authData.user.status,
         hoursDedicatedPerWeek: authData.user.hoursDedicatedPerWeek,
+        therapistBank: authData.user.therapistBank,
         //username: authData.user.username ?? '',
       );
 
       // Store complete user object as JSON
-      await sharedPreferences.setString(
-        'current_user',
-        jsonEncode(user.toJson()),
+      await _secureStorage.write(
+        key: 'current_user',
+        value: jsonEncode(user.toJson()),
       );
 
       return Right(user);
     } on DioException catch (e) {
       String errorMessage = 'Login failed. Please try again.';
-      log("The login error: ${e}");
+      log("The login error: $e");
 
       if (e.response?.data is Map<String, dynamic>) {
         final responseData = e.response!.data as Map<String, dynamic>;
@@ -97,15 +108,16 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<Failure, void>> logout() async {
     try {
       // Get the refresh token before removing it
-      final refreshToken = sharedPreferences.getString('refresh_token');
+      final refreshToken = await _secureStorage.read(key: 'refresh_token');
 
       if (refreshToken != null) {
         await remoteDataSource.logout();
       }
 
       // Clear local storage
-      await sharedPreferences.remove('access_token');
-      await sharedPreferences.remove('refresh_token');
+      await _secureStorage.delete(key: 'access_token');
+      await _secureStorage.delete(key: 'refresh_token');
+      await _secureStorage.delete(key: 'current_user');
 
       return const Right(null);
     } on DioException catch (e) {
@@ -145,8 +157,14 @@ class AuthRepositoryImpl implements AuthRepository {
       final authData = apiResponse.data;
 
       // Store tokens if they exist
-      await sharedPreferences.setString('access_token', authData.accessToken);
-      await sharedPreferences.setString('refresh_token', authData.refreshToken);
+      await _secureStorage.write(
+        key: 'access_token',
+        value: authData.accessToken,
+      );
+      await _secureStorage.write(
+        key: 'refresh_token',
+        value: authData.refreshToken,
+      );
 
       // Convert response to User entity
       final user = User(
@@ -158,13 +176,14 @@ class AuthRepositoryImpl implements AuthRepository {
         profile: authData.user.profile,
         avatar: authData.user.avatar,
         hoursDedicatedPerWeek: 0,
+        therapistBank: authData.user.therapistBank,
         //  username: authData.user.username ?? '',
       );
 
       // Store complete user object as JSON
-      await sharedPreferences.setString(
-        'current_user',
-        jsonEncode(user.toJson()),
+      await _secureStorage.write(
+        key: 'current_user',
+        value: jsonEncode(user.toJson()),
       );
 
       return Right(user);
@@ -196,13 +215,13 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Either<Failure, User>> getCurrentUser() async {
     try {
-      final token = sharedPreferences.getString('access_token');
+      final token = await _secureStorage.read(key: 'access_token');
       if (token == null) {
         return const Left(Failure.authFailure('No token found'));
       }
 
       // Get stored user JSON
-      final userJsonString = sharedPreferences.getString('current_user');
+      final userJsonString = await _secureStorage.read(key: 'current_user');
       if (userJsonString == null) {
         return const Left(Failure.authFailure('No user data found'));
       }
@@ -245,12 +264,13 @@ class AuthRepositoryImpl implements AuthRepository {
         status: userData.status,
         avatar: userData.avatar, // This should be updated
         hoursDedicatedPerWeek: userData.hoursDedicatedPerWeek,
+        // therapistBank: userData.therapistBank
       );
 
       // Update stored user data
-      await sharedPreferences.setString(
-        'current_user',
-        jsonEncode(updatedUser.toJson()),
+      await _secureStorage.write(
+        key: 'current_user',
+        value: jsonEncode(updatedUser.toJson()),
       );
 
       return Right(updatedUser);
@@ -263,7 +283,9 @@ class AuthRepositoryImpl implements AuthRepository {
       }
 
       return Left(Failure.serverFailure(errorMessage));
-    } catch (e) {
+    } catch (e, stackTrace) {
+      log('updateProfile parse error: $e');
+      log('stackTrace: $stackTrace');
       return Left(Failure.unknownFailure('An unexpected error occurred'));
     }
   }
@@ -288,12 +310,13 @@ class AuthRepositoryImpl implements AuthRepository {
         profile: userData.profile,
         status: userData.status,
         hoursDedicatedPerWeek: userData.hoursDedicatedPerWeek,
+        therapistBank: userData.therapistBank,
       );
 
       // Update stored user data with complete information
-      await sharedPreferences.setString(
-        'current_user',
-        jsonEncode(user.toJson()),
+      await _secureStorage.write(
+        key: 'current_user',
+        value: jsonEncode(user.toJson()),
       );
 
       return Right(user);
@@ -307,7 +330,9 @@ class AuthRepositoryImpl implements AuthRepository {
       }
 
       return Left(Failure.serverFailure(errorMessage));
-    } catch (e) {
+    } catch (e, stackTrace) {
+      log('updateProfile parse error: $e');
+      log('stackTrace: $stackTrace');
       return Left(Failure.unknownFailure('An unexpected error occurred'));
     }
   }
@@ -333,12 +358,13 @@ class AuthRepositoryImpl implements AuthRepository {
         gender: userData.gender,
         profile: userData.profile,
         hoursDedicatedPerWeek: userData.hoursDedicatedPerWeek,
+        therapistBank: userData.therapistBank ?? [],
       );
 
       // Update stored user data
-      await sharedPreferences.setString(
-        'current_user',
-        jsonEncode(updatedUser.toJson()),
+      await _secureStorage.write(
+        key: 'current_user',
+        value: jsonEncode(updatedUser.toJson()),
       );
 
       return Right(updatedUser);
@@ -351,7 +377,9 @@ class AuthRepositoryImpl implements AuthRepository {
       }
 
       return Left(Failure.serverFailure(errorMessage));
-    } catch (e) {
+    } catch (e, stackTrace) {
+      log('updateProfile parse error: $e');
+      log('stackTrace: $stackTrace');
       return Left(Failure.unknownFailure('An unexpected error occurred'));
     }
   }
@@ -420,7 +448,7 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Either<Failure, bool>> isLoggedIn() async {
     try {
-      final token = sharedPreferences.getString('access_token');
+      final token = await _secureStorage.read(key: 'access_token');
       return Right(token != null);
     } catch (e) {
       return Left(Failure.unknownFailure(e.toString()));

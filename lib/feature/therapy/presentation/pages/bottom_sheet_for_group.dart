@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:livekit_client/livekit_client.dart';
 import 'package:navicare/core/constants/base_url.dart';
 import 'package:navicare/core/theme/app_colors.dart';
@@ -13,7 +14,6 @@ import 'package:navicare/feature/chat/presentation/pages/user_profile_screen.dar
 import 'package:navicare/feature/chat/presentation/widgets/gradient_avatar.dart';
 import 'package:navicare/feature/therapy/presentation/pages/group_call_screen.dart';
 import 'package:navicare/main.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class GroupMemberSelectionBottomSheet extends StatefulWidget {
   final String groupName;
@@ -35,6 +35,10 @@ class GroupMemberSelectionBottomSheet extends StatefulWidget {
 class _GroupMemberSelectionBottomSheetState
     extends State<GroupMemberSelectionBottomSheet> {
   final Set<String> _selectedUserIds = {};
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+  );
 
   Future<void> _startCallWithSelectedUsers({required bool isVideoCall}) async {
     // Validate selection
@@ -51,7 +55,7 @@ class _GroupMemberSelectionBottomSheetState
     print("Selected chatid: ${widget.chatId}");
     print('Selected user IDs: ${_selectedUserIds.toList()}');
 
-    _join(
+    join(
       String url,
       String token,
       BuildContext context, {
@@ -125,7 +129,7 @@ class _GroupMemberSelectionBottomSheetState
       } finally {}
     }
 
-    String _generateRandomRoomName() {
+    String generateRandomRoomName() {
       const chars =
           'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
       final random = Random();
@@ -137,9 +141,11 @@ class _GroupMemberSelectionBottomSheetState
       );
     }
 
-    final sharedPreferences = await SharedPreferences.getInstance();
-    final accessToken = sharedPreferences.getString('access_token');
-    final roomName = _generateRandomRoomName();
+    final accessToken = await _secureStorage.read(key: 'access_token');
+    if (accessToken == null || accessToken.isEmpty) {
+      throw Exception('Session expired. Please login again');
+    }
+    final roomName = generateRandomRoomName();
 
     // Show loading indicator
     if (!mounted) return;
@@ -159,7 +165,7 @@ class _GroupMemberSelectionBottomSheetState
       dio.options.headers['Authorization'] = 'Bearer $accessToken';
 
       final response = await dio.post(
-        '${base_url_dev}/chat/call/${widget.chatId}',
+        '$base_url_dev/chat/call/${widget.chatId}',
         data: {
           'room': roomName,
           'isVideoCall': isVideoCall,
@@ -175,10 +181,10 @@ class _GroupMemberSelectionBottomSheetState
         final responseData = response.data['data'];
         final String token = responseData['token'];
 
-        print("✅ Backend call successful, navigating to GroupCallScreen...");
-        print("Room name: $roomName");
-        print("Chat ID: ${widget.chatId}");
-        print("Is video call: $isVideoCall");
+        // print("✅ Backend call successful, navigating to GroupCallScreen...");
+        // print("Room name: $roomName");
+        // print("Chat ID: ${widget.chatId}");
+        // print("Is video call: $isVideoCall");
 
         // Close the bottom sheet first
         Navigator.of(context).pop();
@@ -197,8 +203,8 @@ class _GroupMemberSelectionBottomSheetState
           //         ),
           //   ),
           // );
-          _join(
-            "wss://livekit.navigo.et",
+          join(
+            "wss://livekit.navithera.com",
             token,
             context,
             isVideoCall: isVideoCall,

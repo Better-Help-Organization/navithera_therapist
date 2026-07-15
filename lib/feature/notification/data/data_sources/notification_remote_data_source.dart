@@ -13,6 +13,8 @@ abstract class NotificationRemoteDataSource {
 
   @GET('/therapist/me/notifications')
   Future<NotificationListResponse> getNotifications({
+    @Query('fields')
+    String? fields = 'id,updatedAt,createdAt,title,body,message,code',
     @Query('page') int? page,
     @Query('take') int? take,
     @Query('sort') String? sort,

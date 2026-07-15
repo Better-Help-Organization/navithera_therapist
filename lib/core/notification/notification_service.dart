@@ -11,6 +11,7 @@ import 'package:flutter_callkit_incoming/entities/call_kit_params.dart';
 import 'package:flutter_callkit_incoming/entities/ios_params.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:livekit_client/livekit_client.dart';
 import 'package:navicare/core/constants/base_url.dart';
@@ -28,7 +29,7 @@ import 'package:navicare/feature/home/presentation/providers/chart_data_provider
 import 'package:navicare/feature/questionnaire/presentation/pages/match_request_screen.dart';
 import 'package:navicare/main.dart';
 import 'package:overlay_support/overlay_support.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:uuid/uuid.dart';
 
 class PendingRoute {
@@ -59,7 +60,7 @@ class FCMService {
   bool get _isCallDialogOpen => _activeCallChatId != null;
   // Match request ringtone state
   AudioPlayer? _matchRequestPlayer;
-  bool _hasActiveMatchRequest = false;
+  final bool _hasActiveMatchRequest = false;
   bool get hasActiveMatchRequest => _hasActiveMatchRequest;
 
   // Future<void> startMatchRequestRingtone() async {
@@ -104,6 +105,18 @@ class FCMService {
     // final args = widget.args;
 
     try {
+      final micStatus = await Permission.microphone.request();
+      if (micStatus.isDenied || micStatus.isPermanentlyDenied) {
+        print('Microphone permission denied');
+        return;
+      }
+      if (isVideoCall) {
+        final camStatus = await Permission.camera.request();
+        if (camStatus.isDenied || camStatus.isPermanentlyDenied) {
+          print('Camera permission denied');
+          return;
+        }
+      }
       //create new room
       const cameraEncoding = VideoEncoding(
         maxBitrate: 5 * 1000 * 1000,
@@ -142,7 +155,15 @@ class FCMService {
       final listener = room.createListener();
 
       // Connect to the room directly (prepareConnection is called internally)
-      await room.connect(url, token);
+      await room.prepareConnection(url, token);
+      await room.connect(
+        url,
+        token,
+        fastConnectOptions: FastConnectOptions(
+          microphone: TrackOption(enabled: true),
+          camera: TrackOption(enabled: isVideoCall),
+        ),
+      );
 
       print("printed after connected ${context.mounted}");
 
@@ -488,7 +509,6 @@ class FCMService {
     }
 
     if (_isIncomingCallMessage(message)) {
-      print("new kind: ${message}");
       // App opened from terminated by tapping notification is typical.
       // We should present CallKit immediately to mirror Telegram-like behavior.
       final call = _parseIncomingCall(message);
@@ -829,7 +849,7 @@ class FCMService {
       String body = data['message_preview'] ?? notification?.body ?? '';
       final chatData = jsonDecode(data["id"]);
       final chatId = chatData['chat']['id'];
-      print("chatId: ${chatId}");
+      print("chatId: $chatId");
       _updateChatData(chatId);
       print('Error showing notification banner: $e');
     }
@@ -1036,8 +1056,8 @@ class FCMService {
                             ).pop();
                             _activeCallChatId = null;
                             _ringtonePlayer = null;
-                            print("xoxoch; ${chatId}");
-                            print("xoxo: ${isGroupCall}");
+                            print("xoxoch; $chatId");
+                            print("xoxo: $isGroupCall");
                             _joinCallRoom(
                               roomName,
                               participant,
@@ -1132,12 +1152,12 @@ class FCMService {
       final token = idMap['token'] as String?;
       final isVideoCall = idMap['isVideoCall'] as bool? ?? false;
       final isGroupCall = idMap['isGroupCall'] as bool? ?? false;
-      print("isVideoCall4: ${isVideoCall}");
+      print("isVideoCall4: $isVideoCall");
       final callerData = idMap['callerData'] as Map<String, dynamic>?;
       final firstName = callerData?['firstName'] as String? ?? '';
       final lastName = callerData?['lastName'] as String? ?? '';
       final fullName =
-          (firstName + ' ' + lastName).trim().isEmpty
+          ('$firstName $lastName').trim().isEmpty
               ? 'Caller'
               : '$firstName $lastName';
 
@@ -1158,10 +1178,13 @@ class FCMService {
   }
 
   Future<void> rejectCall(String chatId) async {
+    final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+      aOptions: AndroidOptions(encryptedSharedPreferences: true),
+      iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+    );
     final Dio dio = Dio();
     try {
-      final sharedPreferences = await SharedPreferences.getInstance();
-      final accessToken = sharedPreferences.getString('access_token');
+      final accessToken = await _secureStorage.read(key: 'access_token');
 
       dio.options.headers['Authorization'] = 'Bearer $accessToken';
 
@@ -1190,23 +1213,8 @@ class FCMService {
     if (context == null) return;
     print("context not null praying: $context");
 
-    if (context == null) {
-      _ref.read(pendingRouteProvider.notifier).state = PendingRoute(
-        path: '/call-screen',
-        callData: {
-          'roomName': roomName,
-          'participantName': participantName,
-          'chatId': chatId,
-          'isVideoCall': isVideocall,
-          'token': token,
-          'isGroupCall': isGroupCall,
-        },
-      );
-      return;
-    }
-
     _join(
-      "wss://livekit.navigo.et",
+      "wss://livekit.navithera.com",
       token,
       context,
       isVideoCall: isVideocall,
@@ -1248,11 +1256,9 @@ class FCMService {
     String token,
     bool isGroupCall,
   ) {
-    print("isVideoCall1: ${isVideoCall}");
-    // final token2 =
-    //     "eyJhbGciOiJIUzI1NiJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6InF1aWNrc3RhcnQtcm9vbSIsImNhblB1Ymxpc2giOnRydWUsImNhblN1YnNjcmliZSI6dHJ1ZX0sImlzcyI6IkFQSTNyUGFadUdxYjI4OCIsImV4cCI6MTc2NDMyOTEzNCwibmJmIjowLCJzdWIiOiJxdWlja3N0YXJ0LXVzZXJuYW1lIn0.Ef8iTBjiIGhpVbYBo9mt8hK0sQaqTUzpDcJCjXOrVQs";
+    print("isVideoCall1: $isVideoCall");
     _join(
-      "wss://livekit.navigo.et",
+      "wss://livekit.navithera.com",
       token,
       context,
       isVideoCall: isVideoCall,
@@ -1288,7 +1294,7 @@ class FCMBackgroundBridge {
     try {
       // Show CallKit incoming for incoming call messages
       if (_isIncomingCallMessage(message)) {
-        print("new kind bg: ${message}");
+        print("new kind bg: $message");
         final call = _parseIncomingCall(message);
         if (call != null) {
           await _showCallKitIncoming(call);
@@ -1335,11 +1341,11 @@ class FCMBackgroundBridge {
       final callerData = idMap['callerData'] as Map<String, dynamic>?;
       final isVideoCall = idMap['isVideoCall'] as bool? ?? false;
       final isGroupCall = idMap['isGroupCall'] as bool? ?? false;
-      print("isVideoCall5: ${isVideoCall}");
+      print("isVideoCall5: $isVideoCall");
       final firstName = callerData?['firstName'] as String? ?? '';
       final lastName = callerData?['lastName'] as String? ?? '';
       final fullName =
-          (firstName + ' ' + lastName).trim().isEmpty
+          ('$firstName $lastName').trim().isEmpty
               ? 'Caller'
               : '$firstName $lastName';
 
@@ -1360,11 +1366,15 @@ class FCMBackgroundBridge {
   }
 
   static Future<void> _showCallKitIncoming(_IncomingCall call) async {
+    final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+      aOptions: AndroidOptions(encryptedSharedPreferences: true),
+      iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+    );
     try {
-      final sharedPreferences = await SharedPreferences.getInstance();
-      await sharedPreferences.setString(
-        'call_token_${call.chatId}',
-        call.token,
+      // final sharedPreferences = await SharedPreferences.getInstance();
+      await _secureStorage.write(
+        key: 'call_token_${call.chatId}',
+        value: call.token,
       );
     } catch (e) {
       log("Error saving call token: $e");

@@ -32,6 +32,7 @@ mixin _$User {
   String? get gender => throw _privateConstructorUsedError;
   String? get profile => throw _privateConstructorUsedError;
   int? get hoursDedicatedPerWeek => throw _privateConstructorUsedError;
+  List<TherapistBank>? get therapistBank => throw _privateConstructorUsedError;
 
   /// Serializes this User to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -59,6 +60,7 @@ abstract class $UserCopyWith<$Res> {
     String? gender,
     String? profile,
     int? hoursDedicatedPerWeek,
+    List<TherapistBank>? therapistBank,
   });
 }
 
@@ -88,6 +90,7 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
     Object? gender = freezed,
     Object? profile = freezed,
     Object? hoursDedicatedPerWeek = freezed,
+    Object? therapistBank = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -146,6 +149,11 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
                     ? _value.hoursDedicatedPerWeek
                     : hoursDedicatedPerWeek // ignore: cast_nullable_to_non_nullable
                         as int?,
+            therapistBank:
+                freezed == therapistBank
+                    ? _value.therapistBank
+                    : therapistBank // ignore: cast_nullable_to_non_nullable
+                        as List<TherapistBank>?,
           )
           as $Val,
     );
@@ -172,6 +180,7 @@ abstract class _$$UserImplCopyWith<$Res> implements $UserCopyWith<$Res> {
     String? gender,
     String? profile,
     int? hoursDedicatedPerWeek,
+    List<TherapistBank>? therapistBank,
   });
 }
 
@@ -198,6 +207,7 @@ class __$$UserImplCopyWithImpl<$Res>
     Object? gender = freezed,
     Object? profile = freezed,
     Object? hoursDedicatedPerWeek = freezed,
+    Object? therapistBank = freezed,
   }) {
     return _then(
       _$UserImpl(
@@ -256,6 +266,11 @@ class __$$UserImplCopyWithImpl<$Res>
                 ? _value.hoursDedicatedPerWeek
                 : hoursDedicatedPerWeek // ignore: cast_nullable_to_non_nullable
                     as int?,
+        therapistBank:
+            freezed == therapistBank
+                ? _value._therapistBank
+                : therapistBank // ignore: cast_nullable_to_non_nullable
+                    as List<TherapistBank>?,
       ),
     );
   }
@@ -276,7 +291,8 @@ class _$UserImpl implements _User {
     this.gender,
     this.profile,
     this.hoursDedicatedPerWeek,
-  });
+    final List<TherapistBank>? therapistBank,
+  }) : _therapistBank = therapistBank;
 
   factory _$UserImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserImplFromJson(json);
@@ -303,10 +319,19 @@ class _$UserImpl implements _User {
   final String? profile;
   @override
   final int? hoursDedicatedPerWeek;
+  final List<TherapistBank>? _therapistBank;
+  @override
+  List<TherapistBank>? get therapistBank {
+    final value = _therapistBank;
+    if (value == null) return null;
+    if (_therapistBank is EqualUnmodifiableListView) return _therapistBank;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
 
   @override
   String toString() {
-    return 'User(id: $id, email: $email, firstName: $firstName, lastName: $lastName, status: $status, username: $username, phoneNumber: $phoneNumber, avatar: $avatar, gender: $gender, profile: $profile, hoursDedicatedPerWeek: $hoursDedicatedPerWeek)';
+    return 'User(id: $id, email: $email, firstName: $firstName, lastName: $lastName, status: $status, username: $username, phoneNumber: $phoneNumber, avatar: $avatar, gender: $gender, profile: $profile, hoursDedicatedPerWeek: $hoursDedicatedPerWeek, therapistBank: $therapistBank)';
   }
 
   @override
@@ -329,7 +354,11 @@ class _$UserImpl implements _User {
             (identical(other.gender, gender) || other.gender == gender) &&
             (identical(other.profile, profile) || other.profile == profile) &&
             (identical(other.hoursDedicatedPerWeek, hoursDedicatedPerWeek) ||
-                other.hoursDedicatedPerWeek == hoursDedicatedPerWeek));
+                other.hoursDedicatedPerWeek == hoursDedicatedPerWeek) &&
+            const DeepCollectionEquality().equals(
+              other._therapistBank,
+              _therapistBank,
+            ));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -347,6 +376,7 @@ class _$UserImpl implements _User {
     gender,
     profile,
     hoursDedicatedPerWeek,
+    const DeepCollectionEquality().hash(_therapistBank),
   );
 
   /// Create a copy of User
@@ -376,6 +406,7 @@ abstract class _User implements User {
     final String? gender,
     final String? profile,
     final int? hoursDedicatedPerWeek,
+    final List<TherapistBank>? therapistBank,
   }) = _$UserImpl;
 
   factory _User.fromJson(Map<String, dynamic> json) = _$UserImpl.fromJson;
@@ -402,6 +433,8 @@ abstract class _User implements User {
   String? get profile;
   @override
   int? get hoursDedicatedPerWeek;
+  @override
+  List<TherapistBank>? get therapistBank;
 
   /// Create a copy of User
   /// with the given fields replaced by the non-null parameter values.

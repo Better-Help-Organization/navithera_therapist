@@ -18,6 +18,8 @@ class JournalEntry {
 }
 
 class MyJournalScreen extends StatefulWidget {
+  const MyJournalScreen({super.key});
+
   @override
   _MyJournalScreenState createState() => _MyJournalScreenState();
 }
@@ -230,8 +232,8 @@ class _MyJournalScreenState extends State<MyJournalScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToAddEntry,
         backgroundColor: AppColors.secondary,
-        child: Icon(Icons.add, color: Colors.white, size: 28),
         shape: CircleBorder(),
+        child: Icon(Icons.add, color: Colors.white, size: 28),
       ),
     );
   }

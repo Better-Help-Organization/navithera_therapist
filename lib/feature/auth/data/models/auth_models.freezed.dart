@@ -1868,6 +1868,582 @@ abstract class _SignupResponse implements SignupResponse {
       throw _privateConstructorUsedError;
 }
 
+Bank _$BankFromJson(Map<String, dynamic> json) {
+  return _Bank.fromJson(json);
+}
+
+/// @nodoc
+mixin _$Bank {
+  @JsonKey(name: 'id')
+  String get bankId => throw _privateConstructorUsedError;
+
+  /// Serializes this Bank to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of Bank
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $BankCopyWith<Bank> get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $BankCopyWith<$Res> {
+  factory $BankCopyWith(Bank value, $Res Function(Bank) then) =
+      _$BankCopyWithImpl<$Res, Bank>;
+  @useResult
+  $Res call({@JsonKey(name: 'id') String bankId});
+}
+
+/// @nodoc
+class _$BankCopyWithImpl<$Res, $Val extends Bank>
+    implements $BankCopyWith<$Res> {
+  _$BankCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of Bank
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? bankId = null}) {
+    return _then(
+      _value.copyWith(
+            bankId:
+                null == bankId
+                    ? _value.bankId
+                    : bankId // ignore: cast_nullable_to_non_nullable
+                        as String,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$BankImplCopyWith<$Res> implements $BankCopyWith<$Res> {
+  factory _$$BankImplCopyWith(
+    _$BankImpl value,
+    $Res Function(_$BankImpl) then,
+  ) = __$$BankImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({@JsonKey(name: 'id') String bankId});
+}
+
+/// @nodoc
+class __$$BankImplCopyWithImpl<$Res>
+    extends _$BankCopyWithImpl<$Res, _$BankImpl>
+    implements _$$BankImplCopyWith<$Res> {
+  __$$BankImplCopyWithImpl(_$BankImpl _value, $Res Function(_$BankImpl) _then)
+    : super(_value, _then);
+
+  /// Create a copy of Bank
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? bankId = null}) {
+    return _then(
+      _$BankImpl(
+        bankId:
+            null == bankId
+                ? _value.bankId
+                : bankId // ignore: cast_nullable_to_non_nullable
+                    as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$BankImpl implements _Bank {
+  const _$BankImpl({@JsonKey(name: 'id') required this.bankId});
+
+  factory _$BankImpl.fromJson(Map<String, dynamic> json) =>
+      _$$BankImplFromJson(json);
+
+  @override
+  @JsonKey(name: 'id')
+  final String bankId;
+
+  @override
+  String toString() {
+    return 'Bank(bankId: $bankId)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$BankImpl &&
+            (identical(other.bankId, bankId) || other.bankId == bankId));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, bankId);
+
+  /// Create a copy of Bank
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$BankImplCopyWith<_$BankImpl> get copyWith =>
+      __$$BankImplCopyWithImpl<_$BankImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$BankImplToJson(this);
+  }
+}
+
+abstract class _Bank implements Bank {
+  const factory _Bank({@JsonKey(name: 'id') required final String bankId}) =
+      _$BankImpl;
+
+  factory _Bank.fromJson(Map<String, dynamic> json) = _$BankImpl.fromJson;
+
+  @override
+  @JsonKey(name: 'id')
+  String get bankId;
+
+  /// Create a copy of Bank
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$BankImplCopyWith<_$BankImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+TherapistBankRequest _$TherapistBankRequestFromJson(Map<String, dynamic> json) {
+  return _TherapistBankRequest.fromJson(json);
+}
+
+/// @nodoc
+mixin _$TherapistBankRequest {
+  String get bankId => throw _privateConstructorUsedError;
+  String get accountNumber => throw _privateConstructorUsedError;
+  String? get branch => throw _privateConstructorUsedError;
+
+  /// Serializes this TherapistBankRequest to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of TherapistBankRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $TherapistBankRequestCopyWith<TherapistBankRequest> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $TherapistBankRequestCopyWith<$Res> {
+  factory $TherapistBankRequestCopyWith(
+    TherapistBankRequest value,
+    $Res Function(TherapistBankRequest) then,
+  ) = _$TherapistBankRequestCopyWithImpl<$Res, TherapistBankRequest>;
+  @useResult
+  $Res call({String bankId, String accountNumber, String? branch});
+}
+
+/// @nodoc
+class _$TherapistBankRequestCopyWithImpl<
+  $Res,
+  $Val extends TherapistBankRequest
+>
+    implements $TherapistBankRequestCopyWith<$Res> {
+  _$TherapistBankRequestCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of TherapistBankRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? bankId = null,
+    Object? accountNumber = null,
+    Object? branch = freezed,
+  }) {
+    return _then(
+      _value.copyWith(
+            bankId:
+                null == bankId
+                    ? _value.bankId
+                    : bankId // ignore: cast_nullable_to_non_nullable
+                        as String,
+            accountNumber:
+                null == accountNumber
+                    ? _value.accountNumber
+                    : accountNumber // ignore: cast_nullable_to_non_nullable
+                        as String,
+            branch:
+                freezed == branch
+                    ? _value.branch
+                    : branch // ignore: cast_nullable_to_non_nullable
+                        as String?,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$TherapistBankRequestImplCopyWith<$Res>
+    implements $TherapistBankRequestCopyWith<$Res> {
+  factory _$$TherapistBankRequestImplCopyWith(
+    _$TherapistBankRequestImpl value,
+    $Res Function(_$TherapistBankRequestImpl) then,
+  ) = __$$TherapistBankRequestImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String bankId, String accountNumber, String? branch});
+}
+
+/// @nodoc
+class __$$TherapistBankRequestImplCopyWithImpl<$Res>
+    extends _$TherapistBankRequestCopyWithImpl<$Res, _$TherapistBankRequestImpl>
+    implements _$$TherapistBankRequestImplCopyWith<$Res> {
+  __$$TherapistBankRequestImplCopyWithImpl(
+    _$TherapistBankRequestImpl _value,
+    $Res Function(_$TherapistBankRequestImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of TherapistBankRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? bankId = null,
+    Object? accountNumber = null,
+    Object? branch = freezed,
+  }) {
+    return _then(
+      _$TherapistBankRequestImpl(
+        bankId:
+            null == bankId
+                ? _value.bankId
+                : bankId // ignore: cast_nullable_to_non_nullable
+                    as String,
+        accountNumber:
+            null == accountNumber
+                ? _value.accountNumber
+                : accountNumber // ignore: cast_nullable_to_non_nullable
+                    as String,
+        branch:
+            freezed == branch
+                ? _value.branch
+                : branch // ignore: cast_nullable_to_non_nullable
+                    as String?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$TherapistBankRequestImpl implements _TherapistBankRequest {
+  const _$TherapistBankRequestImpl({
+    required this.bankId,
+    required this.accountNumber,
+    this.branch,
+  });
+
+  factory _$TherapistBankRequestImpl.fromJson(Map<String, dynamic> json) =>
+      _$$TherapistBankRequestImplFromJson(json);
+
+  @override
+  final String bankId;
+  @override
+  final String accountNumber;
+  @override
+  final String? branch;
+
+  @override
+  String toString() {
+    return 'TherapistBankRequest(bankId: $bankId, accountNumber: $accountNumber, branch: $branch)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$TherapistBankRequestImpl &&
+            (identical(other.bankId, bankId) || other.bankId == bankId) &&
+            (identical(other.accountNumber, accountNumber) ||
+                other.accountNumber == accountNumber) &&
+            (identical(other.branch, branch) || other.branch == branch));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, bankId, accountNumber, branch);
+
+  /// Create a copy of TherapistBankRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$TherapistBankRequestImplCopyWith<_$TherapistBankRequestImpl>
+  get copyWith =>
+      __$$TherapistBankRequestImplCopyWithImpl<_$TherapistBankRequestImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$TherapistBankRequestImplToJson(this);
+  }
+}
+
+abstract class _TherapistBankRequest implements TherapistBankRequest {
+  const factory _TherapistBankRequest({
+    required final String bankId,
+    required final String accountNumber,
+    final String? branch,
+  }) = _$TherapistBankRequestImpl;
+
+  factory _TherapistBankRequest.fromJson(Map<String, dynamic> json) =
+      _$TherapistBankRequestImpl.fromJson;
+
+  @override
+  String get bankId;
+  @override
+  String get accountNumber;
+  @override
+  String? get branch;
+
+  /// Create a copy of TherapistBankRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$TherapistBankRequestImplCopyWith<_$TherapistBankRequestImpl>
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+TherapistBank _$TherapistBankFromJson(Map<String, dynamic> json) {
+  return _TherapistBank.fromJson(json);
+}
+
+/// @nodoc
+mixin _$TherapistBank {
+  Bank? get bank => throw _privateConstructorUsedError;
+  String? get accountNumber => throw _privateConstructorUsedError;
+  String? get branch => throw _privateConstructorUsedError;
+
+  /// Serializes this TherapistBank to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of TherapistBank
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $TherapistBankCopyWith<TherapistBank> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $TherapistBankCopyWith<$Res> {
+  factory $TherapistBankCopyWith(
+    TherapistBank value,
+    $Res Function(TherapistBank) then,
+  ) = _$TherapistBankCopyWithImpl<$Res, TherapistBank>;
+  @useResult
+  $Res call({Bank? bank, String? accountNumber, String? branch});
+
+  $BankCopyWith<$Res>? get bank;
+}
+
+/// @nodoc
+class _$TherapistBankCopyWithImpl<$Res, $Val extends TherapistBank>
+    implements $TherapistBankCopyWith<$Res> {
+  _$TherapistBankCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of TherapistBank
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? bank = freezed,
+    Object? accountNumber = freezed,
+    Object? branch = freezed,
+  }) {
+    return _then(
+      _value.copyWith(
+            bank:
+                freezed == bank
+                    ? _value.bank
+                    : bank // ignore: cast_nullable_to_non_nullable
+                        as Bank?,
+            accountNumber:
+                freezed == accountNumber
+                    ? _value.accountNumber
+                    : accountNumber // ignore: cast_nullable_to_non_nullable
+                        as String?,
+            branch:
+                freezed == branch
+                    ? _value.branch
+                    : branch // ignore: cast_nullable_to_non_nullable
+                        as String?,
+          )
+          as $Val,
+    );
+  }
+
+  /// Create a copy of TherapistBank
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $BankCopyWith<$Res>? get bank {
+    if (_value.bank == null) {
+      return null;
+    }
+
+    return $BankCopyWith<$Res>(_value.bank!, (value) {
+      return _then(_value.copyWith(bank: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$TherapistBankImplCopyWith<$Res>
+    implements $TherapistBankCopyWith<$Res> {
+  factory _$$TherapistBankImplCopyWith(
+    _$TherapistBankImpl value,
+    $Res Function(_$TherapistBankImpl) then,
+  ) = __$$TherapistBankImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({Bank? bank, String? accountNumber, String? branch});
+
+  @override
+  $BankCopyWith<$Res>? get bank;
+}
+
+/// @nodoc
+class __$$TherapistBankImplCopyWithImpl<$Res>
+    extends _$TherapistBankCopyWithImpl<$Res, _$TherapistBankImpl>
+    implements _$$TherapistBankImplCopyWith<$Res> {
+  __$$TherapistBankImplCopyWithImpl(
+    _$TherapistBankImpl _value,
+    $Res Function(_$TherapistBankImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of TherapistBank
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? bank = freezed,
+    Object? accountNumber = freezed,
+    Object? branch = freezed,
+  }) {
+    return _then(
+      _$TherapistBankImpl(
+        bank:
+            freezed == bank
+                ? _value.bank
+                : bank // ignore: cast_nullable_to_non_nullable
+                    as Bank?,
+        accountNumber:
+            freezed == accountNumber
+                ? _value.accountNumber
+                : accountNumber // ignore: cast_nullable_to_non_nullable
+                    as String?,
+        branch:
+            freezed == branch
+                ? _value.branch
+                : branch // ignore: cast_nullable_to_non_nullable
+                    as String?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$TherapistBankImpl implements _TherapistBank {
+  const _$TherapistBankImpl({this.bank, this.accountNumber, this.branch});
+
+  factory _$TherapistBankImpl.fromJson(Map<String, dynamic> json) =>
+      _$$TherapistBankImplFromJson(json);
+
+  @override
+  final Bank? bank;
+  @override
+  final String? accountNumber;
+  @override
+  final String? branch;
+
+  @override
+  String toString() {
+    return 'TherapistBank(bank: $bank, accountNumber: $accountNumber, branch: $branch)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$TherapistBankImpl &&
+            (identical(other.bank, bank) || other.bank == bank) &&
+            (identical(other.accountNumber, accountNumber) ||
+                other.accountNumber == accountNumber) &&
+            (identical(other.branch, branch) || other.branch == branch));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, bank, accountNumber, branch);
+
+  /// Create a copy of TherapistBank
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$TherapistBankImplCopyWith<_$TherapistBankImpl> get copyWith =>
+      __$$TherapistBankImplCopyWithImpl<_$TherapistBankImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$TherapistBankImplToJson(this);
+  }
+}
+
+abstract class _TherapistBank implements TherapistBank {
+  const factory _TherapistBank({
+    final Bank? bank,
+    final String? accountNumber,
+    final String? branch,
+  }) = _$TherapistBankImpl;
+
+  factory _TherapistBank.fromJson(Map<String, dynamic> json) =
+      _$TherapistBankImpl.fromJson;
+
+  @override
+  Bank? get bank;
+  @override
+  String? get accountNumber;
+  @override
+  String? get branch;
+
+  /// Create a copy of TherapistBank
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$TherapistBankImplCopyWith<_$TherapistBankImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
 UserModel _$UserModelFromJson(Map<String, dynamic> json) {
   return _UserModel.fromJson(json);
 }
@@ -1875,9 +2451,13 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$UserModel {
   String get id => throw _privateConstructorUsedError;
+  @JsonKey(defaultValue: '')
   String get email => throw _privateConstructorUsedError;
+  @JsonKey(defaultValue: '')
   String get firstName => throw _privateConstructorUsedError;
+  @JsonKey(defaultValue: '')
   String get lastName => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: _createdAtFromJson, toJson: _createdAtToJson)
   DateTime get createdAt => throw _privateConstructorUsedError;
   bool? get isEmailAuthenticated => throw _privateConstructorUsedError;
   String? get status => throw _privateConstructorUsedError;
@@ -1896,6 +2476,7 @@ mixin _$UserModel {
   String? get profile => throw _privateConstructorUsedError;
   bool? get isOnline => throw _privateConstructorUsedError;
   int? get hoursDedicatedPerWeek => throw _privateConstructorUsedError;
+  List<TherapistBank>? get therapistBank => throw _privateConstructorUsedError;
 
   /// Serializes this UserModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -1914,9 +2495,10 @@ abstract class $UserModelCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
-    String email,
-    String firstName,
-    String lastName,
+    @JsonKey(defaultValue: '') String email,
+    @JsonKey(defaultValue: '') String firstName,
+    @JsonKey(defaultValue: '') String lastName,
+    @JsonKey(fromJson: _createdAtFromJson, toJson: _createdAtToJson)
     DateTime createdAt,
     bool? isEmailAuthenticated,
     String? status,
@@ -1934,6 +2516,7 @@ abstract class $UserModelCopyWith<$Res> {
     String? profile,
     bool? isOnline,
     int? hoursDedicatedPerWeek,
+    List<TherapistBank>? therapistBank,
   });
 }
 
@@ -1973,6 +2556,7 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
     Object? profile = freezed,
     Object? isOnline = freezed,
     Object? hoursDedicatedPerWeek = freezed,
+    Object? therapistBank = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -2081,6 +2665,11 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
                     ? _value.hoursDedicatedPerWeek
                     : hoursDedicatedPerWeek // ignore: cast_nullable_to_non_nullable
                         as int?,
+            therapistBank:
+                freezed == therapistBank
+                    ? _value.therapistBank
+                    : therapistBank // ignore: cast_nullable_to_non_nullable
+                        as List<TherapistBank>?,
           )
           as $Val,
     );
@@ -2098,9 +2687,10 @@ abstract class _$$UserModelImplCopyWith<$Res>
   @useResult
   $Res call({
     String id,
-    String email,
-    String firstName,
-    String lastName,
+    @JsonKey(defaultValue: '') String email,
+    @JsonKey(defaultValue: '') String firstName,
+    @JsonKey(defaultValue: '') String lastName,
+    @JsonKey(fromJson: _createdAtFromJson, toJson: _createdAtToJson)
     DateTime createdAt,
     bool? isEmailAuthenticated,
     String? status,
@@ -2118,6 +2708,7 @@ abstract class _$$UserModelImplCopyWith<$Res>
     String? profile,
     bool? isOnline,
     int? hoursDedicatedPerWeek,
+    List<TherapistBank>? therapistBank,
   });
 }
 
@@ -2156,6 +2747,7 @@ class __$$UserModelImplCopyWithImpl<$Res>
     Object? profile = freezed,
     Object? isOnline = freezed,
     Object? hoursDedicatedPerWeek = freezed,
+    Object? therapistBank = freezed,
   }) {
     return _then(
       _$UserModelImpl(
@@ -2264,6 +2856,11 @@ class __$$UserModelImplCopyWithImpl<$Res>
                 ? _value.hoursDedicatedPerWeek
                 : hoursDedicatedPerWeek // ignore: cast_nullable_to_non_nullable
                     as int?,
+        therapistBank:
+            freezed == therapistBank
+                ? _value._therapistBank
+                : therapistBank // ignore: cast_nullable_to_non_nullable
+                    as List<TherapistBank>?,
       ),
     );
   }
@@ -2274,9 +2871,10 @@ class __$$UserModelImplCopyWithImpl<$Res>
 class _$UserModelImpl implements _UserModel {
   const _$UserModelImpl({
     required this.id,
-    required this.email,
-    required this.firstName,
-    required this.lastName,
+    @JsonKey(defaultValue: '') required this.email,
+    @JsonKey(defaultValue: '') required this.firstName,
+    @JsonKey(defaultValue: '') required this.lastName,
+    @JsonKey(fromJson: _createdAtFromJson, toJson: _createdAtToJson)
     required this.createdAt,
     this.isEmailAuthenticated,
     this.status,
@@ -2294,7 +2892,8 @@ class _$UserModelImpl implements _UserModel {
     this.profile,
     this.isOnline,
     this.hoursDedicatedPerWeek,
-  });
+    final List<TherapistBank>? therapistBank,
+  }) : _therapistBank = therapistBank;
 
   factory _$UserModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserModelImplFromJson(json);
@@ -2302,12 +2901,16 @@ class _$UserModelImpl implements _UserModel {
   @override
   final String id;
   @override
+  @JsonKey(defaultValue: '')
   final String email;
   @override
+  @JsonKey(defaultValue: '')
   final String firstName;
   @override
+  @JsonKey(defaultValue: '')
   final String lastName;
   @override
+  @JsonKey(fromJson: _createdAtFromJson, toJson: _createdAtToJson)
   final DateTime createdAt;
   @override
   final bool? isEmailAuthenticated;
@@ -2342,10 +2945,19 @@ class _$UserModelImpl implements _UserModel {
   final bool? isOnline;
   @override
   final int? hoursDedicatedPerWeek;
+  final List<TherapistBank>? _therapistBank;
+  @override
+  List<TherapistBank>? get therapistBank {
+    final value = _therapistBank;
+    if (value == null) return null;
+    if (_therapistBank is EqualUnmodifiableListView) return _therapistBank;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
 
   @override
   String toString() {
-    return 'UserModel(id: $id, email: $email, firstName: $firstName, lastName: $lastName, createdAt: $createdAt, isEmailAuthenticated: $isEmailAuthenticated, status: $status, gender: $gender, dob: $dob, username: $username, phoneNumber: $phoneNumber, isVisible: $isVisible, updatedAt: $updatedAt, emergencyContact: $emergencyContact, deletedAt: $deletedAt, isLinked: $isLinked, isPhoneNumberAuthenticated: $isPhoneNumberAuthenticated, avatar: $avatar, profile: $profile, isOnline: $isOnline, hoursDedicatedPerWeek: $hoursDedicatedPerWeek)';
+    return 'UserModel(id: $id, email: $email, firstName: $firstName, lastName: $lastName, createdAt: $createdAt, isEmailAuthenticated: $isEmailAuthenticated, status: $status, gender: $gender, dob: $dob, username: $username, phoneNumber: $phoneNumber, isVisible: $isVisible, updatedAt: $updatedAt, emergencyContact: $emergencyContact, deletedAt: $deletedAt, isLinked: $isLinked, isPhoneNumberAuthenticated: $isPhoneNumberAuthenticated, avatar: $avatar, profile: $profile, isOnline: $isOnline, hoursDedicatedPerWeek: $hoursDedicatedPerWeek, therapistBank: $therapistBank)';
   }
 
   @override
@@ -2393,7 +3005,11 @@ class _$UserModelImpl implements _UserModel {
             (identical(other.isOnline, isOnline) ||
                 other.isOnline == isOnline) &&
             (identical(other.hoursDedicatedPerWeek, hoursDedicatedPerWeek) ||
-                other.hoursDedicatedPerWeek == hoursDedicatedPerWeek));
+                other.hoursDedicatedPerWeek == hoursDedicatedPerWeek) &&
+            const DeepCollectionEquality().equals(
+              other._therapistBank,
+              _therapistBank,
+            ));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -2421,6 +3037,7 @@ class _$UserModelImpl implements _UserModel {
     profile,
     isOnline,
     hoursDedicatedPerWeek,
+    const DeepCollectionEquality().hash(_therapistBank),
   ]);
 
   /// Create a copy of UserModel
@@ -2440,9 +3057,10 @@ class _$UserModelImpl implements _UserModel {
 abstract class _UserModel implements UserModel {
   const factory _UserModel({
     required final String id,
-    required final String email,
-    required final String firstName,
-    required final String lastName,
+    @JsonKey(defaultValue: '') required final String email,
+    @JsonKey(defaultValue: '') required final String firstName,
+    @JsonKey(defaultValue: '') required final String lastName,
+    @JsonKey(fromJson: _createdAtFromJson, toJson: _createdAtToJson)
     required final DateTime createdAt,
     final bool? isEmailAuthenticated,
     final String? status,
@@ -2460,6 +3078,7 @@ abstract class _UserModel implements UserModel {
     final String? profile,
     final bool? isOnline,
     final int? hoursDedicatedPerWeek,
+    final List<TherapistBank>? therapistBank,
   }) = _$UserModelImpl;
 
   factory _UserModel.fromJson(Map<String, dynamic> json) =
@@ -2468,12 +3087,16 @@ abstract class _UserModel implements UserModel {
   @override
   String get id;
   @override
+  @JsonKey(defaultValue: '')
   String get email;
   @override
+  @JsonKey(defaultValue: '')
   String get firstName;
   @override
+  @JsonKey(defaultValue: '')
   String get lastName;
   @override
+  @JsonKey(fromJson: _createdAtFromJson, toJson: _createdAtToJson)
   DateTime get createdAt;
   @override
   bool? get isEmailAuthenticated;
@@ -2507,6 +3130,8 @@ abstract class _UserModel implements UserModel {
   bool? get isOnline;
   @override
   int? get hoursDedicatedPerWeek;
+  @override
+  List<TherapistBank>? get therapistBank;
 
   /// Create a copy of UserModel
   /// with the given fields replaced by the non-null parameter values.
@@ -2525,9 +3150,11 @@ mixin _$UpdateProfileRequest {
   String? get firstName => throw _privateConstructorUsedError;
   String? get lastName => throw _privateConstructorUsedError;
   String? get email => throw _privateConstructorUsedError;
-  String? get gender => throw _privateConstructorUsedError; // String? dob,
+  String? get gender => throw _privateConstructorUsedError;
   String? get username => throw _privateConstructorUsedError;
   String? get phoneNumber => throw _privateConstructorUsedError;
+  List<TherapistBankRequest>? get therapistBank =>
+      throw _privateConstructorUsedError;
 
   /// Serializes this UpdateProfileRequest to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -2553,6 +3180,7 @@ abstract class $UpdateProfileRequestCopyWith<$Res> {
     String? gender,
     String? username,
     String? phoneNumber,
+    List<TherapistBankRequest>? therapistBank,
   });
 }
 
@@ -2580,6 +3208,7 @@ class _$UpdateProfileRequestCopyWithImpl<
     Object? gender = freezed,
     Object? username = freezed,
     Object? phoneNumber = freezed,
+    Object? therapistBank = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -2613,6 +3242,11 @@ class _$UpdateProfileRequestCopyWithImpl<
                     ? _value.phoneNumber
                     : phoneNumber // ignore: cast_nullable_to_non_nullable
                         as String?,
+            therapistBank:
+                freezed == therapistBank
+                    ? _value.therapistBank
+                    : therapistBank // ignore: cast_nullable_to_non_nullable
+                        as List<TherapistBankRequest>?,
           )
           as $Val,
     );
@@ -2635,6 +3269,7 @@ abstract class _$$UpdateProfileRequestImplCopyWith<$Res>
     String? gender,
     String? username,
     String? phoneNumber,
+    List<TherapistBankRequest>? therapistBank,
   });
 }
 
@@ -2658,6 +3293,7 @@ class __$$UpdateProfileRequestImplCopyWithImpl<$Res>
     Object? gender = freezed,
     Object? username = freezed,
     Object? phoneNumber = freezed,
+    Object? therapistBank = freezed,
   }) {
     return _then(
       _$UpdateProfileRequestImpl(
@@ -2691,6 +3327,11 @@ class __$$UpdateProfileRequestImplCopyWithImpl<$Res>
                 ? _value.phoneNumber
                 : phoneNumber // ignore: cast_nullable_to_non_nullable
                     as String?,
+        therapistBank:
+            freezed == therapistBank
+                ? _value._therapistBank
+                : therapistBank // ignore: cast_nullable_to_non_nullable
+                    as List<TherapistBankRequest>?,
       ),
     );
   }
@@ -2706,7 +3347,8 @@ class _$UpdateProfileRequestImpl implements _UpdateProfileRequest {
     this.gender,
     this.username,
     this.phoneNumber,
-  });
+    final List<TherapistBankRequest>? therapistBank,
+  }) : _therapistBank = therapistBank;
 
   factory _$UpdateProfileRequestImpl.fromJson(Map<String, dynamic> json) =>
       _$$UpdateProfileRequestImplFromJson(json);
@@ -2719,15 +3361,23 @@ class _$UpdateProfileRequestImpl implements _UpdateProfileRequest {
   final String? email;
   @override
   final String? gender;
-  // String? dob,
   @override
   final String? username;
   @override
   final String? phoneNumber;
+  final List<TherapistBankRequest>? _therapistBank;
+  @override
+  List<TherapistBankRequest>? get therapistBank {
+    final value = _therapistBank;
+    if (value == null) return null;
+    if (_therapistBank is EqualUnmodifiableListView) return _therapistBank;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
 
   @override
   String toString() {
-    return 'UpdateProfileRequest(firstName: $firstName, lastName: $lastName, email: $email, gender: $gender, username: $username, phoneNumber: $phoneNumber)';
+    return 'UpdateProfileRequest(firstName: $firstName, lastName: $lastName, email: $email, gender: $gender, username: $username, phoneNumber: $phoneNumber, therapistBank: $therapistBank)';
   }
 
   @override
@@ -2744,7 +3394,11 @@ class _$UpdateProfileRequestImpl implements _UpdateProfileRequest {
             (identical(other.username, username) ||
                 other.username == username) &&
             (identical(other.phoneNumber, phoneNumber) ||
-                other.phoneNumber == phoneNumber));
+                other.phoneNumber == phoneNumber) &&
+            const DeepCollectionEquality().equals(
+              other._therapistBank,
+              _therapistBank,
+            ));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -2757,6 +3411,7 @@ class _$UpdateProfileRequestImpl implements _UpdateProfileRequest {
     gender,
     username,
     phoneNumber,
+    const DeepCollectionEquality().hash(_therapistBank),
   );
 
   /// Create a copy of UpdateProfileRequest
@@ -2785,6 +3440,7 @@ abstract class _UpdateProfileRequest implements UpdateProfileRequest {
     final String? gender,
     final String? username,
     final String? phoneNumber,
+    final List<TherapistBankRequest>? therapistBank,
   }) = _$UpdateProfileRequestImpl;
 
   factory _UpdateProfileRequest.fromJson(Map<String, dynamic> json) =
@@ -2797,11 +3453,13 @@ abstract class _UpdateProfileRequest implements UpdateProfileRequest {
   @override
   String? get email;
   @override
-  String? get gender; // String? dob,
+  String? get gender;
   @override
   String? get username;
   @override
   String? get phoneNumber;
+  @override
+  List<TherapistBankRequest>? get therapistBank;
 
   /// Create a copy of UpdateProfileRequest
   /// with the given fields replaced by the non-null parameter values.

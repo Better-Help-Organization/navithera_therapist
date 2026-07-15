@@ -3,16 +3,21 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:navicare/core/constants/base_url.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:navicare/core/providers/socket_provider.dart';
 import 'package:navicare/core/routes/app_router.dart';
 import 'package:navicare/core/theme/app_colors.dart';
 import 'package:navicare/feature/auth/presentation/providers/auth_provider.dart';
 import 'package:navicare/feature/auth/presentation/providers/user_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+  );
 
 // Create a provider for the parameter value
 final therapistDocumentMessageProvider = FutureProvider<String>((ref) async {
@@ -23,8 +28,8 @@ final _fetchTherapistDocumentMessageProvider = FutureProvider<String>((
   ref,
 ) async {
   try {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('access_token');
+    // final prefs = await SharedPreferences.getInstance();
+    final token = await _secureStorage.read(key: 'access_token');
     if (token == null) throw Exception('No token found');
 
     // Replace with your actual base URL
@@ -84,7 +89,7 @@ class _BlockedUserScreenState extends ConsumerState<BlockedUserScreen> {
     final user = ref.watch(currentUserProvider);
     final messageAsync = ref.watch(therapistDocumentMessageProvider);
 
-    log("userjono: ${user}");
+    log("userjono: $user");
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -114,7 +119,7 @@ class _BlockedUserScreenState extends ConsumerState<BlockedUserScreen> {
                       (error, stack) => Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Text(
-                          'Dear ${user != null ? (user?.firstName) : 'Customer'}, your account is ${user?.status ?? "not active"}. Please contact admin to activate.',
+                          'Dear ${user != null ? (user.firstName) : 'Customer'}, your account is ${user?.status ?? "not active"}. Please contact admin to activate.',
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w500,

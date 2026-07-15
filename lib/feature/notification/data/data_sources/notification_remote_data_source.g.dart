@@ -19,12 +19,14 @@ class _NotificationRemoteDataSource implements NotificationRemoteDataSource {
 
   @override
   Future<NotificationListResponse> getNotifications({
+    String? fields = 'id,updatedAt,createdAt,title,body,message,code',
     int? page,
     int? take,
     String? sort,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
+      r'fields': fields,
       r'page': page,
       r'take': take,
       r'sort': sort,

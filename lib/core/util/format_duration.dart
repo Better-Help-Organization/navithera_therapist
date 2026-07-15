@@ -7,7 +7,7 @@ String formatDuration(Duration duration) {
 }
 
 String formatTelegramStyle(DateTime dateTime) {
-  print("Date Time: ${dateTime}");
+  print("Date Time: $dateTime");
   final localDt = dateTime.toLocal();
   final now = DateTime.now();
   final today = DateTime(now.year, now.month, now.day);

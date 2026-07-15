@@ -18,6 +18,10 @@ _$UserImpl _$$UserImplFromJson(Map<String, dynamic> json) => _$UserImpl(
   gender: json['gender'] as String?,
   profile: json['profile'] as String?,
   hoursDedicatedPerWeek: (json['hoursDedicatedPerWeek'] as num?)?.toInt(),
+  therapistBank:
+      (json['therapistBank'] as List<dynamic>?)
+          ?.map((e) => TherapistBank.fromJson(e as Map<String, dynamic>))
+          .toList(),
 );
 
 Map<String, dynamic> _$$UserImplToJson(_$UserImpl instance) =>
@@ -33,4 +37,5 @@ Map<String, dynamic> _$$UserImplToJson(_$UserImpl instance) =>
       'gender': instance.gender,
       'profile': instance.profile,
       'hoursDedicatedPerWeek': instance.hoursDedicatedPerWeek,
+      'therapistBank': instance.therapistBank,
     };

@@ -23,7 +23,7 @@ class MeditationItem {
 
 /// Main list screen.
 class MeditationListScreen extends StatelessWidget {
-  MeditationListScreen({super.key});
+  const MeditationListScreen({super.key});
 
   // Sample data. Replace the image/audio asset paths with your actual files.
   final List<MeditationItem> meditations = const [

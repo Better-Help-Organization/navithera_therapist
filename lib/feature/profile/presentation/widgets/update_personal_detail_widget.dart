@@ -4,7 +4,6 @@ import 'package:navicare/core/theme/app_colors.dart';
 import 'package:navicare/feature/auth/data/models/auth_models.dart';
 import 'package:navicare/feature/auth/presentation/providers/auth_provider.dart';
 import 'package:navicare/feature/auth/presentation/providers/user_provider.dart';
-//import "package:flutter_gen/gen_l10n/app_localization.dart";
 import "package:navicare/l10n/app_localization.dart";
 
 class UpdatePersonalDetails extends ConsumerStatefulWidget {
@@ -21,12 +20,20 @@ class _UpdatePersonalDetailsState extends ConsumerState<UpdatePersonalDetails> {
   final _lastNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
-  //final _usernameController = TextEditingController();
+  final _accountNumberController = TextEditingController();
+  final _cbeAccountController = TextEditingController();
+  final _dashenAccountController = TextEditingController();
+  final _abyssiniaAccountController = TextEditingController();
 
   String? _genderSelection = 'Male';
+  String? _selectedBankId;
   bool _isLoading = false;
 
-  // Track the state of the current operation
+  // TODO: replace with banks fetched from the API once a banks endpoint is confirmed.
+  static const String _cbeBankId = '2c7c5182-f1a5-4e4e-aba3-86912497cfe9';
+  static const String _dashenBankId = '50b0761a-9907-4479-8da2-ca0b6171c1c9';
+  static const String _abyssiniaBankId = 'feb64268-6bd1-4500-9222-d16abeae9f1e';
+
   bool _hasPendingOperation = false;
   bool _hasShownSuccessMessage = false;
 
@@ -43,11 +50,22 @@ class _UpdatePersonalDetailsState extends ConsumerState<UpdatePersonalDetails> {
       _lastNameController.text = user.lastName;
       _emailController.text = user.email;
       _phoneController.text = user.phoneNumber ?? '';
-      // _usernameController.text = user.username ?? '';
       _genderSelection =
           user.gender?.isNotEmpty == true
               ? user.gender![0].toUpperCase() + user.gender!.substring(1)
               : 'Male';
+
+      final banks = user.therapistBank ?? [];
+      for (final entry in banks) {
+        final id = entry.bank?.bankId;
+        if (id == _cbeBankId) {
+          _cbeAccountController.text = entry.accountNumber ?? '';
+        } else if (id == _dashenBankId) {
+          _dashenAccountController.text = entry.accountNumber ?? '';
+        } else if (id == _abyssiniaBankId) {
+          _abyssiniaAccountController.text = entry.accountNumber ?? '';
+        }
+      }
     }
   }
 
@@ -60,13 +78,32 @@ class _UpdatePersonalDetailsState extends ConsumerState<UpdatePersonalDetails> {
       _hasShownSuccessMessage = false;
     });
 
+    final banks = <TherapistBankRequest>[
+      TherapistBankRequest(
+        bankId: _cbeBankId,
+        accountNumber: _cbeAccountController.text.trim(),
+      ),
+      TherapistBankRequest(
+        bankId: _dashenBankId,
+        accountNumber: _dashenAccountController.text.trim(),
+      ),
+    ];
+    if (_abyssiniaAccountController.text.trim().isNotEmpty) {
+      banks.add(
+        TherapistBankRequest(
+          bankId: _abyssiniaBankId,
+          accountNumber: _abyssiniaAccountController.text.trim(),
+        ),
+      );
+    }
+
     final request = UpdateProfileRequest(
       firstName: _firstNameController.text.trim(),
       lastName: _lastNameController.text.trim(),
       email: _emailController.text.trim(),
       phoneNumber: _phoneController.text.trim(),
-      //  username: _usernameController.text.trim(),
       gender: _genderSelection?.toLowerCase(),
+      therapistBank: banks,
     );
 
     await ref.read(authProvider.notifier).updateProfile(request);
@@ -78,15 +115,16 @@ class _UpdatePersonalDetailsState extends ConsumerState<UpdatePersonalDetails> {
     _lastNameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
-    // _usernameController.dispose();
+    _accountNumberController.dispose();
+    _cbeAccountController.dispose();
+    _dashenAccountController.dispose();
+    _abyssiniaAccountController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Listen to auth state changes for success/error messages
     ref.listen<AuthState>(authProvider, (previous, next) {
-      // Only process if we have a pending operation
       if (!_hasPendingOperation) return;
 
       next.whenOrNull(
@@ -94,13 +132,11 @@ class _UpdatePersonalDetailsState extends ConsumerState<UpdatePersonalDetails> {
           if (!_hasShownSuccessMessage) {
             _hasShownSuccessMessage = true;
 
-            // Reset states first
             _hasPendingOperation = false;
             setState(() {
               _isLoading = false;
             });
 
-            // Show success message and navigate
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text("Profile Updated"),
@@ -112,7 +148,6 @@ class _UpdatePersonalDetailsState extends ConsumerState<UpdatePersonalDetails> {
           }
         },
         error: (message) {
-          // Reset states
           _hasPendingOperation = false;
           setState(() {
             _isLoading = false;
@@ -123,7 +158,6 @@ class _UpdatePersonalDetailsState extends ConsumerState<UpdatePersonalDetails> {
           );
         },
         profileError: (user, message) {
-          // Reset states
           _hasPendingOperation = false;
           setState(() {
             _isLoading = false;
@@ -148,7 +182,6 @@ class _UpdatePersonalDetailsState extends ConsumerState<UpdatePersonalDetails> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header row with "Personal Details" and a close button
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -167,7 +200,6 @@ class _UpdatePersonalDetailsState extends ConsumerState<UpdatePersonalDetails> {
               ),
               const SizedBox(height: 24),
 
-              // First Name and Last Name fields in a row
               Row(
                 children: [
                   Expanded(
@@ -187,7 +219,6 @@ class _UpdatePersonalDetailsState extends ConsumerState<UpdatePersonalDetails> {
               ),
               const SizedBox(height: 16),
 
-              // Email Address field
               _buildTextField(
                 label: AppLocalizations.of(context)!.emailAddress,
                 controller: _emailController,
@@ -195,7 +226,6 @@ class _UpdatePersonalDetailsState extends ConsumerState<UpdatePersonalDetails> {
               ),
               const SizedBox(height: 16),
 
-              // Phone Number field
               _buildTextField(
                 label: AppLocalizations.of(context)!.phoneNumber,
                 controller: _phoneController,
@@ -226,7 +256,6 @@ class _UpdatePersonalDetailsState extends ConsumerState<UpdatePersonalDetails> {
               ),
               const SizedBox(height: 24),
 
-              // Gender identity selection
               _buildChoiceSection(
                 label: AppLocalizations.of(context)!.identifyAs,
                 options: const ['Male', 'Female'],
@@ -239,7 +268,27 @@ class _UpdatePersonalDetailsState extends ConsumerState<UpdatePersonalDetails> {
               ),
               const SizedBox(height: 32),
 
-              // Update Profile button
+              _buildTextField(
+                label: 'CBE Account Number',
+                controller: _cbeAccountController,
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 16),
+
+              _buildTextField(
+                label: 'Dashen Account Number',
+                controller: _dashenAccountController,
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 16),
+
+              _buildOptionalTextField(
+                label: 'Abyssinia Account Number (optional)',
+                controller: _abyssiniaAccountController,
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 16),
+
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -277,7 +326,6 @@ class _UpdatePersonalDetailsState extends ConsumerState<UpdatePersonalDetails> {
     );
   }
 
-  // Helper method to build text form fields to reduce code duplication
   Widget _buildTextField({
     required String label,
     TextEditingController? controller,
@@ -314,7 +362,32 @@ class _UpdatePersonalDetailsState extends ConsumerState<UpdatePersonalDetails> {
     );
   }
 
-  // Helper method to build the choice chip sections
+  Widget _buildOptionalTextField({
+  required String label,
+  TextEditingController? controller,
+  TextInputType? keyboardType,
+}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(label, style: const TextStyle(color: Colors.grey)),
+      const SizedBox(height: 8),
+      TextFormField(
+        controller: controller,
+        keyboardType: keyboardType,
+        decoration: InputDecoration(
+          filled: true,
+          fillColor: Colors.grey[100],
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
   Widget _buildChoiceSection({
     required String label,
     required List<String> options,

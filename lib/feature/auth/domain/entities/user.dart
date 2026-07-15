@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:navicare/feature/auth/data/models/auth_models.dart';
 
 part 'user.freezed.dart';
 part 'user.g.dart';
@@ -17,6 +18,7 @@ class User with _$User {
     String? gender,
     String? profile,
     int? hoursDedicatedPerWeek,
+    List<TherapistBank>? therapistBank, 
   }) = _User;
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);

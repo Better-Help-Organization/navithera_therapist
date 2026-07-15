@@ -228,7 +228,7 @@ class _GroupChatCreationScreenState
                   final user = users[index];
                   final isSelected = _selectedUsers.contains(user);
                   final initials =
-                      '${user.firstName?.substring(0, 1) ?? ''}${user.lastName?.substring(0, 1) ?? ''}'
+                      '${user.firstName.substring(0, 1) ?? ''}${user.lastName.substring(0, 1) ?? ''}'
                           .toUpperCase();
                   final userName =
                       '${user.firstName ?? ''} ${user.lastName ?? ''}'.trim();

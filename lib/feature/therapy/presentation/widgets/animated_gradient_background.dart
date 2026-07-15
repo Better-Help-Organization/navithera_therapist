@@ -2,6 +2,8 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 class AnimatedGradientBackground extends StatefulWidget {
+  const AnimatedGradientBackground({super.key});
+
   @override
   _AnimatedGradientBackgroundState createState() =>
       _AnimatedGradientBackgroundState();

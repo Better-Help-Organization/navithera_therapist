@@ -143,13 +143,52 @@ Map<String, dynamic> _$$SignupResponseImplToJson(
   'statusCode': instance.statusCode,
 };
 
+_$BankImpl _$$BankImplFromJson(Map<String, dynamic> json) =>
+    _$BankImpl(bankId: json['id'] as String);
+
+Map<String, dynamic> _$$BankImplToJson(_$BankImpl instance) =>
+    <String, dynamic>{'id': instance.bankId};
+
+_$TherapistBankRequestImpl _$$TherapistBankRequestImplFromJson(
+  Map<String, dynamic> json,
+) => _$TherapistBankRequestImpl(
+  bankId: json['bankId'] as String,
+  accountNumber: json['accountNumber'] as String,
+  branch: json['branch'] as String?,
+);
+
+Map<String, dynamic> _$$TherapistBankRequestImplToJson(
+  _$TherapistBankRequestImpl instance,
+) => <String, dynamic>{
+  'bankId': instance.bankId,
+  'accountNumber': instance.accountNumber,
+  'branch': instance.branch,
+};
+
+_$TherapistBankImpl _$$TherapistBankImplFromJson(Map<String, dynamic> json) =>
+    _$TherapistBankImpl(
+      bank:
+          json['bank'] == null
+              ? null
+              : Bank.fromJson(json['bank'] as Map<String, dynamic>),
+      accountNumber: json['accountNumber'] as String?,
+      branch: json['branch'] as String?,
+    );
+
+Map<String, dynamic> _$$TherapistBankImplToJson(_$TherapistBankImpl instance) =>
+    <String, dynamic>{
+      'bank': instance.bank,
+      'accountNumber': instance.accountNumber,
+      'branch': instance.branch,
+    };
+
 _$UserModelImpl _$$UserModelImplFromJson(Map<String, dynamic> json) =>
     _$UserModelImpl(
       id: json['id'] as String,
-      email: json['email'] as String,
-      firstName: json['firstName'] as String,
-      lastName: json['lastName'] as String,
-      createdAt: DateTime.parse(json['createdAt'] as String),
+      email: json['email'] as String? ?? '',
+      firstName: json['firstName'] as String? ?? '',
+      lastName: json['lastName'] as String? ?? '',
+      createdAt: _createdAtFromJson(json['createdAt']),
       isEmailAuthenticated: json['isEmailAuthenticated'] as bool?,
       status: json['status'] as String?,
       gender: json['gender'] as String?,
@@ -172,6 +211,10 @@ _$UserModelImpl _$$UserModelImplFromJson(Map<String, dynamic> json) =>
       profile: json['profile'] as String?,
       isOnline: json['isOnline'] as bool?,
       hoursDedicatedPerWeek: (json['hoursDedicatedPerWeek'] as num?)?.toInt(),
+      therapistBank:
+          (json['therapistBank'] as List<dynamic>?)
+              ?.map((e) => TherapistBank.fromJson(e as Map<String, dynamic>))
+              .toList(),
     );
 
 Map<String, dynamic> _$$UserModelImplToJson(_$UserModelImpl instance) =>
@@ -180,7 +223,7 @@ Map<String, dynamic> _$$UserModelImplToJson(_$UserModelImpl instance) =>
       'email': instance.email,
       'firstName': instance.firstName,
       'lastName': instance.lastName,
-      'createdAt': instance.createdAt.toIso8601String(),
+      'createdAt': _createdAtToJson(instance.createdAt),
       'isEmailAuthenticated': instance.isEmailAuthenticated,
       'status': instance.status,
       'gender': instance.gender,
@@ -197,6 +240,7 @@ Map<String, dynamic> _$$UserModelImplToJson(_$UserModelImpl instance) =>
       'profile': instance.profile,
       'isOnline': instance.isOnline,
       'hoursDedicatedPerWeek': instance.hoursDedicatedPerWeek,
+      'therapistBank': instance.therapistBank,
     };
 
 _$UpdateProfileRequestImpl _$$UpdateProfileRequestImplFromJson(
@@ -208,6 +252,10 @@ _$UpdateProfileRequestImpl _$$UpdateProfileRequestImplFromJson(
   gender: json['gender'] as String?,
   username: json['username'] as String?,
   phoneNumber: json['phoneNumber'] as String?,
+  therapistBank:
+      (json['therapistBank'] as List<dynamic>?)
+          ?.map((e) => TherapistBankRequest.fromJson(e as Map<String, dynamic>))
+          .toList(),
 );
 
 Map<String, dynamic> _$$UpdateProfileRequestImplToJson(
@@ -219,6 +267,7 @@ Map<String, dynamic> _$$UpdateProfileRequestImplToJson(
   'gender': instance.gender,
   'username': instance.username,
   'phoneNumber': instance.phoneNumber,
+  'therapistBank': instance.therapistBank,
 };
 
 _$ProfileApiResponseImpl _$$ProfileApiResponseImplFromJson(

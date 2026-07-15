@@ -200,7 +200,7 @@ class Session with _$Session {
     int? duration,
     String? type,
     String? note,
-    required UserModel therapist,
+    UserModel? therapist,
   }) = _Session;
 
   factory Session.fromJson(Map<String, dynamic> json) =>

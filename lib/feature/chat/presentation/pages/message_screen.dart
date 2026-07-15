@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:livekit_client/livekit_client.dart';
 import 'package:navicare/core/constants/base_url.dart';
 import 'package:navicare/core/notification/notification_service.dart';
@@ -59,6 +60,10 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
   bool _busy = false;
   bool _isSelectionMode = false;
   final Set<String> _selectedMessageIds = {};
+     final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+  );
 
   @override
   void initState() {
@@ -353,8 +358,7 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
       _busy = true;
     });
 
-    final sharedPreferences = await SharedPreferences.getInstance();
-    final accessToken = sharedPreferences.getString('access_token');
+    final accessToken = _secureStorage.read(key: 'access_token');
     final roomName = _generateRandomRoomName();
 
     try {

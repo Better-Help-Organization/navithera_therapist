@@ -19,7 +19,7 @@ class _LiveSessionRemoteDataSource implements LiveSessionRemoteDataSource {
 
   @override
   Future<ChatListResponse> getChats({
-    String? fields,
+    String? fields = 'id,activeCallRoom,updatedAt',
     String? sort,
     int? take,
     int? page,

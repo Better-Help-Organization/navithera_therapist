@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:navicare/core/constants/base_url.dart';
 import 'package:navicare/core/theme/app_colors.dart';
 import 'package:navicare/core/util/avatar_util.dart';
@@ -33,6 +34,10 @@ class _GroupProfileScreenState extends State<GroupProfileScreen> {
   bool _isSelectionMode = false;
 
   final String groupName = 'Test';
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+  );
 
   void _toggleUserSelection(UserModel user) {
     setState(() {
@@ -59,7 +64,7 @@ class _GroupProfileScreenState extends State<GroupProfileScreen> {
     print("Selected chatid: ${widget.chatId}");
     print('Selected user IDs: ${_selectedUserIds.toList()}');
 
-    String _generateRandomRoomName() {
+    String generateRandomRoomName() {
       const chars =
           'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
       final random = Random();
@@ -71,9 +76,8 @@ class _GroupProfileScreenState extends State<GroupProfileScreen> {
       );
     }
 
-    final sharedPreferences = await SharedPreferences.getInstance();
-    final accessToken = sharedPreferences.getString('access_token');
-    final roomName = _generateRandomRoomName();
+    final accessToken = await _secureStorage.read(key: 'access_token');
+    final roomName = generateRandomRoomName();
 
     // Show loading indicator
     ScaffoldMessenger.of(context).showSnackBar(
@@ -92,7 +96,7 @@ class _GroupProfileScreenState extends State<GroupProfileScreen> {
       dio.options.headers['Authorization'] = 'Bearer $accessToken';
 
       final response = await dio.post(
-        '${base_url_dev}/chat/call/${widget.chatId}',
+        '$base_url_dev/chat/call/${widget.chatId}',
         data: {
           'room': roomName,
           'isVideoCall': isVideoCall,
@@ -206,7 +210,7 @@ class _GroupProfileScreenState extends State<GroupProfileScreen> {
             ?.map(
               (user) => Member(
                 name: '${user.firstName} ${user.lastName}',
-                status: user!.isOnline == true ? 'online' : 'offline',
+                status: user.isOnline == true ? 'online' : 'offline',
                 gradient: getRandomGradient(),
                 isOwner: false, // Set this based on your logic
                 user: user,
@@ -513,7 +517,7 @@ class _Surface extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(child: child, color: Colors.white);
+    return Container(color: Colors.white, child: child);
   }
 }
 

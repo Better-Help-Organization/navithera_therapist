@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:navicare/core/constants/base_url.dart';
 import 'package:navicare/core/notification/notification_service.dart';
 import 'package:navicare/core/theme/app_colors.dart';
@@ -609,15 +610,18 @@ class _MatchRequestScreenState extends ConsumerState<MatchRequestScreen> {
     setState(() {
       isLoading = true;
     });
-
-    final sharedPreferences = await SharedPreferences.getInstance();
-    final accessToken = sharedPreferences.getString('access_token');
+    final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+      aOptions: AndroidOptions(encryptedSharedPreferences: true),
+      iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+    );
+    final accessToken = await _secureStorage.read(key: 'access_token');
 
     try {
       final dio = Dio();
       dio.options.headers['Authorization'] = 'Bearer $accessToken';
 
       final matchId = widget.request.matchData.id;
+      print('TOKEN_DEBUG: $accessToken');
 
       // 1. First accept the match
       final response_2 = await dio.post(
@@ -705,6 +709,11 @@ class _MatchRequestScreenState extends ConsumerState<MatchRequestScreen> {
         );
       }
     } on DioException catch (e) {
+      print('DIO_ERROR_STATUS: ${e.response?.statusCode}');
+      print('DIO_ERROR_DATA: ${e.response?.data}');
+      print('DIO_ERROR_HEADERS: ${e.response?.headers}');
+      print('DIO_REQUEST_PATH: ${e.requestOptions.path}');
+      print('DIO_REQUEST_HEADERS: ${e.requestOptions.headers}');
       if (!mounted) return;
       final msg =
           e.response?.data is Map && e.response?.data['message'] != null
