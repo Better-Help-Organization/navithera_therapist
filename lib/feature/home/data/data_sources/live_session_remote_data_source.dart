@@ -13,7 +13,11 @@ abstract class LiveSessionRemoteDataSource {
 
   @GET('/therapist/me/chats')
   Future<ChatListResponse> getChats({
-    @Query('fields') String? fields,
+    @Query('fields')
+    String? fields =
+        'id,activeCallRoom,updatedAt',
+            // 'group.id,group.firstName,group.lastName,group.avatar'
+            // 'lastMessage.id,lastMessage.content,lastMessage.isRead',
     @Query('sort') String? sort,
     @Query('take') int? take,
     @Query('page') int? page,

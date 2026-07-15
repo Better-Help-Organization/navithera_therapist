@@ -42,8 +42,11 @@ _$NotificationItemImpl _$$NotificationItemImplFromJson(
   title: json['title'] as String,
   body: json['body'] as String,
   message: json['message'] as String?,
-  code: json['code'] as String,
-  therapist: UserModel.fromJson(json['therapist'] as Map<String, dynamic>),
+  code: json['code'] as String?,
+  therapist:
+      json['therapist'] == null
+          ? null
+          : UserModel.fromJson(json['therapist'] as Map<String, dynamic>),
 );
 
 Map<String, dynamic> _$$NotificationItemImplToJson(

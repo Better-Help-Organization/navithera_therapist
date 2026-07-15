@@ -1,9 +1,7 @@
 import 'dart:developer';
 
-import 'package:dartz/dartz.dart' hide State;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:navicare/core/error/failures.dart';
 import 'package:navicare/core/theme/app_colors.dart';
 import 'package:navicare/core/util/avatar_util.dart';
 import 'package:navicare/core/util/photo_viewer.dart';
@@ -54,7 +52,7 @@ class _ContactDetailPageState extends ConsumerState<ContactDetailPage> {
 
   Future<void> _fetchClientSessions() async {
     try {
-      final Either<Failure, SessionListResponse> response;
+      final response;
       if (widget.isInGroup) {
         response = await ref
             .read(chatRepositoryProvider)

@@ -71,6 +71,7 @@ class AuthRepositoryImpl implements AuthRepository {
         avatar: authData.user.avatar,
         status: authData.user.status,
         hoursDedicatedPerWeek: authData.user.hoursDedicatedPerWeek,
+        therapistBank: authData.user.therapistBank,
         //username: authData.user.username ?? '',
       );
 
@@ -175,6 +176,7 @@ class AuthRepositoryImpl implements AuthRepository {
         profile: authData.user.profile,
         avatar: authData.user.avatar,
         hoursDedicatedPerWeek: 0,
+        therapistBank: authData.user.therapistBank,
         //  username: authData.user.username ?? '',
       );
 
@@ -262,6 +264,7 @@ class AuthRepositoryImpl implements AuthRepository {
         status: userData.status,
         avatar: userData.avatar, // This should be updated
         hoursDedicatedPerWeek: userData.hoursDedicatedPerWeek,
+        // therapistBank: userData.therapistBank
       );
 
       // Update stored user data
@@ -280,7 +283,9 @@ class AuthRepositoryImpl implements AuthRepository {
       }
 
       return Left(Failure.serverFailure(errorMessage));
-    } catch (e) {
+    } catch (e, stackTrace) {
+      log('updateProfile parse error: $e');
+      log('stackTrace: $stackTrace');
       return Left(Failure.unknownFailure('An unexpected error occurred'));
     }
   }
@@ -305,6 +310,7 @@ class AuthRepositoryImpl implements AuthRepository {
         profile: userData.profile,
         status: userData.status,
         hoursDedicatedPerWeek: userData.hoursDedicatedPerWeek,
+        therapistBank: userData.therapistBank,
       );
 
       // Update stored user data with complete information
@@ -324,7 +330,9 @@ class AuthRepositoryImpl implements AuthRepository {
       }
 
       return Left(Failure.serverFailure(errorMessage));
-    } catch (e) {
+    } catch (e, stackTrace) {
+      log('updateProfile parse error: $e');
+      log('stackTrace: $stackTrace');
       return Left(Failure.unknownFailure('An unexpected error occurred'));
     }
   }
@@ -350,6 +358,7 @@ class AuthRepositoryImpl implements AuthRepository {
         gender: userData.gender,
         profile: userData.profile,
         hoursDedicatedPerWeek: userData.hoursDedicatedPerWeek,
+        therapistBank: userData.therapistBank ?? [],
       );
 
       // Update stored user data
@@ -368,7 +377,9 @@ class AuthRepositoryImpl implements AuthRepository {
       }
 
       return Left(Failure.serverFailure(errorMessage));
-    } catch (e) {
+    } catch (e, stackTrace) {
+      log('updateProfile parse error: $e');
+      log('stackTrace: $stackTrace');
       return Left(Failure.unknownFailure('An unexpected error occurred'));
     }
   }

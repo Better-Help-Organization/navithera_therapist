@@ -3716,7 +3716,7 @@ mixin _$Session {
   int? get duration => throw _privateConstructorUsedError;
   String? get type => throw _privateConstructorUsedError;
   String? get note => throw _privateConstructorUsedError;
-  UserModel get therapist => throw _privateConstructorUsedError;
+  UserModel? get therapist => throw _privateConstructorUsedError;
 
   /// Serializes this Session to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -3739,10 +3739,10 @@ abstract class $SessionCopyWith<$Res> {
     int? duration,
     String? type,
     String? note,
-    UserModel therapist,
+    UserModel? therapist,
   });
 
-  $UserModelCopyWith<$Res> get therapist;
+  $UserModelCopyWith<$Res>? get therapist;
 }
 
 /// @nodoc
@@ -3766,7 +3766,7 @@ class _$SessionCopyWithImpl<$Res, $Val extends Session>
     Object? duration = freezed,
     Object? type = freezed,
     Object? note = freezed,
-    Object? therapist = null,
+    Object? therapist = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -3801,10 +3801,10 @@ class _$SessionCopyWithImpl<$Res, $Val extends Session>
                     : note // ignore: cast_nullable_to_non_nullable
                         as String?,
             therapist:
-                null == therapist
+                freezed == therapist
                     ? _value.therapist
                     : therapist // ignore: cast_nullable_to_non_nullable
-                        as UserModel,
+                        as UserModel?,
           )
           as $Val,
     );
@@ -3814,8 +3814,12 @@ class _$SessionCopyWithImpl<$Res, $Val extends Session>
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  $UserModelCopyWith<$Res> get therapist {
-    return $UserModelCopyWith<$Res>(_value.therapist, (value) {
+  $UserModelCopyWith<$Res>? get therapist {
+    if (_value.therapist == null) {
+      return null;
+    }
+
+    return $UserModelCopyWith<$Res>(_value.therapist!, (value) {
       return _then(_value.copyWith(therapist: value) as $Val);
     });
   }
@@ -3836,11 +3840,11 @@ abstract class _$$SessionImplCopyWith<$Res> implements $SessionCopyWith<$Res> {
     int? duration,
     String? type,
     String? note,
-    UserModel therapist,
+    UserModel? therapist,
   });
 
   @override
-  $UserModelCopyWith<$Res> get therapist;
+  $UserModelCopyWith<$Res>? get therapist;
 }
 
 /// @nodoc
@@ -3863,7 +3867,7 @@ class __$$SessionImplCopyWithImpl<$Res>
     Object? duration = freezed,
     Object? type = freezed,
     Object? note = freezed,
-    Object? therapist = null,
+    Object? therapist = freezed,
   }) {
     return _then(
       _$SessionImpl(
@@ -3898,10 +3902,10 @@ class __$$SessionImplCopyWithImpl<$Res>
                 : note // ignore: cast_nullable_to_non_nullable
                     as String?,
         therapist:
-            null == therapist
+            freezed == therapist
                 ? _value.therapist
                 : therapist // ignore: cast_nullable_to_non_nullable
-                    as UserModel,
+                    as UserModel?,
       ),
     );
   }
@@ -3917,7 +3921,7 @@ class _$SessionImpl implements _Session {
     this.duration,
     this.type,
     this.note,
-    required this.therapist,
+    this.therapist,
   });
 
   factory _$SessionImpl.fromJson(Map<String, dynamic> json) =>
@@ -3936,7 +3940,7 @@ class _$SessionImpl implements _Session {
   @override
   final String? note;
   @override
-  final UserModel therapist;
+  final UserModel? therapist;
 
   @override
   String toString() {
@@ -3996,7 +4000,7 @@ abstract class _Session implements Session {
     final int? duration,
     final String? type,
     final String? note,
-    required final UserModel therapist,
+    final UserModel? therapist,
   }) = _$SessionImpl;
 
   factory _Session.fromJson(Map<String, dynamic> json) = _$SessionImpl.fromJson;
@@ -4014,7 +4018,7 @@ abstract class _Session implements Session {
   @override
   String? get note;
   @override
-  UserModel get therapist;
+  UserModel? get therapist;
 
   /// Create a copy of Session
   /// with the given fields replaced by the non-null parameter values.

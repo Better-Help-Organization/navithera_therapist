@@ -27,6 +27,7 @@ import 'package:navicare/feature/chat/presentation/providers/chat_provider.dart'
 import 'package:navicare/feature/chat/presentation/providers/message_provider.dart';
 import 'package:navicare/feature/therapy/presentation/pages/bottom_sheet_for_group.dart';
 import 'package:navicare/feature/therapy/presentation/pages/call_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -59,7 +60,7 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
   bool _busy = false;
   bool _isSelectionMode = false;
   final Set<String> _selectedMessageIds = {};
-  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+     final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
     aOptions: AndroidOptions(encryptedSharedPreferences: true),
     iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
   );
@@ -327,7 +328,7 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
 
       // Only cancel if we haven't initiated the call yet
       if (callId != null) {
-        await _sendCallCancelNotification(callId);
+        await _sendCallCancelNotification(callId!);
       }
 
       if (mounted) {
@@ -357,26 +358,15 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
       _busy = true;
     });
 
+    final accessToken = _secureStorage.read(key: 'access_token');
     final roomName = _generateRandomRoomName();
 
     try {
-      final accessToken = await _secureStorage.read(key: 'access_token');
-      if (accessToken == null || accessToken.isEmpty) {
-        removeOverlay();
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Session expired. Please Sign in again'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-      }
       final dio = Dio();
       dio.options.headers['Authorization'] = 'Bearer $accessToken';
 
       final response = await dio.post(
-        '$base_url_dev/chat/call/${widget.chat.id}',
+        '${base_url_dev}/chat/call/${widget.chat.id}',
         data: {'room': roomName, 'isVideoCall': isVideoCall},
       );
 
@@ -421,7 +411,7 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
         if (!mounted) return;
 
         await _join(
-          "wss://livekit.navithera.com",
+          "wss://livekit.navigo.et",
           token,
           context,
           isVideoCall: isVideoCall,
@@ -472,14 +462,14 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
   // Add this helper method to notify backend about call cancellation
   Future<void> _sendCallCancelNotification(String callId) async {
     try {
-      final accessToken = await _secureStorage.read(key: 'access_token');
-      if (accessToken == null || accessToken.isEmpty) return;
+      final sharedPreferences = await SharedPreferences.getInstance();
+      final accessToken = sharedPreferences.getString('access_token');
 
       final dio = Dio();
-      dio.options.headers['Authorization'] = 'Bearer $accessToken';
+      dio.options.headers['Authorization'] = 'Bearer ${accessToken}';
 
       await dio.post(
-        '$base_url_dev/chat/call/cancel',
+        '${base_url_dev}/chat/call/cancel',
         data: {
           'callId': callId,
           'chatId': widget.chat.id,
@@ -776,10 +766,13 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
     // Determine the final online status
     final bool isOnline;
     if (isOnlineFromSocket != null) {
+      print("user st id: ${clientInfoAsync?.value?.id}");
+      print("user st Online 1 socket: ${isOnlineFromSocket}");
       // Prefer real-time socket status
       isOnline = isOnlineFromSocket;
     } else if (clientInfoAsync != null &&
         clientInfoAsync is AsyncData<UserModel>) {
+      print("user st Online 2 socket: ${clientInfoAsync}");
       // Use client info status as fallback
       isOnline =
           clientInfoAsync.value.isOnline ??
@@ -837,6 +830,7 @@ class _ChatMessageScreenState extends ConsumerState<ChatMessageScreen>
                             ),
                           );
                         } else {
+                          print("clientId: ${clientId}");
                           // For non-group chat, fetch therapist info
                           if (clientId != null) {
                             Navigator.push(

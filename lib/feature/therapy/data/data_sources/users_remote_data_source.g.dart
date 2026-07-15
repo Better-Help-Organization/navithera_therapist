@@ -18,9 +18,17 @@ class _UsersRemoteDataSource implements UsersRemoteDataSource {
   final ParseErrorLogger? errorLogger;
 
   @override
-  Future<UsersListResponse> getUsers({int? page, int? limit}) async {
+  Future<UsersListResponse> getUsers({
+    int? page,
+    int? limit,
+    String? fields = 'id,firstName,lastName,avatar,email,isOnline',
+  }) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'page': page, r'limit': limit};
+    final queryParameters = <String, dynamic>{
+      r'page': page,
+      r'limit': limit,
+      r'fields': fields,
+    };
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;

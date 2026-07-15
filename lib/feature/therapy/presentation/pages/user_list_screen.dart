@@ -189,7 +189,7 @@ class _UsersListScreenState extends ConsumerState<UsersListScreen> {
           ),
           Error(:final failure) => Center(
             child: Text(
-              'Error loading therapists',
+              'Error: ${failure.message}',
               style: TextStyle(fontSize: 14, color: Colors.red[400]),
             ),
           ),

@@ -106,17 +106,17 @@ class FCMService {
 
     try {
       final micStatus = await Permission.microphone.request();
-    if (micStatus.isDenied || micStatus.isPermanentlyDenied) {
-      print('Microphone permission denied');
-      return;
-    }
-    if (isVideoCall) {
-      final camStatus = await Permission.camera.request();
-      if (camStatus.isDenied || camStatus.isPermanentlyDenied) {
-        print('Camera permission denied');
+      if (micStatus.isDenied || micStatus.isPermanentlyDenied) {
+        print('Microphone permission denied');
         return;
       }
-    }
+      if (isVideoCall) {
+        final camStatus = await Permission.camera.request();
+        if (camStatus.isDenied || camStatus.isPermanentlyDenied) {
+          print('Camera permission denied');
+          return;
+        }
+      }
       //create new room
       const cameraEncoding = VideoEncoding(
         maxBitrate: 5 * 1000 * 1000,

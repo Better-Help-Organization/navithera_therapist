@@ -98,7 +98,8 @@ class ChatRepositoryImpl implements ChatRepository {
       final response = await remoteDataSource.getChatThreads(
         page: page,
         take: limit,
-        fields: 'client.*,therapist.*,group.*,updatedAt,groupName',
+        fields:
+            'therapist.id,therapist.email,therapist.firstName,therapist.lastName,therapist.createdAt,therapist.avatar,therapist.profile,client.id,client.email,client.firstName,client.lastName,client.createdAt,group.*,lastMessage.id,lastMessage.content,lastMessage.createdAt,lastMessage.isRead,updatedAt,groupName',
         sort: "updatedAt=Desc",
       );
       return Right(response);
@@ -269,7 +270,8 @@ class ChatRepositoryImpl implements ChatRepository {
       final response = await remoteDataSource.getChatThreads(
         page: page,
         take: limit,
-        fields: 'client.*,group.*,updatedAt,groupName',
+        fields:
+            'therapist.id,therapist.email,therapist.firstName,therapist.lastName,therapist.createdAt,therapist.avatar,therapist.profile,client.id,client.email,client.firstName,client.lastName,client.createdAt,client.avatar,client.profile,lastMessage.id,lastMessage.content,lastMessage.createdAt,lastMessage.isRead,group.*,updatedAt,groupName',
         sort: sort,
         // You'll need to update the remote data source to accept filter parameter
         filters: 'client.firstName=$query', // or implement proper filtering
@@ -301,6 +303,7 @@ class ChatRepositoryImpl implements ChatRepository {
         page: page,
         take: 0,
         sort: 'schedule=Asc',
+        fields: 'client.*',
       );
       log("here: $response");
       return Right(response);
@@ -331,6 +334,7 @@ class ChatRepositoryImpl implements ChatRepository {
         page: page,
         take: 0,
         sort: 'schedule=Asc',
+        // fields: 'client.*,therapist.*',
       );
       log("here: $response");
       return Right(response);

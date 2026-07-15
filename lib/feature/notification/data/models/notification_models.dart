@@ -31,8 +31,8 @@ class NotificationItem with _$NotificationItem {
     required String title,
     required String body,
     required String? message,
-    required String code,
-    required UserModel therapist,
+     String? code,
+     UserModel? therapist,
     @JsonKey(ignore: true) @Default(false) bool isRead,
     @JsonKey(ignore: true) @Default(false) bool isExpanded,
   }) = _NotificationItem;

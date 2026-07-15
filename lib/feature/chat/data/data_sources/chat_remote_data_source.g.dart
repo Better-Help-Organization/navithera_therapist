@@ -21,7 +21,12 @@ class _ChatRemoteDataSource implements ChatRemoteDataSource {
   Future<ChatListResponse> getChatThreads({
     int? page,
     int? take,
-    String? fields,
+    String? fields =
+        'id,updatedAt,unreadCount,groupName,'
+            'client.id,client.firstName,client.lastName,client.avatar,'
+            'group.id,group.firstName,group.lastName,group.avatar,'
+            'therapist.id,therapist.firstName,therapist.lastName,therapist.avatar,'
+            'lastMessage.id,lastMessage.content,lastMessage.createdAt,lastMessage.isRead',
     String? sort,
     String? filters,
   }) async {
@@ -85,12 +90,14 @@ class _ChatRemoteDataSource implements ChatRemoteDataSource {
     int? page,
     int? take,
     String? sort,
+    String? fields = 'id,content,createdAt,updatedAt',
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'page': page,
       r'take': take,
       r'sort': sort,
+      r'fields': fields,
     };
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
@@ -231,6 +238,7 @@ class _ChatRemoteDataSource implements ChatRemoteDataSource {
     int? page,
     int? take,
     String? sort,
+    String? fields = 'id,createdAt,schedule,duration,type,note,therapist.id',
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
@@ -238,6 +246,7 @@ class _ChatRemoteDataSource implements ChatRemoteDataSource {
       r'page': page,
       r'take': take,
       r'sort': sort,
+      r'fields': fields,
     };
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
@@ -318,13 +327,16 @@ class _ChatRemoteDataSource implements ChatRemoteDataSource {
 
   @override
   Future<GroupSessionNoteResponse> getGroupSessionNote({
-    String? fields,
     String? filters,
+    String? fields =
+        'id,paymentPeriod,therapist.id,'
+            'clientNotes.id,clientNotes.note,clientNotes.updatedAt,clientNotes.createdAt,'
+            'clientNotes.client.id,clientNotes.client.firstName,clientNotes.client.lastName,clientNotes.client.avatar',
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
-      r'fields': fields,
       r'filters': filters,
+      r'fields': fields,
     };
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};

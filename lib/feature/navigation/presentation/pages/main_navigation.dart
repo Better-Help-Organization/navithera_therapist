@@ -38,7 +38,7 @@ class _MainNavigationState extends State<MainNavigation> {
 
     _dio.options.headers['Authorization'] = 'Bearer $accessToken';
     final response = await _dio.get(
-      '$base_url_dev/therapist/me/sessions?fields=schedule,duration,client.*&take=0',
+      '$base_url_dev/therapist/me/sessions?fields=schedule,duration&take=0',
     );
     final sessionsData = response.data['data'] as List;
     return sessionsData.map((data) => Session.fromMap(data)).toList();

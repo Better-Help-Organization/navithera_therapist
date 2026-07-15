@@ -385,7 +385,7 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
                           ? '$base_url_for_image${client.profile}?v=${DateTime.now().millisecondsSinceEpoch}'
                           : null,
                   unreadCount: 0,
-                  timestamp: DateTime(2025, 4, 2, 14, 15),
+                  timestamp: thread.lastMessage?.createdAt,
                   isOutgoing: true,
                   isRead: true,
                   isGroup: thread.group.isNotEmpty,

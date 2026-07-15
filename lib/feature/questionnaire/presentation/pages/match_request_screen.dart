@@ -12,6 +12,7 @@ import 'package:navicare/feature/chat/domain/repositories/chat_repository.dart';
 import 'package:navicare/feature/chat/presentation/providers/chat_provider.dart';
 import 'package:navicare/feature/questionnaire/domain/entities/answer_models.dart';
 import 'package:navicare/feature/questionnaire/presentation/providers/answer_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MatchRequest {
   final int? code;
@@ -192,10 +193,6 @@ class _MatchRequestScreenState extends ConsumerState<MatchRequestScreen> {
   String? currentViewingDate; // Currently viewing date for time selection
   Map<String, bool> expandedAvailability = {};
   bool isLoading = false;
-   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
-    aOptions: AndroidOptions(encryptedSharedPreferences: true),
-    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
-  );
 
   @override
   void initState() {
@@ -300,12 +297,12 @@ class _MatchRequestScreenState extends ConsumerState<MatchRequestScreen> {
                                         client.gender!.isNotEmpty)
                                       _Chip(
                                         text: _capitalize(client.gender!),
-                                        icon: Icons.person_rounded, iconSize: 16,
+                                        icon: Icons.person_rounded,
                                       ),
                                     if (age != null)
                                       _Chip(
                                         text: 'Signed up $age years ago',
-                                        icon: Icons.schedule, iconSize: 16,
+                                        icon: Icons.schedule,
                                       ),
                                   ],
                                 ),
@@ -613,7 +610,10 @@ class _MatchRequestScreenState extends ConsumerState<MatchRequestScreen> {
     setState(() {
       isLoading = true;
     });
-
+    final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+      aOptions: AndroidOptions(encryptedSharedPreferences: true),
+      iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+    );
     final accessToken = await _secureStorage.read(key: 'access_token');
 
     try {
@@ -621,10 +621,11 @@ class _MatchRequestScreenState extends ConsumerState<MatchRequestScreen> {
       dio.options.headers['Authorization'] = 'Bearer $accessToken';
 
       final matchId = widget.request.matchData.id;
+      print('TOKEN_DEBUG: $accessToken');
 
       // 1. First accept the match
       final response_2 = await dio.post(
-        '$base_url_dev/match/accept/',
+        '${base_url_dev}/match/accept/',
         data: {'matchId': matchId},
       );
 
@@ -667,14 +668,14 @@ class _MatchRequestScreenState extends ConsumerState<MatchRequestScreen> {
         "client": clientId,
       };
 
-      print("Request data: $requestData");
+      print("Request data: ${requestData}");
 
       final response = await dio.post(
-        '$base_url_dev/session',
+        '${base_url_dev}/session',
         data: requestData,
       );
 
-      print("Response: $response");
+      print("Response: ${response}");
 
       if (response.statusCode == 201) {
         if (!mounted) return;
@@ -708,6 +709,11 @@ class _MatchRequestScreenState extends ConsumerState<MatchRequestScreen> {
         );
       }
     } on DioException catch (e) {
+      print('DIO_ERROR_STATUS: ${e.response?.statusCode}');
+      print('DIO_ERROR_DATA: ${e.response?.data}');
+      print('DIO_ERROR_HEADERS: ${e.response?.headers}');
+      print('DIO_REQUEST_PATH: ${e.requestOptions.path}');
+      print('DIO_REQUEST_HEADERS: ${e.requestOptions.headers}');
       if (!mounted) return;
       final msg =
           e.response?.data is Map && e.response?.data['message'] != null
@@ -747,7 +753,7 @@ class _MatchRequestScreenState extends ConsumerState<MatchRequestScreen> {
 
       if (times.isNotEmpty) {
         if (!datesByWeekday.containsKey(weekday)) {
-          datesByWeekday[weekday] = <String>{};
+          datesByWeekday[weekday] = Set<String>();
         }
         datesByWeekday[weekday]!.addAll(times);
       }
@@ -830,7 +836,7 @@ class _MatchRequestScreenState extends ConsumerState<MatchRequestScreen> {
 
   Widget _buildAnswersSection(AnswerResponse answerResponse) {
     final answers = answerResponse.data;
-    log("im here 3 $answers");
+    log("im here 3 ${answers}");
 
     if (answers.isEmpty) {
       return _SectionCard(
@@ -850,7 +856,7 @@ class _MatchRequestScreenState extends ConsumerState<MatchRequestScreen> {
     return Padding(
       //padding: const EdgeInsets.all(8.0),
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-      child: SizedBox(
+      child: Container(
         width: double.infinity,
         child: _SectionCard(
           title: 'Questionnaire Answers',
@@ -956,7 +962,8 @@ class _InfoTile extends StatelessWidget {
   const _InfoTile({
     required this.icon,
     required this.label,
-    required this.value, this.trailing,
+    required this.value,
+    this.trailing,
   });
 
   @override
@@ -1012,7 +1019,7 @@ class _Chip extends StatelessWidget {
   final IconData? icon;
   final double iconSize;
 
-  const _Chip({required this.text, this.icon, required this.iconSize});
+  const _Chip({required this.text, this.icon, this.iconSize = 14});
 
   @override
   Widget build(BuildContext context) {
@@ -1020,7 +1027,7 @@ class _Chip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: cs.surfaceContainerHighest.withOpacity(0.45),
+        color: cs.surfaceVariant.withOpacity(0.45),
         borderRadius: BorderRadius.circular(999),
         border: Border.all(color: cs.outlineVariant.withOpacity(0.35)),
       ),
@@ -1612,7 +1619,7 @@ class _DateChips extends StatelessWidget {
                   color: isSelected ? cs.onPrimary : cs.onSurface,
                   fontWeight: FontWeight.w600,
                 ),
-                backgroundColor: cs.surfaceContainerHighest.withOpacity(0.45),
+                backgroundColor: cs.surfaceVariant.withOpacity(0.45),
                 shape: StadiumBorder(
                   side: BorderSide(
                     color:
@@ -1706,7 +1713,7 @@ class _TimesForSelectedDate extends StatelessWidget {
     final matched =
         availabilities.where((a) => _getDayIndex(a.day) == weekday).toList();
 
-    print("availablity: $availabilities");
+    print("availablity: ${availabilities}");
 
     if (matched.isEmpty) {
       return _InfoPill(
@@ -2005,7 +2012,7 @@ class _SelectedAppointmentsSummary extends StatelessWidget {
               ],
             ),
           );
-        }),
+        }).toList(),
       ],
     );
   }

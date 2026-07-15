@@ -368,8 +368,8 @@ mixin _$NotificationItem {
   String get title => throw _privateConstructorUsedError;
   String get body => throw _privateConstructorUsedError;
   String? get message => throw _privateConstructorUsedError;
-  String get code => throw _privateConstructorUsedError;
-  UserModel get therapist => throw _privateConstructorUsedError;
+  String? get code => throw _privateConstructorUsedError;
+  UserModel? get therapist => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
   bool get isRead => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -399,13 +399,13 @@ abstract class $NotificationItemCopyWith<$Res> {
     String title,
     String body,
     String? message,
-    String code,
-    UserModel therapist,
+    String? code,
+    UserModel? therapist,
     @JsonKey(ignore: true) bool isRead,
     @JsonKey(ignore: true) bool isExpanded,
   });
 
-  $UserModelCopyWith<$Res> get therapist;
+  $UserModelCopyWith<$Res>? get therapist;
 }
 
 /// @nodoc
@@ -429,8 +429,8 @@ class _$NotificationItemCopyWithImpl<$Res, $Val extends NotificationItem>
     Object? title = null,
     Object? body = null,
     Object? message = freezed,
-    Object? code = null,
-    Object? therapist = null,
+    Object? code = freezed,
+    Object? therapist = freezed,
     Object? isRead = null,
     Object? isExpanded = null,
   }) {
@@ -467,15 +467,15 @@ class _$NotificationItemCopyWithImpl<$Res, $Val extends NotificationItem>
                     : message // ignore: cast_nullable_to_non_nullable
                         as String?,
             code:
-                null == code
+                freezed == code
                     ? _value.code
                     : code // ignore: cast_nullable_to_non_nullable
-                        as String,
+                        as String?,
             therapist:
-                null == therapist
+                freezed == therapist
                     ? _value.therapist
                     : therapist // ignore: cast_nullable_to_non_nullable
-                        as UserModel,
+                        as UserModel?,
             isRead:
                 null == isRead
                     ? _value.isRead
@@ -495,8 +495,12 @@ class _$NotificationItemCopyWithImpl<$Res, $Val extends NotificationItem>
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  $UserModelCopyWith<$Res> get therapist {
-    return $UserModelCopyWith<$Res>(_value.therapist, (value) {
+  $UserModelCopyWith<$Res>? get therapist {
+    if (_value.therapist == null) {
+      return null;
+    }
+
+    return $UserModelCopyWith<$Res>(_value.therapist!, (value) {
       return _then(_value.copyWith(therapist: value) as $Val);
     });
   }
@@ -518,14 +522,14 @@ abstract class _$$NotificationItemImplCopyWith<$Res>
     String title,
     String body,
     String? message,
-    String code,
-    UserModel therapist,
+    String? code,
+    UserModel? therapist,
     @JsonKey(ignore: true) bool isRead,
     @JsonKey(ignore: true) bool isExpanded,
   });
 
   @override
-  $UserModelCopyWith<$Res> get therapist;
+  $UserModelCopyWith<$Res>? get therapist;
 }
 
 /// @nodoc
@@ -548,8 +552,8 @@ class __$$NotificationItemImplCopyWithImpl<$Res>
     Object? title = null,
     Object? body = null,
     Object? message = freezed,
-    Object? code = null,
-    Object? therapist = null,
+    Object? code = freezed,
+    Object? therapist = freezed,
     Object? isRead = null,
     Object? isExpanded = null,
   }) {
@@ -586,15 +590,15 @@ class __$$NotificationItemImplCopyWithImpl<$Res>
                 : message // ignore: cast_nullable_to_non_nullable
                     as String?,
         code:
-            null == code
+            freezed == code
                 ? _value.code
                 : code // ignore: cast_nullable_to_non_nullable
-                    as String,
+                    as String?,
         therapist:
-            null == therapist
+            freezed == therapist
                 ? _value.therapist
                 : therapist // ignore: cast_nullable_to_non_nullable
-                    as UserModel,
+                    as UserModel?,
         isRead:
             null == isRead
                 ? _value.isRead
@@ -620,8 +624,8 @@ class _$NotificationItemImpl implements _NotificationItem {
     required this.title,
     required this.body,
     required this.message,
-    required this.code,
-    required this.therapist,
+    this.code,
+    this.therapist,
     @JsonKey(ignore: true) this.isRead = false,
     @JsonKey(ignore: true) this.isExpanded = false,
   });
@@ -642,9 +646,9 @@ class _$NotificationItemImpl implements _NotificationItem {
   @override
   final String? message;
   @override
-  final String code;
+  final String? code;
   @override
-  final UserModel therapist;
+  final UserModel? therapist;
   @override
   @JsonKey(ignore: true)
   final bool isRead;
@@ -719,8 +723,8 @@ abstract class _NotificationItem implements NotificationItem {
     required final String title,
     required final String body,
     required final String? message,
-    required final String code,
-    required final UserModel therapist,
+    final String? code,
+    final UserModel? therapist,
     @JsonKey(ignore: true) final bool isRead,
     @JsonKey(ignore: true) final bool isExpanded,
   }) = _$NotificationItemImpl;
@@ -741,9 +745,9 @@ abstract class _NotificationItem implements NotificationItem {
   @override
   String? get message;
   @override
-  String get code;
+  String? get code;
   @override
-  UserModel get therapist;
+  UserModel? get therapist;
   @override
   @JsonKey(ignore: true)
   bool get isRead;

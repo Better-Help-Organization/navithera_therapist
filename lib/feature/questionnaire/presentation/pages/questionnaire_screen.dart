@@ -10,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:navicare/core/constants/base_url.dart';
 import 'package:navicare/core/routes/app_router.dart';
 import 'package:navicare/feature/questionnaire/presentation/widgets/progress_indicator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
 // ============ Providers ============
 
@@ -42,18 +43,18 @@ const Map<String, String> expertiseOptions = {
 };
 
 class FileUploadService {
-  static const FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
-    aOptions: AndroidOptions(encryptedSharedPreferences: true),
-    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
-  );
   static Future<String> uploadFile(File imageFile, String endpoint) async {
+   FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+      aOptions: AndroidOptions(encryptedSharedPreferences: true),
+      iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+    );
     final accessToken = await _secureStorage.read(key: 'access_token');
 
     if (accessToken == null) {
       throw Exception('No access token found. Please login again.');
     }
 
-    final uri = Uri.parse('$base_url_dev/therapist/me/upload/$endpoint');
+    final uri = Uri.parse('${base_url_dev}/therapist/me/upload/$endpoint');
     final request = http.MultipartRequest('POST', uri);
 
     // Add authorization header
@@ -142,6 +143,10 @@ class FileUploadService {
     String endpoint,
     String modalId,
   ) async {
+FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+      aOptions: AndroidOptions(encryptedSharedPreferences: true),
+      iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+    );
     final accessToken = await _secureStorage.read(key: 'access_token');
 
     if (accessToken == null) {
@@ -150,7 +155,7 @@ class FileUploadService {
 
     // Construct URL with modalId query parameter
     final uri = Uri.parse(
-      '$base_url_dev/therapist/me/upload/$endpoint?modalId=$modalId',
+      '${base_url_dev}/therapist/me/upload/$endpoint?modalId=$modalId',
     );
     final request = http.MultipartRequest('POST', uri);
 
@@ -219,11 +224,11 @@ final currentStepProvider = StateProvider<int>((ref) => 0);
 
 // Languages - fetched from /language endpoint
 final languagesAsyncProvider = FutureProvider<List<_Language>>((ref) async {
-  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
-    aOptions: AndroidOptions(encryptedSharedPreferences: true),
-    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
-  );
-  final accessToken = await _secureStorage.read(key: 'access_token');
+FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+      aOptions: AndroidOptions(encryptedSharedPreferences: true),
+      iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+    );
+    final accessToken = await _secureStorage.read(key: 'access_token');
   if (accessToken == null) throw Exception('No access token found');
 
   final response = await http.get(
@@ -245,11 +250,11 @@ final languagesAsyncProvider = FutureProvider<List<_Language>>((ref) async {
   }
 });
 final modalsAsyncProvider = FutureProvider<List<_Modal>>((ref) async {
-  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
-    aOptions: AndroidOptions(encryptedSharedPreferences: true),
-    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
-  );
-  final accessToken = await _secureStorage.read(key: 'access_token');
+FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+      aOptions: AndroidOptions(encryptedSharedPreferences: true),
+      iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+    );
+    final accessToken = await _secureStorage.read(key: 'access_token');
 
   if (accessToken == null) {
     throw Exception('No access token found');
@@ -310,11 +315,11 @@ final bankAccountNumbersProvider = StateProvider<Map<String, String>>(
 final bankBranchesProvider = StateProvider<Map<String, String>>((ref) => {});
 // Levels - fetched from /level endpoint
 final levelsAsyncProvider = FutureProvider<List<_Level>>((ref) async {
-  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
-    aOptions: AndroidOptions(encryptedSharedPreferences: true),
-    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
-  );
-  final accessToken = await _secureStorage.read(key: 'access_token');
+FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+      aOptions: AndroidOptions(encryptedSharedPreferences: true),
+      iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+    );
+    final accessToken = await _secureStorage.read(key: 'access_token');
 
   if (accessToken == null) {
     throw Exception('No access token found');
@@ -350,11 +355,11 @@ final goalsTextProvider = StateProvider<String>((ref) => '');
 
 // Add providers for banks
 final banksAsyncProvider = FutureProvider<List<_Bank>>((ref) async {
-  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
-    aOptions: AndroidOptions(encryptedSharedPreferences: true),
-    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
-  );
-  final accessToken = await _secureStorage.read(key: 'access_token');
+FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+      aOptions: AndroidOptions(encryptedSharedPreferences: true),
+      iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+    );
+    final accessToken = await _secureStorage.read(key: 'access_token');
 
   if (accessToken == null) {
     throw Exception('No access token found');
@@ -643,13 +648,13 @@ class _PostSignupQuestionnaireScreenState
 
   Future<void> _submit() async {
     setState(() => _submitting = true);
-    final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+
+    try {
+FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
       aOptions: AndroidOptions(encryptedSharedPreferences: true),
       iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
     );
-
-    try {
-      final accessToken = await _secureStorage.read(key: 'access_token');
+    final accessToken = await _secureStorage.read(key: 'access_token');
 
       if (accessToken == null) {
         throw Exception('No access token found');
@@ -664,7 +669,7 @@ class _PostSignupQuestionnaireScreenState
       final selectedLanguages = ref.read(
         selectedLanguageIdsProvider,
       ); // Get selected languages
-      print("selectedLanguages before submit: $selectedLanguages");
+      print("selectedLanguages before submit: ${selectedLanguages}");
 
       final expertiseArray =
           ref.read(selectedExpertiseProvider).map((expertiseKey) {
@@ -694,7 +699,7 @@ class _PostSignupQuestionnaireScreenState
         'language': selectedLanguages, // Add languages to payload
       };
 
-      print("Submitting payload: $payload");
+      print("Submitting payload: ${payload}");
       print("Selected languages: $selectedLanguages");
 
       // Submit to therapist/me endpoint
@@ -1267,7 +1272,7 @@ class _PostSignupQuestionnaireScreenState
 
         // Optional: enforce size limit (e.g., 10MB)
         const maxBytes = 10 * 1024 * 1024;
-        if (picked.size > maxBytes) {
+        if (picked.size != null && picked.size > maxBytes) {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -1331,20 +1336,20 @@ class _PostSignupQuestionnaireScreenState
     }
 
     // Helper to get file extension for display
-    String getFileExtension(File file) {
+    String _getFileExtension(File file) {
       final path = file.path;
       final extension = path.split('.').last.toLowerCase();
       return extension.toUpperCase();
     }
 
     // Helper to get file name for display
-    String getFileName(File file) {
+    String _getFileName(File file) {
       final path = file.path;
       return path.split('/').last;
     }
 
     // Badge widget for file type
-    Widget fileTypeBadge(String extension) {
+    Widget _fileTypeBadge(String extension) {
       Color bgColor;
       Color textColor;
 
@@ -1417,7 +1422,7 @@ class _PostSignupQuestionnaireScreenState
           Text(
             selectedModalId == null
                 ? 'Please select a modality first'
-                : 'Upload your documents for ${ref.watch(modalsAsyncProvider).when(data: (modals) => modals.firstWhere((m) => m.id == selectedModalId, orElse: () => _Modal(id: '', name: 'Selected', order: 0, description: '')).name, loading: () => 'selected modality', error: (_, __) => 'selected modality')}',
+                : 'Upload your documents for ${ref.watch(modalsAsyncProvider).when(data: (modals) => modals.firstWhere((m) => m.id == selectedModalId, orElse: () => _Modal(id: '', name: '', order: 0, description: '')).name, loading: () => 'selected modality', error: (_, __) => 'selected modality')}',
             style: TextStyle(
               fontSize: 14,
               color: selectedModalId == null ? Colors.red : textSecondary,
@@ -1462,14 +1467,14 @@ class _PostSignupQuestionnaireScreenState
                 children: [
                   Row(
                     children: [
-                      fileTypeBadge(getFileExtension(normalLicenceImage)),
+                      _fileTypeBadge(_getFileExtension(normalLicenceImage)),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              getFileName(normalLicenceImage),
+                              _getFileName(normalLicenceImage),
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -1480,7 +1485,7 @@ class _PostSignupQuestionnaireScreenState
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '${getFileExtension(normalLicenceImage)} • ${_formatFileSize(normalLicenceImage.lengthSync())}',
+                              '${_getFileExtension(normalLicenceImage)} • ${_formatFileSize(normalLicenceImage.lengthSync())}',
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: textSecondary,
@@ -1599,7 +1604,7 @@ class _PostSignupQuestionnaireScreenState
         final picked = result.files.first;
 
         const maxBytes = 10 * 1024 * 1024;
-        if (picked.size > maxBytes) {
+        if (picked.size != null && picked.size > maxBytes) {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -1659,24 +1664,24 @@ class _PostSignupQuestionnaireScreenState
       }
     }
 
-    String getFileExtension(File file) {
+    String _getFileExtension(File file) {
       final path = file.path;
       final extension = path.split('.').last.toLowerCase();
       return extension.toUpperCase();
     }
 
-    String getFileName(File file) {
+    String _getFileName(File file) {
       final path = file.path;
       return path.split('/').last;
     }
 
-    String formatFileSize(int bytes) {
+    String _formatFileSize(int bytes) {
       if (bytes < 1024) return '$bytes B';
       if (bytes < 1048576) return '${(bytes / 1024).toStringAsFixed(1)} KB';
       return '${(bytes / 1048576).toStringAsFixed(1)} MB';
     }
 
-    Widget fileTypeBadge(String extension) {
+    Widget _fileTypeBadge(String extension) {
       Color bgColor;
       Color textColor;
 
@@ -1751,14 +1756,14 @@ class _PostSignupQuestionnaireScreenState
                 children: [
                   Row(
                     children: [
-                      fileTypeBadge(getFileExtension(specialTrainingImage)),
+                      _fileTypeBadge(_getFileExtension(specialTrainingImage!)),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              getFileName(specialTrainingImage),
+                              _getFileName(specialTrainingImage!),
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -1769,7 +1774,7 @@ class _PostSignupQuestionnaireScreenState
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '${getFileExtension(specialTrainingImage)} • ${formatFileSize(specialTrainingImage.lengthSync())}',
+                              '${_getFileExtension(specialTrainingImage!)} • ${_formatFileSize(specialTrainingImage!.lengthSync())}',
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: textSecondary,
@@ -2243,7 +2248,7 @@ class _PostSignupQuestionnaireScreenState
         final picked = result.files.first;
 
         const maxBytes = 10 * 1024 * 1024;
-        if (picked.size > maxBytes) {
+        if (picked.size != null && picked.size > maxBytes) {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -2301,24 +2306,24 @@ class _PostSignupQuestionnaireScreenState
       }
     }
 
-    String getFileExtension(File file) {
+    String _getFileExtension(File file) {
       final path = file.path;
       final extension = path.split('.').last.toLowerCase();
       return extension.toUpperCase();
     }
 
-    String getFileName(File file) {
+    String _getFileName(File file) {
       final path = file.path;
       return path.split('/').last;
     }
 
-    String formatFileSize(int bytes) {
+    String _formatFileSize(int bytes) {
       if (bytes < 1024) return '$bytes B';
       if (bytes < 1048576) return '${(bytes / 1024).toStringAsFixed(1)} KB';
       return '${(bytes / 1048576).toStringAsFixed(1)} MB';
     }
 
-    Widget fileTypeBadge(String extension) {
+    Widget _fileTypeBadge(String extension) {
       Color bgColor;
       Color textColor;
 
@@ -2407,14 +2412,14 @@ class _PostSignupQuestionnaireScreenState
                 children: [
                   Row(
                     children: [
-                      fileTypeBadge(getFileExtension(licenceImage)),
+                      _fileTypeBadge(_getFileExtension(licenceImage)),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              getFileName(licenceImage),
+                              _getFileName(licenceImage),
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -2425,7 +2430,7 @@ class _PostSignupQuestionnaireScreenState
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '${getFileExtension(licenceImage)} • ${formatFileSize(licenceImage.lengthSync())}',
+                              '${_getFileExtension(licenceImage)} • ${_formatFileSize(licenceImage.lengthSync())}',
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: textSecondary,
@@ -2769,7 +2774,7 @@ class _PostSignupQuestionnaireScreenState
         final picked = result.files.first;
 
         const maxBytes = 10 * 1024 * 1024;
-        if (picked.size > maxBytes) {
+        if (picked.size != null && picked.size > maxBytes) {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -2827,24 +2832,24 @@ class _PostSignupQuestionnaireScreenState
       }
     }
 
-    String getFileExtension(File file) {
+    String _getFileExtension(File file) {
       final path = file.path;
       final extension = path.split('.').last.toLowerCase();
       return extension.toUpperCase();
     }
 
-    String getFileName(File file) {
+    String _getFileName(File file) {
       final path = file.path;
       return path.split('/').last;
     }
 
-    String formatFileSize(int bytes) {
+    String _formatFileSize(int bytes) {
       if (bytes < 1024) return '$bytes B';
       if (bytes < 1048576) return '${(bytes / 1024).toStringAsFixed(1)} KB';
       return '${(bytes / 1048576).toStringAsFixed(1)} MB';
     }
 
-    Widget fileTypeBadge(String extension) {
+    Widget _fileTypeBadge(String extension) {
       Color bgColor;
       Color textColor;
 
@@ -2933,14 +2938,14 @@ class _PostSignupQuestionnaireScreenState
                 children: [
                   Row(
                     children: [
-                      fileTypeBadge(getFileExtension(degreeImage)),
+                      _fileTypeBadge(_getFileExtension(degreeImage!)),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              getFileName(degreeImage),
+                              _getFileName(degreeImage!),
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -2951,7 +2956,7 @@ class _PostSignupQuestionnaireScreenState
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '${getFileExtension(degreeImage)} • ${formatFileSize(degreeImage.lengthSync())}',
+                              '${_getFileExtension(degreeImage!)} • ${_formatFileSize(degreeImage!.lengthSync())}',
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: textSecondary,
@@ -3103,7 +3108,7 @@ class _PostSignupQuestionnaireScreenState
       ),
     );
   }
-
+       //This is an optional file to upload
   Widget _professionalLicenseUploadStep(WidgetRef ref) {
     final professionalLicenseImage = ref.watch(
       professionalLicenseImageProvider,
@@ -3126,7 +3131,7 @@ class _PostSignupQuestionnaireScreenState
         final picked = result.files.first;
 
         const maxBytes = 10 * 1024 * 1024;
-        if (picked.size > maxBytes) {
+        if (picked.size != null && picked.size > maxBytes) {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -3184,24 +3189,24 @@ class _PostSignupQuestionnaireScreenState
       }
     }
 
-    String getFileExtension(File file) {
+    String _getFileExtension(File file) {
       final path = file.path;
       final extension = path.split('.').last.toLowerCase();
       return extension.toUpperCase();
     }
 
-    String getFileName(File file) {
+    String _getFileName(File file) {
       final path = file.path;
       return path.split('/').last;
     }
 
-    String formatFileSize(int bytes) {
+    String _formatFileSize(int bytes) {
       if (bytes < 1024) return '$bytes B';
       if (bytes < 1048576) return '${(bytes / 1024).toStringAsFixed(1)} KB';
       return '${(bytes / 1048576).toStringAsFixed(1)} MB';
     }
 
-    Widget fileTypeBadge(String extension) {
+    Widget _fileTypeBadge(String extension) {
       Color bgColor;
       Color textColor;
 
@@ -3276,14 +3281,16 @@ class _PostSignupQuestionnaireScreenState
                 children: [
                   Row(
                     children: [
-                      fileTypeBadge(getFileExtension(professionalLicenseImage)),
+                      _fileTypeBadge(
+                        _getFileExtension(professionalLicenseImage!),
+                      ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              getFileName(professionalLicenseImage),
+                              _getFileName(professionalLicenseImage!),
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -3294,7 +3301,7 @@ class _PostSignupQuestionnaireScreenState
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '${getFileExtension(professionalLicenseImage)} • ${formatFileSize(professionalLicenseImage.lengthSync())}',
+                              '${_getFileExtension(professionalLicenseImage!)} • ${_formatFileSize(professionalLicenseImage!.lengthSync())}',
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: textSecondary,
@@ -3916,7 +3923,7 @@ class _PostSignupQuestionnaireScreenState
               borderRadius: BorderRadius.circular(12),
               child: Image.file(
                 image,
-                fit: BoxFit.cover,
+                fit: BoxFit.none,
                 errorBuilder: (context, error, stackTrace) {
                   return const Center(
                     child: Icon(
@@ -4216,8 +4223,8 @@ class _PostSignupQuestionnaireScreenState
                     _wrapCard(_normalLicenceUploadStep(ref)),
                     _wrapCard(_licenceUploadStep(ref)),
                     _wrapCard(_degreeUploadStep(ref)),
-                    _wrapCard(_professionalLicenseUploadStep(ref)),
-                    _wrapCard(_specialTrainingUploadStep(ref)),
+                    _wrapCard(_professionalLicenseUploadStep(ref)),//optional
+                    _wrapCard(_specialTrainingUploadStep(ref)),//optional
                     _wrapCard(_profileUploadStep(ref)),
                   ],
                 ),

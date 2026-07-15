@@ -1,5 +1,4 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-
 part 'auth_models.freezed.dart';
 part 'auth_models.g.dart';
 
@@ -101,13 +100,52 @@ class SignupResponse with _$SignupResponse {
 }
 
 @freezed
+class Bank with _$Bank {
+  const factory Bank({@JsonKey(name: 'id') required String bankId}) = _Bank;
+
+  factory Bank.fromJson(Map<String, dynamic> json) => _$BankFromJson(json);
+}
+
+@freezed
+class TherapistBankRequest with _$TherapistBankRequest {
+  const factory TherapistBankRequest({
+    required String bankId,
+    required String accountNumber,
+    String? branch,
+  }) = _TherapistBankRequest;
+
+  factory TherapistBankRequest.fromJson(Map<String, dynamic> json) =>
+      _$TherapistBankRequestFromJson(json);
+}
+
+@freezed
+class TherapistBank with _$TherapistBank {
+  const factory TherapistBank({
+    Bank? bank,
+    String? accountNumber,
+    String? branch,
+  }) = _TherapistBank;
+
+  factory TherapistBank.fromJson(Map<String, dynamic> json) =>
+      _$TherapistBankFromJson(json);
+}
+
+DateTime _createdAtFromJson(dynamic value) {
+  if (value == null) return DateTime.fromMillisecondsSinceEpoch(0);
+  return DateTime.parse(value as String);
+}
+
+dynamic _createdAtToJson(DateTime value) => value.toIso8601String();
+
+@freezed
 class UserModel with _$UserModel {
   const factory UserModel({
     required String id,
-    required String email,
-    required String firstName,
-    required String lastName,
-    required DateTime createdAt,
+    @JsonKey(defaultValue: '') required String email,
+    @JsonKey(defaultValue: '') required String firstName,
+    @JsonKey(defaultValue: '') required String lastName,
+    @JsonKey(fromJson: _createdAtFromJson, toJson: _createdAtToJson)
+     required DateTime createdAt,
     bool? isEmailAuthenticated,
     String? status,
     String? gender,
@@ -124,6 +162,7 @@ class UserModel with _$UserModel {
     String? profile,
     bool? isOnline,
     int? hoursDedicatedPerWeek,
+    List<TherapistBank>? therapistBank,
   }) = _UserModel;
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>
@@ -137,10 +176,9 @@ class UpdateProfileRequest with _$UpdateProfileRequest {
     String? lastName,
     String? email,
     String? gender,
-    // String? dob,
     String? username,
     String? phoneNumber,
-    // String? avatar,
+    List<TherapistBankRequest>? therapistBank, // CHANGED — was id/accountNumber
   }) = _UpdateProfileRequest;
 
   factory UpdateProfileRequest.fromJson(Map<String, dynamic> json) =>

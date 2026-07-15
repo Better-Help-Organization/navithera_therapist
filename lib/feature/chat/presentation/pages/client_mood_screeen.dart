@@ -15,13 +15,13 @@ final moodProvider =
     });
 
 class MoodNotifier extends StateNotifier<AsyncValue<List<MoodEntry>>> {
-  MoodNotifier() : super(const AsyncValue.loading());
-
-  final Dio _dio = Dio();
-   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+     final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
     aOptions: AndroidOptions(encryptedSharedPreferences: true),
     iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
   );
+  MoodNotifier() : super(const AsyncValue.loading());
+
+  final Dio _dio = Dio();
 
   Future<void> loadMoods(String clientId) async {
     state = const AsyncValue.loading();
@@ -29,7 +29,7 @@ class MoodNotifier extends StateNotifier<AsyncValue<List<MoodEntry>>> {
     try {
       await _attachAuthHeader();
       final response = await _dio
-          .get('$base_url_dev/mood?filters=client.id%3D$clientId&take=100')
+          .get('${base_url_dev}/mood?filters=client.id%3D$clientId&take=100')
           .timeout(const Duration(seconds: 30));
 
       if (response.data != null && response.data['data'] != null) {
@@ -46,9 +46,8 @@ class MoodNotifier extends StateNotifier<AsyncValue<List<MoodEntry>>> {
   }
 
   Future<void> _attachAuthHeader() async {
-    // final prefs = await SharedPreferences.getInstance();
-    final accessToken = await _secureStorage.read(key: 'access_token');
-    if (accessToken != null && accessToken.isNotEmpty) {
+    final accessToken = _secureStorage.read(key:'access_token');
+    if (accessToken != null) {
       _dio.options.headers['Authorization'] = 'Bearer $accessToken';
     } else {
       _dio.options.headers.remove('Authorization');
@@ -71,15 +70,20 @@ class MoodEntry {
     required this.client,
   });
 
-  factory MoodEntry.fromMap(Map<String, dynamic> map) {
-    return MoodEntry(
-      id: map['id']?.toString() ?? '',
-      createdAt: DateTime.parse(map['createdAt']?.toString() ?? ''),
-      mood: map['mood']?.toString() ?? 'neutral',
-      notes: map['notes']?.toString(),
-      client: Client.fromMap(map['client'] as Map<String, dynamic>),
-    );
-  }
+factory MoodEntry.fromMap(Map<String, dynamic> map) {
+  final clientMap = map['client'];
+
+  return MoodEntry(
+    id: map['id']?.toString() ?? '',
+    createdAt: DateTime.parse(map['createdAt']?.toString() ?? ''),
+    mood: map['mood']?.toString() ?? 'neutral',
+    notes: map['notes']?.toString(),
+    client:
+        clientMap is Map<String, dynamic>
+            ? Client.fromMap(clientMap)
+            : Client(id: '', name: 'Client'),
+  );
+}
 }
 
 class Client {
@@ -218,7 +222,7 @@ class _MoodCalendarScreenState extends State<MoodCalendarScreen> {
                         onPressed:
                             () => ref
                                 .read(moodProvider.notifier)
-                                .loadMoods(widget.clientId),
+                                .loadMoods(widget.clientName),
                         child: const Text('Retry'),
                       ),
                     ],
@@ -393,7 +397,7 @@ class _MoodCalendarScreenState extends State<MoodCalendarScreen> {
                                     Text(
                                       '${date.day}',
                                       style: TextStyle(
-                                        color: AppColors.primary,
+                                        color: AppColors.calendarSelected,
                                         fontWeight: FontWeight.w700,
                                       ),
                                     ),
@@ -508,7 +512,7 @@ class _MoodCalendarScreenState extends State<MoodCalendarScreen> {
                   ),
                 )
               else
-                ...dayMoods.map((mood) => _buildMoodDetail(mood)),
+                ...dayMoods.map((mood) => _buildMoodDetail(mood)).toList(),
             ],
           ),
         ),

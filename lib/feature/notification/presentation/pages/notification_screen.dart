@@ -286,7 +286,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
     );
   }
 
-  Color _getNotificationColor(String code) {
+  Color _getNotificationColor(String? code) {
     switch (code) {
       case '1': // Session scheduled
         return Colors.blue;
@@ -390,7 +390,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
     return null;
   }
 
-  IconData _getNotificationIcon(String code) {
+  IconData _getNotificationIcon(String? code) {
     switch (code) {
       case '1': // Session scheduled
         return Icons.calendar_today;

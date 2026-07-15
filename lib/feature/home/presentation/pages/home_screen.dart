@@ -1111,7 +1111,7 @@ class _ModernLineChartCard extends StatelessWidget {
                   LineChartBarData(
                     spots: effectiveSpots,
                     isCurved: true,
-                    curveSmoothness: 0.32,
+                    curveSmoothness: 0.35,
                     color: color,
                     barWidth: 3,
                     isStrokeCapRound: true,
@@ -1156,7 +1156,7 @@ class _ModernLineChartCard extends StatelessWidget {
 
 // Skeleton and Helper Widgets
 class _StatsSkeleton extends StatelessWidget {
-  const _StatsSkeleton();
+  const _StatsSkeleton(); 
 
   @override
   Widget build(BuildContext context) {

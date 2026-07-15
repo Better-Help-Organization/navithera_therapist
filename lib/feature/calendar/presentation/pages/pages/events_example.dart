@@ -35,7 +35,7 @@ class SessionNotifier extends StateNotifier<List<Session>> {
     try {
       await _attachAuthHeader();
       final response = await _dio.get(
-        '$base_url_dev/therapist/me/sessions?fields=client.*,schedule,duration,hasTherapistAttended,approvalStatus,groupName,groupAttendance.*&take=0',
+        '$base_url_dev/therapist/me/sessions?fields=client.firstName,client.lastName,schedule,duration,hasTherapistAttended,approvalStatus,group.*,groupAttendance.*&take=0',
       );
 
       log("response data: ${response.data}");
@@ -820,7 +820,7 @@ class _SessionCalendarScreenState extends ConsumerState<SessionCalendarScreen>
                                   color:
                                       hasSessions
                                           ? AppColors.primary
-                                          : AppColors.primary.withOpacity(0.1),
+                                          : AppColors.primary,
                                   borderRadius: BorderRadius.circular(8),
                                   border:
                                       hasSessions

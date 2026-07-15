@@ -164,7 +164,7 @@ class _ChatSearchScreenState extends ConsumerState<ChatSearchScreen> {
                                       client!.profile!.isNotEmpty)
                               ? Image(
                                 image: NetworkImage(
-                                  '$base_url_for_image${client.profile}?v=${DateTime.now().millisecondsSinceEpoch}',
+                                  '${base_url_for_image}${client.profile}?v=${DateTime.now().millisecondsSinceEpoch}',
                                 ),
                                 width: 50,
                                 height: 50,
@@ -172,7 +172,7 @@ class _ChatSearchScreenState extends ConsumerState<ChatSearchScreen> {
                                 errorBuilder: (context, error, stackTrace) {
                                   return Image(
                                     image: AssetImage(
-                                      getAvatarImage(client.avatar ?? 0),
+                                      getAvatarImage(client?.avatar ?? 0),
                                     ),
                                     width: 50,
                                     height: 50,
@@ -243,9 +243,9 @@ class _ChatSearchScreenState extends ConsumerState<ChatSearchScreen> {
                         ? '${client.firstName} ${client.lastName}'
                         : "Group Chat",
                 lastMessage: 'I sent you the design files 📎',
-                avatarUrl: 'https://randomuser.me/api/portraits/women/2.jpg',
+                // avatarUrl: 'https://randomuser.me/api/portraits/women/2.jpg',
                 unreadCount: 0,
-                timestamp: DateTime(2025, 4, 2, 14, 15),
+                timestamp: thread.lastMessage?.createdAt,
                 isOutgoing: true,
                 isRead: true,
                 isGroup: thread.group.isNotEmpty,
